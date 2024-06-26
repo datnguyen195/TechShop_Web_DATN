@@ -1,23 +1,17 @@
 const express = require("express");
-const connectDB = require("./TechShop/config/db");
-var expresshbs = require("express-handlebars");
 require("dotenv").config();
+const dbConnect = require("./TechShop/config/dbConnect");
+const initRoutes = require("./TechShop/routes");
+const cookieParser = require("cookie-parser");
 
 const app = express();
-
-connectDB();
-
-app.engine(".hbs", expresshbs.engine({ extname: ".hbs" }));
-app.set("view engine", ".hbs");
-
+app.use(cookieParser());
+const port = process.env.PORT || 8888;
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
+dbConnect();
+initRoutes(app);
 
-const userRouters = require("./TechShop/routes/auth");
-app.use("/users", userRouters);
-
-app.get("/", (req, res) => res.send("API Running"));
-
-const PORT = process.env.PORT || 8000;
-
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.listen(port, () => {
+  console.log("Server running on the port: " + port);
+});
