@@ -36,6 +36,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
     deleteCategory: respone ? respone : "ko the xoa Category",
   });
 });
+///jiji
 module.exports = {
   createCategory,
   getCategories,
