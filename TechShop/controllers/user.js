@@ -42,7 +42,7 @@ const login = asyncHandler(async (req, res) => {
   const response = await User.findOne({ email });
   if (response && (await response.isCorrectPassword(password))) {
     // Tách password và role ra khỏi response
-    const { password, role, ...userData } = response.toObject();
+    const { password, role, refreshToken, ...userData } = response.toObject();
     // Tạo access token
     const accessToken = generateAccessToken(response._id, role);
     // Tạo refresh token
