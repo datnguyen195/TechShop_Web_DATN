@@ -193,6 +193,7 @@ const updateUser = asyncHandler(async (req, res) => {
     updatedUser: response ? response : "Some thing went wrong",
   });
 });
+
 const updateUserByAdmin = asyncHandler(async (req, res) => {
   //
   const { uid } = req.params;
@@ -200,6 +201,20 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
   const response = await User.findByIdAndUpdate(uid, req.body, {
     new: true,
   }).select("-password -role -refreshToken");
+  return res.status(200).json({
+    success: response ? true : false,
+    updatedUser: response ? response : "Some thing went wrong",
+  });
+});
+
+const updateAddress = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  if (!req.body.address) throw new Error("Missing inputs");
+  const response = await User.findByIdAndUpdate(
+    _id,
+    { $push: { address: req.body.address } },
+    { new: true }
+  ).select("-password -role -refreshToken");
   return res.status(200).json({
     success: response ? true : false,
     updatedUser: response ? response : "Some thing went wrong",
@@ -217,4 +232,5 @@ module.exports = {
   deleteUser,
   updateUser,
   updateUserByAdmin,
+  updateAddress,
 };
