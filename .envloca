@@ -1,0 +1,12 @@
+PORT = 5000
+MONGO_URI = mongodb+srv://techshop_datn:techshop@cluster0.rkrz02g.mongodb.net/TechShop
+JWT_SECRET =  qwhefwncbsghdndsaksbcl
+EMAIL_NAME = chuthethanh909@gmail.com
+EMAIL_APP_PASSWORD = ysgeqpjriqnygwfx
+URL_SERVER = https://locallhost/5000
+LIMIT_PRODUCTS = 2
+
+CLOUDINARY_NAME = da45kwm0j
+CLOUDINARY_KEY = 189954976438371
+CLOUDINARY_SECRET = ddX5JaCcLe5PDzWGVzpCobg5WBg
+ ///tạo file .env copy ở đây dán vào .env
