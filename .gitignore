@@ -45,7 +45,7 @@ jspm_packages/
 .yarn-integrity
 
 # dotenv environment variable files
-.env
+# .env
 .env.test
 
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
