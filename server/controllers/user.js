@@ -10,7 +10,7 @@ const crypto = require("crypto");
 const product = require("../models/product");
 
 const register = asyncHandler(async (req, res) => {
-  const { email, password, name } = req.body;
+  const { email, password, name } = req.body.params;
   if (!email || !password || !name)
     return res.status(400).json({
       sucess: false,
@@ -20,7 +20,7 @@ const register = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
   if (user) throw new Error("User has existed");
   else {
-    const newUser = await User.create(req.body);
+    const newUser = await User.create(req.body.params);
     return res.status(200).json({
       sucess: newUser ? true : false,
       mes: newUser
