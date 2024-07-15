@@ -1,14 +1,17 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
-import { Header, Navigation } from "../../components";
+
+import { Sidebar } from "../../components";
 
 const Public = () => {
   return (
-    <div className="w-full flex flex-col items-center">
-      <Header />
-      <Navigation />
-      <div className="w-[1220px]">
-        <Outlet />
+    <div className="w-main fle">
+      <div className="flex flex-col gap-5 w-[30%] flex-auto border">
+        <Sidebar />
+        <span>Deal daily</span>
+      </div>
+      <div className="flex flex-col gap-5 w-[70%] flex-auto border">
+        <Sidebar />
+        <span>Best seller</span>
       </div>
     </div>
   );

@@ -1,16 +1,14 @@
 import React from "react";
-import { Sidebar } from "../../components";
-
+import { Outlet } from "react-router-dom";
+import { Header, Navigation, Sidebar } from "../../components";
+import { useSelector } from "react-redux";
 const Home = () => {
   return (
-    <div className="w-main flex">
-      <div className="flex flex-col gap-5 w-[30%] flex-auto border">
-        <Sidebar />
-        <span>Deal daily</span>
-      </div>
-      <div className="flex flex-col gap-5 w-[70%] flex-auto border">
-        <Sidebar />
-        <span>Best seller</span>
+    <div className="w-full flex flex-col items-center">
+      <Header />
+      <Navigation />
+      <div className="w-[1220px]">
+        <Outlet />
       </div>
     </div>
   );

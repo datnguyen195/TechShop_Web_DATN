@@ -8,21 +8,21 @@ const jwt = require("jsonwebtoken");
 const sendMail = require("../ultils/sendMail");
 const crypto = require("crypto");
 const product = require("../models/product");
+const makeToken = require("uniqid");
 
 const register = asyncHandler(async (req, res) => {
   const { email, password, name } = req.body;
   if (!email || !password || !name)
     return res.status(400).json({
-      sucess: false,
+      success: false,
       mes: "Thiếu dữ liệu",
     });
-
   const user = await User.findOne({ email });
-  if (user) throw new Error("User has existed");
+  if (user) throw new Error("Người dùng đã tồn tại");
   else {
     const newUser = await User.create(req.body);
     return res.status(200).json({
-      sucess: newUser ? true : false,
+      success: newUser ? true : false,
       mes: newUser
         ? "Đăng ký thành công. Vui lòng đăng nhập~"
         : "Đã xảy ra lỗi",
@@ -30,13 +30,85 @@ const register = asyncHandler(async (req, res) => {
     });
   }
 });
+
+// const register1 = asyncHandler(async (req, res) => {
+//   const { email, password, name, mobile } = req.body;
+
+//   if (!email || !password || !name || !mobile)
+//     return res.status(400).json({
+//       success: false,
+//       mes: "Thiếu dữ liệu",
+//     });
+//   const user = await User.findOne({ email });
+//   if (user) {
+//     throw new Error("Người dùng đã tồn tại");
+//   } else {
+//     const token = makeToken();
+//     res.cookie(
+//       "dataregister",
+//       { ...req.body, token },
+//       {
+//         httpOnly: true,
+//         maxAge: 15 * 60 * 1000,
+//       }
+//     );
+//     const html = `này sẽ hết hạn sau 15 phút kể từ bây giờ. ${token}{' '}
+//    <a href=${process.env.URL_SERVER}/api/user/finalregister/${token}>Click here</a>`;
+
+//     const data = {
+//       email,
+//       html,
+//       title: "Hoàn tất đăng ký",
+//     };
+//     const rs = await sendMail(data);
+//     return res.status(200).json({
+//       success: true,
+//       mes: "Vui lòng check mail của bạn",
+//     });
+//   }
+//   //lưư dươi cookei
+// });
+
+// const finalRegister = asyncHandler(async (req, res) => {
+//   const { token } = req.body;
+//   if (!token) throw new Error("Thiếu dữ liệu");
+//   const checkToken = await User.findOne({ token });
+//   if (!checkToken) throw new Error("Token không hợp lệ");
+//   return res.status(200).json({
+//     success: checkToken ? true : false,
+//     mes: checkToken ? "Đăng Ký thành công" : "Đã xảy ra lỗi",
+//   });
+// });
+
+// const finalRegister = asyncHandler(async (req, res) => {
+//   const cookie = req.cookies;
+//   const { token } = req.params;
+//   if (!cookie || cookie?.dataregister?.token !== token)
+//     throw new Error("Đăng ký bị lỗi");
+//   const newUser = await User.create({
+//     email: cookie?.dataregister?.email,
+//     password: cookie?.dataregister?.password,
+//     name: cookie?.dataregister?.name,
+//     mobile: cookie?.dataregister?.mobile,
+//   });
+//   return res.status(200).json({
+//     success: newUser ? true : false,
+//     mes: newUser ? "Đăng ký thành công. Vui lòng đăng nhập~" : "Đã xảy ra lỗi",
+//     newUser,
+//   });
+//   // return res.status(200).json({
+//   //   success: true,
+//   //   cookie,
+//   // });
+// });
+
 // Refresh token => Cấp mới access token
 // Access token => Xác thực người dùng, quân quyên người dùng
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)
     return res.status(400).json({
-      sucess: false,
+      success: false,
       mes: "Thiếu dữ liệu",
     });
   // plain object
@@ -60,7 +132,7 @@ const login = asyncHandler(async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return res.status(200).json({
-      sucess: true,
+      success: true,
       accessToken,
       userData,
     });
@@ -129,11 +201,12 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const resetToken = user.createPasswordChangedToken();
   await user.save();
 
-  const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.URL_SERVER}/api/user/reset-password/${resetToken}>Click here</a>`;
+  const html = `Token này sẽ hết hạn sau 15 phút kể từ bây giờ ${resetToken}. <a href=${process.env.URL_SERVER}/api/user/reset-password/${resetToken}>Click here</a>`;
 
   const data = {
     email,
     html,
+    title: "Forgot password",
   };
   const rs = await sendMail(data);
   return res.status(200).json({
@@ -182,7 +255,6 @@ const deleteUser = asyncHandler(async (req, res) => {
   });
 });
 const updateUser = asyncHandler(async (req, res) => {
-  //
   const { _id } = req.user;
   if (!_id || Object.keys(req.body).length === 0)
     throw new Error("Missing inputs");
