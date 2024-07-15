@@ -3,8 +3,13 @@ export const appStore = createSlice({
   name: "app",
   initialState: {
     isLoading: false,
+    isShowModal: false,
   },
-  reducers: {},
+  reducers: {
+    showModal: (state, action) => {
+      state.isShowModal = action.payload.isShowModal;
+    },
+  },
   extraReducers: (builder) => {
     // Bắt đầu thực hiện action login (Promise pending)
     builder.addCase(login.pending, (state) => {

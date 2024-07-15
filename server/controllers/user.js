@@ -145,7 +145,7 @@ const login = asyncHandler(async (req, res) => {
 });
 const getCurrent = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const user = await User.findById(_id).select("-refreshToken -password -role");
+  const user = await User.findById(_id).select("-refreshToken -password ");
   return res.status(200).json({
     success: user ? true : false,
     rs: user ? user : "Không tìm thấy người dùng",
@@ -240,10 +240,48 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 const getUsers = asyncHandler(async (req, res) => {
-  const response = await User.find().select("-refreshToken -password -role");
-  return res.status(200).json({
-    success: response ? true : false,
-    users: response,
+  const queries = { ...req.query };
+  const excludeFields = ["limit", "sort", "page", "fields"];
+  excludeFields.forEach((el) => delete queries[el]);
+  let queryString = JSON.stringify(queries);
+  queryString = queryString.replace(
+    /\b(gte|gt|lt|lte)\b/g,
+    (macthedEl) => `$${macthedEl}`
+  );
+  const formatedQueries = JSON.parse(queryString);
+  if (queries?.name)
+    formatedQueries.name = { $regex: queries.name, $options: "i" };
+  let queryCommand = Product.find(formatedQueries);
+
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    queryCommand = queryCommand.sort(sortBy);
+  }
+
+  if (req.query.fields) {
+    const fields = req.query.fields.split(",").join(" ");
+    queryCommand = queryCommand.select(fields);
+  }
+
+  //Pagination
+  //limit: số object lay ve goi 1 API
+  //skip:2
+  //1 2 3 ... 10
+  const page = +req.query.page || 1;
+  const limit = +req.query.limit || process.env.LIMIT_PRODUCTS;
+  const skip = (page - 1) * limit;
+  queryCommand.skip(skip).limit(limit);
+
+  //Execute query
+  //So luong ap thoa man dieu kien == so luonwg sp tra ve 1 lafn goi api
+  queryCommand.exec(async (err, response) => {
+    if (err) throw new Error(err.message);
+    const counts = await Product.find(formatedQueries).countDocuments();
+    return res.status(200).json({
+      success: response ? true : false,
+      counts,
+      products: response ? response : "Cannot get products",
+    });
   });
 });
 const deleteUser = asyncHandler(async (req, res) => {
@@ -339,6 +377,21 @@ const updateCart = asyncHandler(async (req, res) => {
     });
   }
 });
+const uploadImagesAvatar = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  if (!req.file) throw new Error("thiếu trường");
+  const response = await User.findByIdAndUpdate(
+    _id,
+    { avatar: req.file.path },
+    { new: true }
+  );
+  return res.status(200).json({
+    status: response ? true : false,
+    updateAvatar: response ? response : "khong the upload anh avatar",
+  });
+  // console.log(req.files);
+  // return res.json("oke");
+});
 module.exports = {
   register,
   login,
@@ -353,4 +406,5 @@ module.exports = {
   updateUserByAdmin,
   updateAddress,
   updateCart,
+  uploadImagesAvatar,
 };
