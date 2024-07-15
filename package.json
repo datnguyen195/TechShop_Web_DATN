@@ -1,5 +1,6 @@
 {
   "scripts": {
-    "start": "cd server && yarn start "
+    "api": "cd server && yarn start",
+    "start": "cd client && yarn start"
   }
 }
