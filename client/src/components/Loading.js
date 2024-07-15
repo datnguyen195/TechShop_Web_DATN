@@ -1,7 +1,8 @@
-import React from "react";
+import React, { memo } from "react";
+// import { RingLoader } from "react-scripts";
 
 const Loading = () => {
-  return <div>Loading</div>;
+  // return <RingLoader />;
 };
 
-export default Loading;
+export default memo(Loading);

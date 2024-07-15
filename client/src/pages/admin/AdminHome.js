@@ -1,28 +1,25 @@
-import React from "react";
+import React, { memo } from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import { Header, Navigation } from "../../components";
+import { Sidebar } from "../../components";
 import { useSelector } from "react-redux";
 import path from "../../ultils/path";
 const AdminHome = () => {
-  const { isLoggedIn, curent } = useSelector((state) => state.user);
-  // if (!isLoggedIn || !curent || +curent.role !== 0) {
-  //   console.log(path.LOGIN);
-  //   console.log(path.curent);
-
-  //   // return <Navigate to={`/${path.LOGIN}`} />;
-  // }
-  console.log(path.LOGIN);
-  console.log("curent", path.curent);
+  const { isLoggedIn, current } = useSelector((state) => state.user);
+  console.log("current22", current);
+  if (!isLoggedIn || !current || +current.role !== 0) {
+    return <Navigate to={`/${path.LOGIN}`} replace={true} />;
+  }
   return (
-    <div className="w-full flex flex-col items-center">
-      <Header />
-      <div>thanhhbcnis</div>
-      <Navigation />
-      <div className="w-[1220px]">
+    <div className="h-full flex bg-white min-h-screen ">
+      <div className="w-[327px] flex-none bottom-0 top-0 fixed">
+        <Sidebar />
+      </div>
+      <div className="w-[327px]"></div>
+      <div className="flex-auto">
         <Outlet />
       </div>
     </div>
   );
 };
 
-export default AdminHome;
+export default memo(AdminHome);

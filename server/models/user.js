@@ -62,6 +62,7 @@ var userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
+      default: " ",
     },
   },
   {
