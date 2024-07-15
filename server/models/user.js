@@ -25,7 +25,8 @@ var userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "user",
+      enum: [0, 1],
+      default: 1,
     },
     cart: [
       {
@@ -81,7 +82,7 @@ userSchema.methods = {
     return await bcrypt.compare(password, this.password);
   },
   createPasswordChangedToken: function () {
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetToken = crypto.randomBytes(3).toString("hex");
     this.passwordResetToken = crypto
       .createHash("sha256")
       .update(resetToken)
