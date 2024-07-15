@@ -13,27 +13,30 @@ const register = asyncHandler(async (req, res) => {
   const { email, password, name } = req.body.params;
   if (!email || !password || !name)
     return res.status(400).json({
-      sucess: false,
-      mes: "Thiếu dữ liệu",
+      success: false,
+      message: "Thiếu dữ liệu",
     });
 
   const user = await User.findOne({ email });
-  if (user) throw new Error("User has existed");
-  else {
+  if (user) {
+    return res.status(400).json({
+      sucess: false,
+      error: "User has expired",
+    });
+  } else {
     const newUser = await User.create(req.body.params);
     return res.status(200).json({
       sucess: newUser ? true : false,
       mes: newUser
         ? "Đăng ký thành công. Vui lòng đăng nhập~"
         : "Đã xảy ra lỗi",
-      newUser,
     });
   }
 });
 // Refresh token => Cấp mới access token
 // Access token => Xác thực người dùng, quân quyên người dùng
 const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body.params;
   if (!email || !password)
     return res.status(400).json({
       sucess: false,

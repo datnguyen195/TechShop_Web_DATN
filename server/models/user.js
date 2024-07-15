@@ -1,6 +1,7 @@
 const mongoose = require("mongoose"); // Erase if already required
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+
 // Declare the Schema of the Mongo model
 var userSchema = new mongoose.Schema(
   {
@@ -52,6 +53,14 @@ var userSchema = new mongoose.Schema(
       type: String,
     },
     passwordResetExpires: {
+      type: String,
+    },
+    gender: {
+      type: String,
+      enum: [0, 1, 2],
+      default: 0,
+    },
+    avatar: {
       type: String,
     },
   },
