@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { adminSidebar } from "../ultils/contants";
 import clsx from "clsx";
 import icons from "../ultils/icons";
-const { FaAngleDown, FaCaretLeft } = icons;
+const { MdArrowDropDown, MdArrowLeft } = icons;
 
 const activedStyle = "px-4 py-2 flex items-center gap-2 bg-blue-200";
 const NotActivedStyle = "px-4 py-2 flex items-center gap-2 hover:bg-blue-100";
@@ -47,9 +47,9 @@ const Sidebar = () => {
                     <span>{el.text}</span>
                   </div>
                   {actived.some((id) => id === el.id) ? (
-                    <FaCaretLeft />
+                    <MdArrowLeft />
                   ) : (
-                    <FaAngleDown />
+                    <MdArrowDropDown />
                   )}
                 </div>
                 {actived.some((id) => id === el.id) && (

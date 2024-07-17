@@ -32,7 +32,6 @@ const Login = () => {
 
     if (isRegister) {
       const response = await apiRegister(payload);
-      console.log(response.success);
       {
         if (response.success) {
           Swal.fire("Thành công.", response.mes, "success");
@@ -42,8 +41,6 @@ const Login = () => {
           Swal.fire("Đã sảy ra lỗi.", response.mes, "error");
         }
       }
-
-      console.log(response);
     } else {
       const res = await apiLogin(data);
       if (res.success) {

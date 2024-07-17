@@ -1,10 +1,10 @@
 const path = {
-  LOGIN: "",
+  LOGIN: "login",
   PUBLIC: "public",
   HOME: "home",
   ALL: "*",
 
-  ADMIN: "admin",
+  ADMIN: "",
   DASHBOARD: "dashboard",
   MANAGE_ORDER: "manageorder",
   MANAGE_PRODUCTS: "manageproducts",

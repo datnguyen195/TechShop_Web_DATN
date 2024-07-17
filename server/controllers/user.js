@@ -248,46 +248,46 @@ const getUsers = asyncHandler(async (req, res) => {
   const formatedQueries = JSON.parse(queryString);
   if (queries?.name)
     formatedQueries.name = { $regex: queries.name, $options: "i" };
-  let queryCommand = Product.find(formatedQueries);
 
+  if (req.query.searchKey) {
+    delete formatedQueries.searchKey;
+    formatedQueries["$or"] = [
+      { name: { $regex: req.query.searchKey, $options: "i" } },
+      { email: { $regex: req.query.searchKey, $options: "i" } },
+      { mobile: { $regex: req.query.searchKey, $options: "i" } },
+    ];
+  }
+
+  let queryCommand = User.find(formatedQueries);
   if (req.query.sort) {
     const sortBy = req.query.sort.split(",").join(" ");
     queryCommand = queryCommand.sort(sortBy);
   }
-
   if (req.query.fields) {
     const fields = req.query.fields.split(",").join(" ");
     queryCommand = queryCommand.select(fields);
   }
-
-  //Pagination
-  //limit: số object lay ve goi 1 API
-  //skip:2
-  //1 2 3 ... 10
   const page = +req.query.page || 1;
   const limit = +req.query.limit || process.env.LIMIT_PRODUCTS;
   const skip = (page - 1) * limit;
   queryCommand.skip(skip).limit(limit);
-
-  //Execute query
-  //So luong ap thoa man dieu kien == so luonwg sp tra ve 1 lafn goi api
   queryCommand.exec(async (err, response) => {
     if (err) throw new Error(err.message);
-    const counts = await Product.find(formatedQueries).countDocuments();
+    const counts = await User.find(formatedQueries).countDocuments();
     return res.status(200).json({
       success: response ? true : false,
       counts,
-      products: response ? response : "Cannot get products",
+      users: response ? response : "Cannot get users",
     });
   });
 });
+
 const deleteUser = asyncHandler(async (req, res) => {
-  const { _id } = req.query;
-  if (!_id) throw new Error("Thiếu dữ liệu");
-  const response = await User.findByIdAndDelete(_id);
+  const { uid } = req.query;
+  const response = await User.findByIdAndDelete(uid);
   return res.status(200).json({
     success: response ? true : false,
-    deletedUser: response
+    mes: response
       ? `User with email ${response.email} deleted`
       : "No user delete",
   });
@@ -298,23 +298,23 @@ const updateUser = asyncHandler(async (req, res) => {
     throw new Error("Missing inputs");
   const response = await User.findByIdAndUpdate(_id, req.body, {
     new: true,
-  }).select("-password -role -refreshToken");
+  }).select("-role -refreshToken");
   return res.status(200).json({
     success: response ? true : false,
-    updatedUser: response ? response : "Some thing went wrong",
+    updatedUser: response ? response : "Đã xảy ra lỗi",
   });
 });
 
 const updateUserByAdmin = asyncHandler(async (req, res) => {
   //
   const { uid } = req.params;
-  if (Object.keys(req.body).length === 0) throw new Error("Missing inputs");
+  if (Object.keys(req.body).length === 0) throw new Error("Thiếu dữ liệu");
   const response = await User.findByIdAndUpdate(uid, req.body, {
     new: true,
   }).select("-password -role -refreshToken");
   return res.status(200).json({
     success: response ? true : false,
-    updatedUser: response ? response : "Some thing went wrong",
+    mes: response ? "Thành công" : "Đã xảy ra lỗi",
   });
 });
 
@@ -328,7 +328,7 @@ const updateAddress = asyncHandler(async (req, res) => {
   ).select("-password -role -refreshToken");
   return res.status(200).json({
     success: response ? true : false,
-    updatedUser: response ? response : "Some thing went wrong",
+    updatedUser: response ? response : "Đã xảy ra lỗi",
   });
 });
 
@@ -349,7 +349,7 @@ const updateCart = asyncHandler(async (req, res) => {
       );
       return res.status(200).json({
         success: response ? true : false,
-        updatedUser: response ? response : "Some thing went wrong",
+        updatedUser: response ? response : "Đã xảy ra lỗi",
       });
     } else {
       const response = await User.findByIdAndUpdate(
@@ -359,7 +359,7 @@ const updateCart = asyncHandler(async (req, res) => {
       );
       return res.status(200).json({
         success: response ? true : false,
-        updatedUser: response ? response : "Some thing went wrong",
+        updatedUser: response ? response : "Đã xảy ra lỗi",
       });
     }
   } else {
@@ -370,7 +370,7 @@ const updateCart = asyncHandler(async (req, res) => {
     );
     return res.status(200).json({
       success: response ? true : false,
-      updatedUser: response ? response : "Some thing went wrong",
+      updatedUser: response ? response : "Đã xảy ra lỗi",
     });
   }
 });

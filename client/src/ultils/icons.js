@@ -1,10 +1,22 @@
 import { IoIosLogOut, IoIosSpeedometer, IoIosPeople } from "react-icons/io";
-import { FaAngleDown, FaCaretLeft } from "react-icons/fa6";
+import {
+  MdArrowDropDown,
+  MdArrowLeft,
+  MdDelete,
+  MdEditSquare,
+  MdOutlineClear,
+  MdSystemUpdateAlt,
+} from "react-icons/md";
 const icons = {
-  FaAngleDown,
   IoIosLogOut,
   IoIosSpeedometer,
   IoIosPeople,
-  FaCaretLeft,
+
+  MdArrowDropDown,
+  MdArrowLeft,
+  MdDelete,
+  MdEditSquare,
+  MdOutlineClear,
+  MdSystemUpdateAlt,
 };
 export default icons;

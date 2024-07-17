@@ -10,7 +10,6 @@ const { IoIosLogOut } = icons;
 const TopHeader = () => {
   const dispatch = useDispatch();
   const { isLoggedIn, current } = useSelector((state) => state.user);
-  console.log("current111", current);
   useEffect(() => {
     if (isLoggedIn) {
       dispatch(getCurrent());

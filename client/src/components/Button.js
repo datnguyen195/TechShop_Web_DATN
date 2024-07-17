@@ -1,13 +1,21 @@
 import React, { memo } from "react";
 
-const Button = ({ name, handleOnClink, style, iconBefore, inconAfter, fw }) => {
+const Button = ({
+  name,
+  handleOnClink,
+  style,
+  iconBefore,
+  inconAfter,
+  fw,
+  type = "button",
+}) => {
   return (
     <button
-      type="button"
+      type={type}
       className={
         style
           ? style
-          : `ps-4, py-2 rounded-md text-white bg-main ${
+          : `px-4, py-2 rounded-md text-white my-2 bg-main p-2 ${
               fw ? "w-full" : "w-fit"
             }`
       }

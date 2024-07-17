@@ -35,8 +35,7 @@ var userSchema = new mongoose.Schema(
       },
     ],
     address: {
-      type: Array,
-      default: [],
+      type: String,
     },
     wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
     isBlocked: {
@@ -62,7 +61,7 @@ var userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: " ",
+      default: "https://cdn-i.vtcnews.vn/upload/2023/08/03/1-13125665.jpg",
     },
   },
   {
