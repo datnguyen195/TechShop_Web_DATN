@@ -24,7 +24,8 @@ var userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "user",
+      enum: [0, 1],
+      default: 1,
     },
     cart: [
       {
@@ -34,8 +35,7 @@ var userSchema = new mongoose.Schema(
       },
     ],
     address: {
-      type: Array,
-      default: [],
+      type: String,
     },
     wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
     isBlocked: {
@@ -53,6 +53,15 @@ var userSchema = new mongoose.Schema(
     },
     passwordResetExpires: {
       type: String,
+    },
+    gender: {
+      type: String,
+      enum: [0, 1, 2],
+      default: 0,
+    },
+    avatar: {
+      type: String,
+      default: "https://cdn-i.vtcnews.vn/upload/2023/08/03/1-13125665.jpg",
     },
   },
   {
@@ -72,7 +81,7 @@ userSchema.methods = {
     return await bcrypt.compare(password, this.password);
   },
   createPasswordChangedToken: function () {
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetToken = crypto.randomBytes(3).toString("hex");
     this.passwordResetToken = crypto
       .createHash("sha256")
       .update(resetToken)
