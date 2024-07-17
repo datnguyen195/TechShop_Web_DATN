@@ -7,26 +7,30 @@ const {
 const jwt = require("jsonwebtoken");
 const sendMail = require("../ultils/sendMail");
 const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
 const product = require("../models/product");
 const makeToken = require("uniqid");
 
 const register = asyncHandler(async (req, res) => {
-  const { email, password, name } = req.body;
+  const { email, password, name } = req.body.params ?? req.body;
   if (!email || !password || !name)
     return res.status(400).json({
       success: false,
-      mes: "Thiếu dữ liệu",
+      message: "Thiếu dữ liệu",
     });
   const user = await User.findOne({ email });
-  if (user) throw new Error("Người dùng đã tồn tại");
-  else {
-    const newUser = await User.create(req.body);
+  if (user) {
+    return res.status(400).json({
+      sucess: false,
+      error: "User has expired",
+    });
+  } else {
+    const newUser = await User.create(req.body.params ?? req.body);
     return res.status(200).json({
       success: newUser ? true : false,
       mes: newUser
         ? "Đăng ký thành công. Vui lòng đăng nhập~"
         : "Đã xảy ra lỗi",
-      newUser,
     });
   }
 });
@@ -105,7 +109,7 @@ const register = asyncHandler(async (req, res) => {
 // Refresh token => Cấp mới access token
 // Access token => Xác thực người dùng, quân quyên người dùng
 const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body.params ?? req.body;
   if (!email || !password)
     return res.status(400).json({
       success: false,
@@ -389,6 +393,30 @@ const uploadImagesAvatar = asyncHandler(async (req, res) => {
   // console.log(req.files);
   // return res.json("oke");
 });
+
+const changePassUser = asyncHandler(async (req, res) => {
+  const { _id, oldPassword, newPassword } = req.body.params ?? req.body;
+
+  const user = await User.findById(_id);
+
+  if (!user) {
+    return res.status(404).json({ mes: "User not found", success: false });
+  }
+
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+  if (!isMatch) {
+    return res
+      .status(401)
+      .json({ mes: "Incorrect old password", success: false });
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.json({ mes: "Password changed successfully", success: true });
+});
+
 module.exports = {
   register,
   login,
@@ -404,4 +432,5 @@ module.exports = {
   updateAddress,
   updateCart,
   uploadImagesAvatar,
+  changePassUser,
 };
