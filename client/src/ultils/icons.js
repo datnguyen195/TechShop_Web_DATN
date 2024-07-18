@@ -6,6 +6,7 @@ import {
   MdEditSquare,
   MdOutlineClear,
   MdSystemUpdateAlt,
+  MdClose,
 } from "react-icons/md";
 const icons = {
   IoIosLogOut,
@@ -18,5 +19,6 @@ const icons = {
   MdEditSquare,
   MdOutlineClear,
   MdSystemUpdateAlt,
+  MdClose,
 };
 export default icons;

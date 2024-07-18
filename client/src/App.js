@@ -1,11 +1,12 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import path from "./ultils/path";
-import { Home, Login, Public } from "./pages/public";
+import { Home, Public } from "./pages/public";
 import {
   AdminHome,
   CreateProducts,
   Dashboard,
+  Login,
   ManageOrder,
   ManageProducts,
   ManageUsers,

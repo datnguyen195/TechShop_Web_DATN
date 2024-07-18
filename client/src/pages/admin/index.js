@@ -1,3 +1,4 @@
+export { default as Login } from "./Login";
 export { default as AdminHome } from "./AdminHome";
 export { default as Dashboard } from "./Dashboard";
 export { default as ManageOrder } from "./ManageOrder";

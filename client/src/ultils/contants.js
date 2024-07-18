@@ -43,6 +43,6 @@ export const adminSidebar = [
 ];
 
 export const roles = [
-  { code: 0, value: "Admin" },
-  { code: 1, value: "User" },
+  { code: 0, title: "Admin" },
+  { code: 1, title: "User" },
 ];

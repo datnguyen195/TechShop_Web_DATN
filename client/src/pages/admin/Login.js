@@ -3,9 +3,11 @@ import { Button, InputField } from "../../components";
 import { apiLogin, apiRegister } from "../../apis/user";
 import { useNavigate } from "react-router-dom";
 import path from "../../ultils/path";
+import { getCurrent } from "../../store/user/asyncActions";
 import Swal from "sweetalert2";
 import { register } from "../../store/user/userStore";
 import { useDispatch } from "react-redux";
+import { validate } from "../../ultils/helper";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -29,32 +31,35 @@ const Login = () => {
   const [isRegister, setIsRegister] = useState(false);
   const handleSubmit = async () => {
     const { name, mobile, ...data } = payload;
-
-    if (isRegister) {
-      const response = await apiRegister(payload);
-      {
-        if (response.success) {
-          Swal.fire("Thành công.", response.mes, "success");
-          setIsRegister(false);
-          resetPayload();
-        } else {
-          Swal.fire("Đã sảy ra lỗi.", response.mes, "error");
+    const invalids = isRegister ? validate(payload) : validate(data);
+    if (invalids === 0) {
+      if (isRegister) {
+        const response = await apiRegister(payload);
+        {
+          if (response.success) {
+            Swal.fire("Thành công.", response.mes, "success");
+            setIsRegister(false);
+            resetPayload();
+          } else {
+            Swal.fire("Đã sảy ra lỗi.", response.mes, "error");
+          }
         }
-      }
-    } else {
-      const res = await apiLogin(data);
-      if (res.success) {
-        dispatch(
-          register({
-            isLoggedIn: true,
-            token: res.accessToken,
-            userData: res.userData,
-          })
-        );
-        Swal.fire("Thành công.", res.mes, "success");
-        navigate(`/${path.ADMIN}`);
       } else {
-        Swal.fire("Đã sảy ra lỗi.", res.mes, "error");
+        const res = await apiLogin(data);
+        if (res.success) {
+          dispatch(
+            register({
+              isLoggedIn: true,
+              token: res.accessToken,
+              userData: res.userData,
+            })
+          );
+          Swal.fire("Thành công.", res.mes, "success");
+          dispatch(getCurrent());
+          navigate(`/${path.ADMIN}`);
+        } else {
+          Swal.fire("Đã sảy ra lỗi.", res.mes, "error");
+        }
       }
     }
   };

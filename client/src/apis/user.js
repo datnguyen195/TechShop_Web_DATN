@@ -34,9 +34,8 @@ export const apiUpdateUser = (data, uid) =>
     data,
   });
 
-export const apiDeleteUser = (data, uid) =>
+export const apiDeleteUser = (uid) =>
   axios({
     url: "/user/" + uid,
     method: "delete",
-    data,
   });
