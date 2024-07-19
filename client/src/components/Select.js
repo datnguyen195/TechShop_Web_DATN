@@ -23,7 +23,7 @@ const Select = ({
       >
         <option value="">-Chon-</option>
         {options?.map((el) => (
-          <option value={el.code}>{el.value}</option>
+          <option value={el.code}>{el.title}</option>
         ))}
       </select>
       {errors[id] && (

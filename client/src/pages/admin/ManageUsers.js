@@ -61,11 +61,15 @@ const ManageUsers = () => {
       showCancelButton: true,
     }).then(async (result) => {
       if (result.isConfirmed) {
+        console.log("uid", uid);
         const response = await apiDeleteUser(uid);
+        console.log("response", uid);
         if (response.success) {
           render();
           toast.success(response.mes);
-        } else toast.error(response.mes);
+        } else {
+          toast.error(response.mes);
+        }
       }
     });
   };
@@ -197,7 +201,7 @@ const ManageUsers = () => {
                       />
                     ) : (
                       <span>
-                        {roles.find((role) => +role.code === +el.role)?.value}
+                        {roles.find((role) => +role.code === +el.role)?.title}
                       </span>
                     )}
                   </td>

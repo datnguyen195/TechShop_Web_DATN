@@ -10,10 +10,12 @@ const InputForm = ({
   type = "text",
   placeholder,
   fullwidth,
+  style,
+  layout,
   defaulfValue,
 }) => {
   return (
-    <div className="flex flex-col h-[65px] gap-2">
+    <div className={clsx("flex flex-col h-[65px] gap-2", layout)}>
       {label && <label htmlFor={id}>{label}</label>}
       <input
         type={type}
@@ -21,7 +23,11 @@ const InputForm = ({
         {...register(id, validate)}
         disabled={disabled}
         placeholder={placeholder}
-        className={clsx(" border border-black my-auto", fullwidth && "w-full")}
+        className={clsx(
+          " p-2 border border-black my-auto",
+          fullwidth && "w-full",
+          style
+        )}
         defaultValue={defaulfValue}
       />
 

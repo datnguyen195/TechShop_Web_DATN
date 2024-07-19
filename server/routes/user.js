@@ -22,7 +22,9 @@ router.delete("/:uid", [verifyAccessToken, isAdmin], ctrls.deleteUser);
 router.put("/current", [verifyAccessToken], ctrls.updateUser);
 router.put("/address", verifyAccessToken, ctrls.updateAddress);
 router.put("/cart", verifyAccessToken, ctrls.updateCart);
+router.delete("/remove-cart/:pid/:color", verifyAccessToken, ctrls.deleteCart);
 router.put("/:uid", [verifyAccessToken, isAdmin], ctrls.updateUserByAdmin);
+router.post("/changepass", ctrls.changePassUser);
 
 module.exports = router;
 

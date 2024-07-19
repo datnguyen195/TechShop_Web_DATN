@@ -12,7 +12,7 @@ const getBrand = asyncHandler(async (req, res) => {
   const response = await Brand.find();
   return res.json({
     success: response ? true : false,
-    createBrand: response ? response : "ko xem Brand",
+    getBrand: response ? response : "ko xem Brand",
   });
 });
 

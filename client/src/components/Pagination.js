@@ -6,7 +6,6 @@ import usePagination from "./usePagination";
 const Pagination = ({ totalCount }) => {
   const [params] = useSearchParams();
   const pagination = usePagination(totalCount, params.get("page") || 1);
-  console.log("thu", pagination);
   const range = () => {
     const currentPage = +params.get("page");
     const pageSize = +2 || 10;

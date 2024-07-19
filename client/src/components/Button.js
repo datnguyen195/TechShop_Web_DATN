@@ -15,7 +15,7 @@ const Button = ({
       className={
         style
           ? style
-          : `px-4, py-2 rounded-md text-white my-2 bg-main p-2 ${
+          : `px-4, py-2 rounded-md text-white my-2 bg-gray-600 p-2 ${
               fw ? "w-full" : "w-fit"
             }`
       }
