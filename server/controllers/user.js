@@ -146,7 +146,15 @@ const login = asyncHandler(async (req, res) => {
 });
 const getCurrent = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const user = await User.findById(_id).select("-refreshToken -password ");
+  const user = await User.findById(_id)
+    .select("-refreshToken -password ")
+    .populate({
+      path: "cart",
+      populate: {
+        path: "product",
+        select: "title thumb price",
+      },
+    });
   return res.status(200).json({
     success: user ? true : false,
     rs: user ? user : "Không tìm thấy người dùng",
@@ -338,46 +346,66 @@ const updateAddress = asyncHandler(async (req, res) => {
 
 const updateCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { pid, quantity, color } = req.body;
-  if (!pid || !quantity || !color) throw new Error("Missing inputs");
+  const { pid, quantity = 1, color, price, thumb, title } = req.body;
+  if (!pid || !color) throw new Error("Missing inputs");
   const user = await User.findById(_id).select("cart");
   const alreadyProduct = user?.cart?.find(
-    (el) => el.product.toString() === pid
+    (el) => el.product.toString() === pid && el.color === color
   );
-  if (alreadyProduct) {
-    if (alreadyProduct.color === color) {
-      const response = await User.updateOne(
-        { cart: { $elemMatch: alreadyProduct } },
-        { $set: { "cart.$.quantity": quantity } },
-        { new: true }
-      );
-      return res.status(200).json({
-        success: response ? true : false,
-        updatedUser: response ? response : "Đã xảy ra lỗi",
-      });
-    } else {
-      const response = await User.findByIdAndUpdate(
-        _id,
-        { $push: { cart: { product: pid, quantity, color } } },
-        { new: true }
-      );
-      return res.status(200).json({
-        success: response ? true : false,
-        updatedUser: response ? response : "Đã xảy ra lỗi",
-      });
-    }
-  } else {
-    const response = await User.findByIdAndUpdate(
-      _id,
-      { $push: { cart: { product: pid, quantity, color } } },
+  if (alreadyProduct && alreadyProduct.color === color) {
+    const response = await User.updateOne(
+      { cart: { $elemMatch: alreadyProduct } },
+      {
+        $set: {
+          "cart.$.quantity": quantity,
+          "cart.$.price": price,
+          "cart.$.thumb": thumb,
+          "cart.$.title": title,
+        },
+      },
       { new: true }
     );
     return res.status(200).json({
       success: response ? true : false,
-      updatedUser: response ? response : "Đã xảy ra lỗi",
+      mes: response ? "cập nhật giỏ hàng" : "Đã xảy ra lỗi",
+    });
+  } else {
+    const response = await User.findByIdAndUpdate(
+      _id,
+      { $push: { cart: { product: pid, quantity, color, price, title } } },
+      { new: true }
+    );
+    return res.status(200).json({
+      success: response ? true : false,
+      mes: response ? "cập nhật giỏ hàng" : "Đã xảy ra lỗi",
     });
   }
 });
+
+const deleteCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { pid, color } = req.params;
+  const user = await User.findById(_id).select("cart");
+  const alreadyProduct = user?.cart?.find(
+    (el) => el.product.toString() === pid && el.color === color
+  );
+  if (alreadyProduct) {
+    return res.status(200).json({
+      success: false,
+      mes: "cập nhật giỏ hàng",
+    });
+  }
+  const response = await User.findByIdAndUpdate(
+    _id,
+    { $push: { cart: { product: pid, color } } },
+    { new: true }
+  );
+  return res.status(200).json({
+    success: response ? true : false,
+    mes: response ? "cập nhật giỏ hàng" : "Đã xảy ra lỗi",
+  });
+});
+
 const uploadImagesAvatar = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   if (!req.file) throw new Error("thiếu trường");
@@ -433,4 +461,5 @@ module.exports = {
   updateCart,
   uploadImagesAvatar,
   changePassUser,
+  deleteCart,
 };
