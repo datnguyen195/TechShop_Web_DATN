@@ -50,8 +50,16 @@ const getProducts = asyncHandler(async (req, res) => {
     (macthedEl) => `$${macthedEl}`
   );
   const formatedQueries = JSON.parse(queryString);
-  console.log(formatedQueries);
 
+  if (req.query.q) {
+    delete formatedQueries.q;
+    formatedQueries["$or"] = [
+      { color: { $regex: req.query.q, $options: "i" } },
+      { title: { $regex: req.query.q, $options: "i" } },
+      { category: { $regex: req.query.q, $options: "i" } },
+      { brand: { $regex: req.query.q, $options: "i" } },
+    ];
+  }
   //Filtering
   if (queries?.title)
     formatedQueries.title = { $regex: queries.title, $options: "i" };

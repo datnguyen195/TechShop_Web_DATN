@@ -9,7 +9,6 @@ const MarkdownEditor = ({
   invalidFields,
   setInvalidFields,
 }) => {
-  console.log(invalidFields?.some((el) => el.name === name));
   return (
     <div className="flex flex-col">
       <span>{label}</span>
