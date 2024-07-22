@@ -7,6 +7,7 @@ import {
   apiGetCategores,
   apiUpdateProducts,
 } from "../../apis";
+import Swal from "sweetalert2";
 import { getBase64, validate } from "../../ultils/helper";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -105,6 +106,13 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
           image: [],
         });
         handleCloseModal();
+        render();
+        Swal.fire({
+          icon: "success",
+          title: "Xử lý thành công.",
+          showConfirmButton: false,
+          timer: 1000,
+        });
       }
 
       // }

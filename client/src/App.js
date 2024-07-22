@@ -2,7 +2,8 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import path from "./ultils/path";
 import { Home, Public } from "./pages/public";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   AdminHome,
   CreateProducts,
@@ -16,6 +17,7 @@ import {
 function App() {
   return (
     <div className="min-h-screen">
+      <ToastContainer />
       <Routes>
         <Route path={path.LOGIN} element={<Login />} />
         <Route path={path.ADMIN} element={<AdminHome />}>

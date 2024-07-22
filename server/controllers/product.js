@@ -119,7 +119,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
   const deletedProduct = await Product.findByIdAndDelete(pid);
   return res.status(200).json({
     success: deletedProduct ? true : false,
-    deletedProduct: deletedProduct ? deletedProduct : "Cannot delete product",
+    mes: deletedProduct ? deletedProduct : "Cannot delete product",
   });
 });
 

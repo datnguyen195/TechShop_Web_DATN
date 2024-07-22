@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { apiGetProducts } from "../../apis/app";
+import { apiDeleteProducts, apiGetProducts } from "../../apis/app";
 import moment from "moment";
 import icons from "../../ultils/icons";
 import useDebounce from "../../components/useDebounce";
 import InputFrom from "../../components/InputFrom";
 import Pagination from "../../components/Pagination";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   createSearchParams,
   useLocation,
@@ -48,6 +49,7 @@ const ManageProducts = () => {
   };
 
   const queryDebounce = useDebounce(watch("q"), 800);
+
   const handleDeleteProduct = (pid) => {
     Swal.fire({
       title: "Are you sure?",
@@ -56,9 +58,24 @@ const ManageProducts = () => {
       showCancelButton: true,
     }).then(async (rs) => {
       if (rs.isConfirmed) {
-        const response = await apiGetProducts(pid);
-        if (response.success) toast.success(response.mes);
-        else toast.error(response.mes);
+        const response = await apiDeleteProducts(pid);
+        if (response.success)
+          Swal.fire({
+            icon: "success",
+            title: "Xử lý thành công.",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+        else {
+          toast.error(response.mes);
+          Swal.fire({
+            icon: "error",
+            title: "Xảy ra lỗi.",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+        }
+        render();
       }
     });
   };
@@ -157,7 +174,7 @@ const ManageProducts = () => {
                       size={24}
                       color="red"
                       onClick={() => {
-                        handleDeleteProduct();
+                        handleDeleteProduct(el._id);
                       }}
                     />
                   </td>

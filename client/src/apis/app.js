@@ -31,3 +31,9 @@ export const apiUpdateProducts = (data, pid) =>
     method: "put",
     data,
   });
+
+export const apiDeleteProducts = (pid) =>
+  axios({
+    url: "/product/" + pid,
+    method: "delete",
+  });
