@@ -1,6 +1,34 @@
 const mongoose = require("mongoose"); // Erase if already required
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const { type } = require("os");
+
+const addressSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    require: true,
+  },
+  street: {
+    type: String,
+    required: true,
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  district: {
+    type: String,
+    required: true,
+  },
+  ward: {
+    type: String,
+    required: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
+});
 
 // Declare the Schema of the Mongo model
 var userSchema = new mongoose.Schema(
@@ -36,7 +64,7 @@ var userSchema = new mongoose.Schema(
       },
     ],
     address: {
-      type: String,
+      type: [addressSchema],
     },
     wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
     isBlocked: {
