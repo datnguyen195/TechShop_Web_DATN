@@ -1,38 +1,74 @@
 const Order = require("../models/order");
 const User = require("../models/user");
+const Product = require("../models/product");
 const Coupon = require("../models/coupon");
 const asyncHandler = require("express-async-handler");
 
 const createOrder = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { coupon } = req.body;
-  const userCart = await User.findById(_id)
-    .select("cart")
-    .populate("cart.product", "title price");
-  const products = userCart?.cart?.map((el) => ({
-    product: el.product._id,
-    count: el.quantity,
-    color: el.color,
-  }));
-  let total = userCart?.cart?.reduce(
-    (sum, el) => el.product.price * el.quantity + sum,
-    0
-  );
-  const createData = { products, total, orderBy: _id };
-  if (coupon) {
-    const selectedCoupon = await Coupon.findById(coupon);
-    total =
-      Math.round((total * (1 - +selectedCoupon?.discount / 100)) / 1000) *
-        1000 || total;
-    createData.total = total;
-    createData.coupon = coupon;
+  const { products, total, address } = req.body;
+  if (address) {
+    await User.findByIdAndUpdate(_id, { address, cart: [] });
   }
+  const data = { products, total, postedBy: _id };
+  const rs = await Order.create(data);
 
-  const rs = await Order.create(createData);
+  try {
+    for (let product of products) {
+      const { productId, quantity } = product;
+      const foundProduct = await Product.findById(productId);
+
+      if (foundProduct) {
+        foundProduct.quantity -= quantity;
+        await foundProduct.save();
+      } else {
+        return res.status(404).json({
+          success: false,
+          error: `Không tìm thấy sản phẩm với ID ${productId}`,
+        });
+      }
+    }
+    return res.status.json({
+      success: true,
+      rs: "Thành công ",
+      order: rs,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      error: "Đã xảy ra lỗi khi cập nhật số lượng sản phẩm.",
+    });
+  }
+});
+
+const createOneOrder = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { productId, quantity, total, address } = req.body;
+
+  const product = await Product.findById(productId);
+  if (!product) {
+    return res
+      .status(404)
+      .json({ success: false, error: "Không tìm thấy sản phẩm." });
+  }
+  const orderData = {
+    products: [{ product: productId, quantity }],
+    total,
+    postedBy: _id,
+  };
+  const newOrder = await Order.create(orderData);
+  if (!newOrder) {
+    return res
+      .status(500)
+      .json({ success: false, error: "Đã xảy ra lỗi khi tạo đơn hàng." });
+  }
+  product.quantity -= quantity;
+  await product.save();
   return res.json({
     success: rs ? true : false,
-    rs: rs ? rs : "ko tạo thêm mới ",
-    userCart,
+    rs: rs ? rs : "Xảy ra lỗi ",
+    newOrder,
   });
 });
 
@@ -72,4 +108,5 @@ module.exports = {
   updateStatus,
   getUserOrder,
   getsOrder,
+  createOneOrder,
 };

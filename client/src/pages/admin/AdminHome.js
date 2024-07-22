@@ -16,7 +16,6 @@ const AdminHome = () => {
       <div className="w-[290px] flex-none fixed top-0 left-0 bottom-0">
         <Sidebar />
       </div>
-
       <div className="flex-auto ml-[290px]">
         <TopHeader />
         <Outlet />

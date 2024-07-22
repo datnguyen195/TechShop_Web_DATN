@@ -50,8 +50,16 @@ const getProducts = asyncHandler(async (req, res) => {
     (macthedEl) => `$${macthedEl}`
   );
   const formatedQueries = JSON.parse(queryString);
-  console.log(formatedQueries);
 
+  if (req.query.q) {
+    delete formatedQueries.q;
+    formatedQueries["$or"] = [
+      { color: { $regex: req.query.q, $options: "i" } },
+      { title: { $regex: req.query.q, $options: "i" } },
+      { category: { $regex: req.query.q, $options: "i" } },
+      { brand: { $regex: req.query.q, $options: "i" } },
+    ];
+  }
   //Filtering
   if (queries?.title)
     formatedQueries.title = { $regex: queries.title, $options: "i" };
@@ -93,6 +101,9 @@ const getProducts = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
+  const files = req?.files;
+  if (files?.thumb) req.body.thumb = files?.thumb[0]?.path;
+  if (files?.images) req.body.images = files?.images?.map((el) => el.path);
   if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
   const updatedProduct = await Product.findByIdAndUpdate(pid, req.body, {
     new: true,

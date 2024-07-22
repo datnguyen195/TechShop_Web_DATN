@@ -25,9 +25,7 @@ const TopHeader = () => {
   return (
     <div className="h-[38px] w-[1120px] px-4  flex items-center justify-end">
       <div className="w-main flex items-center justify-between text-xs ">
-        <span className="text-sm text-red-500">
-          Hãy gọi cho tôi khi bạn cần
-        </span>
+        <span className="text-sm text-red-500"></span>
         {isLoggedIn ? (
           <small className=" flex flex-row items-center ">
             <span className="text-sm text-red-500">{`Xin chào, ${current?.name}`}</span>

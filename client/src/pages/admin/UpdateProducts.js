@@ -1,7 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState, memo, useCallback } from "react";
 import { Button, InputFrom, MarkdownEditor, Select } from "../../components";
 import { useForm } from "react-hook-form";
-import { apiCreateProduct, apiGetBrand, apiGetCategores } from "../../apis";
+import {
+  apiCreateProduct,
+  apiGetBrand,
+  apiGetCategores,
+  apiUpdateProducts,
+} from "../../apis";
 import { getBase64, validate } from "../../ultils/helper";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -9,38 +14,38 @@ import "react-toastify/dist/ReactToastify.css";
 import icons from "../../ultils/icons";
 import path from "../../ultils/path";
 
-const CreateProducts = () => {
-  const navigate = useNavigate();
-  const [categories, setCategories] = useState(null);
-  const [brand, setBrand] = useState(null);
-  const { MdClose } = icons;
+const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
   const fetchCategories = async () => {
     const response = await apiGetCategores();
     if (response.success) setCategories(response.createCategory);
   };
-  const [preiew, setPreview] = useState({
-    thumb: "",
-    images: [],
-  });
+  const [isFocus, setIFocus] = useState(false);
   const fetchBrand = async () => {
     const response = await apiGetBrand();
     if (response.success) setBrand(response.getBrand);
   };
-
+  const [payload, setPayload] = useState({
+    description: "",
+  });
+  const [preiew, setPreview] = useState({
+    thumb: "",
+    images: [],
+  });
   const {
     handleSubmit,
     register,
     formState: { errors },
     reset,
     watch,
-  } = useForm({
-    category: "",
-    brand: "",
-  });
-  const [payload, setPayload] = useState({
-    description: "",
-  });
+  } = useForm({});
+
   const [hoverElm, setHoverElm] = useState(null);
+  const navigate = useNavigate();
+  const [categories, setCategories] = useState(null);
+  const [brand, setBrand] = useState(null);
+  const [effectCount, setEffectCount] = useState(0);
+  const { MdClose } = icons;
+
   const [invalidFields, setInvalidFields] = useState([]);
   const changeValue = useCallback(
     (e) => {
@@ -48,39 +53,6 @@ const CreateProducts = () => {
     },
     [payload]
   );
-
-  const handleCreateProduct = async (data) => {
-    const invalids = validate(payload, setInvalidFields);
-    if (invalids === 0) {
-      // if (data.category) {
-      //   const categoryItem = categories?.find(
-      //     (el) => el.title === data.category
-      //   );
-      //   if (categoryItem) {
-      //     data.category = categoryItem._id;
-      //     console.log(data.category);
-      //   }
-      // }
-      const finalPayload = { ...data, ...payload };
-      const formData = new FormData();
-      for (let i of Object.entries(finalPayload)) formData.append(i[0], i[1]);
-      if (finalPayload.thumb) formData.append("thumb", finalPayload.thumb[0]);
-      if (finalPayload.images) {
-        for (let image of finalPayload.images) formData.append("images", image);
-      }
-      console.log("formData", formData);
-      const response = await apiCreateProduct(formData);
-      if (response.success) {
-        reset();
-        setPayload({
-          thumb: "",
-          image: [],
-        });
-        navigate(`/${path.MANAGE_PRODUCTS}`);
-      }
-    }
-  };
-
   const handlePreviewImages = async (files) => {
     const imagesPreview = [];
     for (let file of files) {
@@ -94,7 +66,7 @@ const CreateProducts = () => {
         return;
       }
       const base64 = await getBase64(file);
-      imagesPreview.push({ name: file.name, path: base64 });
+      imagesPreview.push(base64);
     }
     setPreview((prev) => ({ ...prev, images: imagesPreview }));
   };
@@ -112,24 +84,85 @@ const CreateProducts = () => {
         images: prev.images?.filter((el) => el.name != name),
       }));
   };
+  const handleUpdateProduct = async (data) => {
+    const invalids = validate(payload, setInvalidFields);
+    if (invalids === 0) {
+      const finalPayload = { ...data, ...payload };
+      finalPayload.thumb =
+        data?.thumb?.length === 0 ? preiew.thumb : data.thumb[0];
+      const formData = new FormData();
+      for (let i of Object.entries(finalPayload)) formData.append(i[0], i[1]);
+      finalPayload.thumb =
+        data?.image?.length === 0 ? preiew.images : data.images;
+      for (let image of finalPayload.images) formData.append("images", image);
+
+      const response = await apiUpdateProducts(formData, edit._id);
+      console.log("response", response);
+      if (response.success) {
+        reset();
+        setPayload({
+          thumb: "",
+          image: [],
+        });
+        handleCloseModal();
+      }
+
+      // }
+    }
+  };
+  const handleCloseModal = () => {
+    setEdit(null);
+  };
+  useEffect(() => {
+    if (watch("thumb") instanceof FileList && watch("thumb").length > 0) {
+      handlePreview(watch("thumb")[0]);
+    }
+  }, [watch("thumb")]);
+
+  useEffect(() => {
+    if (watch("images") instanceof FileList && watch("images").length > 0) {
+      handlePreviewImages(watch("images"));
+    }
+  }, [watch("images")]);
+
   useEffect(() => {
     fetchCategories();
     fetchBrand();
-  }, []);
-  useEffect(() => {
-    handlePreview(watch("thumb")[0]);
-  }, [watch("thumb")]);
-  useEffect(() => {
-    handlePreviewImages(watch("images"));
-  }, [watch("images")]);
-
+    reset({
+      title: edit?.title || "",
+      price: edit?.price || "",
+      quantity: edit?.quantity || "",
+      color: edit?.color || "",
+      category: edit?.category || "",
+      brand: edit?.brand || "",
+    });
+    setPayload({
+      description:
+        typeof edit.description === "object"
+          ? edit.description?.join(",")
+          : edit.description,
+    });
+    setPreview({
+      thumb: edit?.thumb || "",
+      images: edit?.images || [],
+    });
+  }, [edit]);
+  console.log(preiew);
+  console.log("88", watch("images")?.FileList?.length == 0);
   return (
-    <div className="w-full">
-      <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
-        <span>ManageUsers</span>
-      </h1>
+    <div className="w-full flex flex-col gap-4 relative">
+      <div className="h-[69px] w-full"></div>
+      <div className="p-4 border-b w-[80%] bg-gray-100 flex justify-between items-center fixed top-0">
+        <h1 className="text-3xl font-bold tracking-tight">Update products</h1>
+        <button
+          className=" text-red-600 hover: underline cursor-pointer"
+          onClick={handleCloseModal}
+        >
+          Trở về
+        </button>
+      </div>
       <div className="p-4 ">
-        <form onSubmit={handleSubmit(handleCreateProduct)}>
+        <form onSubmit={handleSubmit(handleUpdateProduct)}>
           <InputFrom
             label="Name product"
             register={register}
@@ -193,11 +226,15 @@ const CreateProducts = () => {
                 fullwidth
                 style={"p-2 border  border-gray-950 "}
                 errors={errors}
+                defaulfValue={edit.category}
                 id={"category"}
                 validate={{
                   required: "Không được để trống",
                 }}
-                options={categories}
+                options={categories?.map((el) => ({
+                  code: el.title,
+                  title: el.title,
+                }))}
               />
             </div>
             <div className="flex-auto">
@@ -211,7 +248,10 @@ const CreateProducts = () => {
                 validate={{
                   required: "Không được để trống",
                 }}
-                options={brand}
+                options={brand?.map((el) => ({
+                  code: el.title,
+                  title: el.title,
+                }))}
               />
             </div>
           </div>
@@ -222,35 +262,27 @@ const CreateProducts = () => {
             label="Description"
             invalidFields={invalidFields}
             setInvalidFields={setInvalidFields}
+            value={payload.description}
           />
           <div className="flex flex-col gap-2 mt-8">
             <label htmlFor="thumb">Upload ảnh</label>
-            <input
-              type="file"
-              id="thumb "
-              {...register("thumb", { required: "Thêm ảnh" })}
-            />
+            <input type="file" id="thumb " {...register("thumb")} />
             {errors["thumb"] && (
               <small className="text-red-600">{errors["thumb"]?.message}</small>
             )}
           </div>
-          {preiew.thumb && (
-            <div className="my-4">
-              <img
-                src={preiew.thumb}
-                alt="hu"
-                className="w-[200px] object-contain"
-              />
-            </div>
-          )}
+
+          <div className="my-4">
+            <img
+              src={preiew.thumb}
+              alt="hu"
+              className="w-[200px] object-contain"
+            />
+          </div>
+
           <div className="flex flex-col gap-2 mt-8">
             <label htmlFor="products">Upload ảnh</label>
-            <input
-              type="file"
-              id="products"
-              multiple
-              {...register("images", { required: "Thêm ảnh" })}
-            />
+            <input type="file" id="products" multiple {...register("images")} />
             {errors["images"] && (
               <small className="text-red-600">
                 {errors["images"]?.message}
@@ -268,7 +300,7 @@ const CreateProducts = () => {
                 >
                   <img
                     key={idx}
-                    src={el.path}
+                    src={el}
                     alt="Sản phẩm"
                     className="w-[200px] object-contain"
                   />
@@ -294,4 +326,4 @@ const CreateProducts = () => {
   );
 };
 
-export default CreateProducts;
+export default memo(UpdateProducts);

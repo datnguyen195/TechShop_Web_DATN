@@ -8,7 +8,7 @@ const Pagination = ({ totalCount }) => {
   const pagination = usePagination(totalCount, params.get("page") || 1);
   const range = () => {
     const currentPage = +params.get("page");
-    const pageSize = +2 || 10;
+    const pageSize = 10 || 10;
     const start = (currentPage - 1) * pageSize + 1;
     const end = Math.min(currentPage * pageSize, totalCount);
 
