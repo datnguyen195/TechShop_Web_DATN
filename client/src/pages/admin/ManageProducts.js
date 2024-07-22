@@ -5,12 +5,14 @@ import icons from "../../ultils/icons";
 import useDebounce from "../../components/useDebounce";
 import InputFrom from "../../components/InputFrom";
 import Pagination from "../../components/Pagination";
+import { toast } from "react-toastify";
 import {
   createSearchParams,
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useForm, SubmitHandler } from "react-hook-form";
 import UpdateProducts from "./UpdateProducts";
 const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
@@ -46,6 +48,20 @@ const ManageProducts = () => {
   };
 
   const queryDebounce = useDebounce(watch("q"), 800);
+  const handleDeleteProduct = (pid) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Are you sure remove this product",
+      icon: "warning",
+      showCancelButton: true,
+    }).then(async (rs) => {
+      if (rs.isConfirmed) {
+        const response = await apiGetProducts(pid);
+        if (response.success) toast.success(response.mes);
+        else toast.error(response.mes);
+      }
+    });
+  };
 
   useEffect(() => {
     if (queryDebounce) {
@@ -100,6 +116,7 @@ const ManageProducts = () => {
               <th className="text-center py-2">Màu</th>
               <th className="text-center py-2">Đánh giá</th>
               <th className="text-center py-2">Ngày tạo</th>
+              <th className="text-center">Sửa </th>
             </tr>
           </thead>
 
@@ -140,8 +157,7 @@ const ManageProducts = () => {
                       size={24}
                       color="red"
                       onClick={() => {
-                        {
-                        }
+                        handleDeleteProduct();
                       }}
                     />
                   </td>

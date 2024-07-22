@@ -24,3 +24,10 @@ export const apiGetProducts = (params) =>
     method: "get",
     params,
   });
+
+export const apiUpdateProducts = (data, pid) =>
+  axios({
+    url: "/product/" + pid,
+    method: "put",
+    data,
+  });

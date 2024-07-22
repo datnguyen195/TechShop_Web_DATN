@@ -1,7 +1,12 @@
 import React, { useEffect, useState, memo, useCallback } from "react";
 import { Button, InputFrom, MarkdownEditor, Select } from "../../components";
 import { useForm } from "react-hook-form";
-import { apiCreateProduct, apiGetBrand, apiGetCategores } from "../../apis";
+import {
+  apiCreateProduct,
+  apiGetBrand,
+  apiGetCategores,
+  apiUpdateProducts,
+} from "../../apis";
 import { getBase64, validate } from "../../ultils/helper";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +19,7 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
     const response = await apiGetCategores();
     if (response.success) setCategories(response.createCategory);
   };
-
+  const [isFocus, setIFocus] = useState(false);
   const fetchBrand = async () => {
     const response = await apiGetBrand();
     if (response.success) setBrand(response.getBrand);
@@ -33,21 +38,6 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
     reset,
     watch,
   } = useForm({});
-
-  useEffect(() => {
-    const maxEffectCount = 300; // Đổi số lần tùy ý
-    if (effectCount < maxEffectCount) {
-      reset({
-        title: edit?.title || "",
-        price: edit?.price || "",
-        quantity: edit?.quantity || "",
-        color: edit?.color || "",
-        category: edit?.category || "",
-        brand: edit?.brand || "",
-      });
-      setEffectCount(effectCount + 1);
-    }
-  }, []);
 
   const [hoverElm, setHoverElm] = useState(null);
   const navigate = useNavigate();
@@ -76,7 +66,7 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
         return;
       }
       const base64 = await getBase64(file);
-      imagesPreview.push({ name: file.name, path: base64 });
+      imagesPreview.push(base64);
     }
     setPreview((prev) => ({ ...prev, images: imagesPreview }));
   };
@@ -94,39 +84,43 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
         images: prev.images?.filter((el) => el.name != name),
       }));
   };
-  const handleCreateProduct = async (data) => {
+  const handleUpdateProduct = async (data) => {
     const invalids = validate(payload, setInvalidFields);
     if (invalids === 0) {
       const finalPayload = { ...data, ...payload };
+      finalPayload.thumb =
+        data?.thumb?.length === 0 ? preiew.thumb : data.thumb[0];
       const formData = new FormData();
       for (let i of Object.entries(finalPayload)) formData.append(i[0], i[1]);
-      if (finalPayload.thumb) formData.append("thumb", finalPayload.thumb[0]);
-      if (finalPayload.images) {
-        for (let image of finalPayload.images) formData.append("images", image);
-      }
-      console.log("formData", formData);
-      const response = await apiCreateProduct(formData);
+      finalPayload.thumb =
+        data?.image?.length === 0 ? preiew.images : data.images;
+      for (let image of finalPayload.images) formData.append("images", image);
+
+      const response = await apiUpdateProducts(formData, edit._id);
+      console.log("response", response);
       if (response.success) {
         reset();
         setPayload({
           thumb: "",
           image: [],
         });
-        navigate(`/${path.MANAGE_PRODUCTS}`);
+        handleCloseModal();
       }
+
+      // }
     }
   };
   const handleCloseModal = () => {
     setEdit(null);
   };
   useEffect(() => {
-    if (watch("thumb")?.FileList?.length == 0) {
+    if (watch("thumb") instanceof FileList && watch("thumb").length > 0) {
       handlePreview(watch("thumb")[0]);
     }
   }, [watch("thumb")]);
 
   useEffect(() => {
-    if (watch("images")?.FileList?.length == "") {
+    if (watch("images") instanceof FileList && watch("images").length > 0) {
       handlePreviewImages(watch("images"));
     }
   }, [watch("images")]);
@@ -153,6 +147,7 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
       images: edit?.images || [],
     });
   }, [edit]);
+  console.log(preiew);
   console.log("88", watch("images")?.FileList?.length == 0);
   return (
     <div className="w-full flex flex-col gap-4 relative">
@@ -167,7 +162,7 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
         </button>
       </div>
       <div className="p-4 ">
-        <form onSubmit={handleSubmit(handleCreateProduct)}>
+        <form onSubmit={handleSubmit(handleUpdateProduct)}>
           <InputFrom
             label="Name product"
             register={register}
@@ -231,6 +226,7 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
                 fullwidth
                 style={"p-2 border  border-gray-950 "}
                 errors={errors}
+                defaulfValue={edit.category}
                 id={"category"}
                 validate={{
                   required: "Không được để trống",
@@ -270,11 +266,7 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
           />
           <div className="flex flex-col gap-2 mt-8">
             <label htmlFor="thumb">Upload ảnh</label>
-            <input
-              type="file"
-              id="thumb "
-              {...register("thumb", { required: "Thêm ảnh" })}
-            />
+            <input type="file" id="thumb " {...register("thumb")} />
             {errors["thumb"] && (
               <small className="text-red-600">{errors["thumb"]?.message}</small>
             )}
@@ -290,12 +282,7 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
 
           <div className="flex flex-col gap-2 mt-8">
             <label htmlFor="products">Upload ảnh</label>
-            <input
-              type="file"
-              id="products"
-              multiple
-              {...register("images", { required: "Thêm ảnh" })}
-            />
+            <input type="file" id="products" multiple {...register("images")} />
             {errors["images"] && (
               <small className="text-red-600">
                 {errors["images"]?.message}

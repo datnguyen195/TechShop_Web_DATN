@@ -1,14 +1,20 @@
 import path from "./path";
 import icons from "./icons";
 
-const { IoIosLogOut, IoIosPeople } = icons;
+const {
+  IoIosLogOut,
+  IoIosPeople,
+  MdReceiptLong,
+  MdAppRegistration,
+  MdOutlineTrendingUp,
+} = icons;
 export const adminSidebar = [
   {
     id: 1,
     type: "SINGLE",
     text: "Dashboard",
     path: `/${path.DASHBOARD}`,
-    icon: <IoIosLogOut />,
+    icon: <MdOutlineTrendingUp />,
   },
   {
     id: 2,
@@ -21,7 +27,7 @@ export const adminSidebar = [
     id: 3,
     type: "PARENT",
     text: "Manage product",
-    icon: <IoIosPeople />,
+    icon: <MdAppRegistration />,
     submenu: [
       {
         text: "Create product",
@@ -34,11 +40,18 @@ export const adminSidebar = [
     ],
   },
   {
-    id: 2,
+    id: 4,
     type: "SINGLE",
     text: "Manage orders",
     path: `/${path.MANAGE_ORDER}`,
-    icon: <IoIosPeople />,
+    icon: <MdReceiptLong />,
+  },
+  {
+    id: 5,
+    type: "SINGLE",
+    text: "Manage orders",
+    path: `/${path.CREATEP_RODUCTS}`,
+    icon: <MdReceiptLong />,
   },
 ];
 
