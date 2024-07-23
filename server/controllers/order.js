@@ -6,25 +6,33 @@ const asyncHandler = require("express-async-handler");
 
 const createOrder = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { products, total, address } = req.body;
+  const { products, total, address } = req.body.params ?? req.body;
   if (address) {
     await User.findByIdAndUpdate(_id, { address, cart: [] });
   }
   const data = { products, total, postedBy: _id };
-  const rs = await Order.create(data);
 
   try {
+    const rs = await Order.create(data);
     for (let product of products) {
-      const { productId, quantity } = product;
-      const foundProduct = await Product.findById(productId);
+      const { _id } = product.product;
+      const { quantity } = product;
+      const foundProduct = await Product.findById(_id);
 
       if (foundProduct) {
-        foundProduct.quantity -= quantity;
-        await foundProduct.save();
+        if (foundProduct.quantity < 1) {
+          return res.status(404).json({
+            success: false,
+            error: `Sản phẩm đã hết`,
+          });
+        } else {
+          foundProduct.quantity = foundProduct.quantity - quantity;
+          await foundProduct.save();
+        }
       } else {
         return res.status(404).json({
           success: false,
-          error: `Không tìm thấy sản phẩm với ID ${productId}`,
+          error: `Không tìm thấy sản phẩm với ID ${_id}`,
         });
       }
     }
@@ -34,7 +42,6 @@ const createOrder = asyncHandler(async (req, res) => {
       order: rs,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       success: false,
       error: "Đã xảy ra lỗi khi cập nhật số lượng sản phẩm.",

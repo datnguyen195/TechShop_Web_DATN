@@ -419,12 +419,14 @@ const deleteCart = asyncHandler(async (req, res) => {
   }
   const response = await User.findByIdAndUpdate(
     _id,
-    { $push: { cart: { product: pid, color } } },
+    { $pull: { cart: { _id: pid, color } } },
     { new: true }
   );
+
   return res.status(200).json({
     success: response ? true : false,
     mes: response ? "cập nhật giỏ hàng" : "Đã xảy ra lỗi",
+    cart: response.cart,
   });
 });
 
