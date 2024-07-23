@@ -13,6 +13,7 @@ router.post(
   ctrls.createProduct
 );
 router.get("/", ctrls.getProducts);
+router.get("/w", ctrls.getProductsw);
 router.put("/ratings", verifyAccessToken, ctrls.ratings);
 router.put(
   "/uploadimage/:pid",

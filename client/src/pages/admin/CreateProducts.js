@@ -115,7 +115,17 @@ const CreateProducts = () => {
     }
     setPreview((prev) => ({ ...prev, images: imagesPreview }));
   };
-
+  const handleChange = (e) => {
+    const typeName = e.target.value;
+    if (e.target.checked) {
+      setSelectedTypes((prevTypes) => [...prevTypes, typeName]);
+    } else {
+      setSelectedTypes((prevTypes) =>
+        prevTypes.filter((name) => name !== typeName)
+      );
+    }
+    console.log();
+  };
   const handlePreview = async (file) => {
     const base64Thumb = await getBase64(file);
     setPreview((prev) => ({ ...prev, thumb: base64Thumb }));
@@ -139,7 +149,7 @@ const CreateProducts = () => {
   useEffect(() => {
     handlePreviewImages(watch("images"));
   }, [watch("images")]);
-
+  console.log("selectedTypes", selectedTypes);
   return (
     <div className="w-full">
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
@@ -235,22 +245,14 @@ const CreateProducts = () => {
           <div className="mt-4 flex flex-wrap gap-4 mb-6">
             <p className="mr-2">Chọn loại:</p>
             {types.map((type) => (
-              <label key={type.id} className="inline-flex items-center">
+              <label key={type.id}>
                 <input
                   type="checkbox"
                   value={type.name}
-                  onChange={(e) => {
-                    const typeName = e.target.value;
-                    if (e.target.checked) {
-                      setSelectedTypes((prevTypes) => [...prevTypes, typeName]);
-                    } else {
-                      setSelectedTypes((prevTypes) =>
-                        prevTypes.filter((name) => name !== typeName)
-                      );
-                    }
-                  }}
+                  onChange={handleChange}
+                  checked={selectedTypes.includes(type.name)}
                 />
-                <span className="ml-2">{type.name}</span>
+                {type.name}
               </label>
             ))}
           </div>

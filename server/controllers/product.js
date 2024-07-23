@@ -69,6 +69,64 @@ const getProducts = asyncHandler(async (req, res) => {
     formatedQueries.title = { $regex: queries.title, $options: "i" };
   let queryCommand = Product.find(formatedQueries);
 
+  if (queries?.category)
+    formatedQueries.category = { $regex: queries.category, $options: "i" };
+  queryCommand = Product.find(formatedQueries);
+  //Sorting
+  //abc, seg => [abc,efg]=> abc sfg
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    queryCommand = queryCommand.sort(sortBy);
+  }
+
+  if (req.query.fields) {
+    const fields = req.query.fields.split(",").join(" ");
+    queryCommand = queryCommand.select(fields);
+  }
+  //Execute query
+  //So luong ap thoa man dieu kien == so luonwg sp tra ve 1 lafn goi api
+  queryCommand.exec(async (err, response) => {
+    if (err) throw new Error(err.message);
+    const counts = await Product.find(formatedQueries).countDocuments();
+    return res.status(200).json({
+      success: response ? true : false,
+      counts,
+      products: response ? response : "Cannot get products",
+    });
+  });
+});
+
+const getProductsw = asyncHandler(async (req, res) => {
+  const queries = { ...req.query };
+  //tach cac truong dac biet ra khoi query
+  const excludeFields = ["limit", "sort", "page", "fields"];
+  excludeFields.forEach((el) => delete queries[el]);
+
+  //Format lai cac operator cho dung cu phap mongoose
+  let queryString = JSON.stringify(queries);
+  queryString = queryString.replace(
+    /\b(gte|gt|lt|lte)\b/g,
+    (macthedEl) => `$${macthedEl}`
+  );
+  const formatedQueries = JSON.parse(queryString);
+
+  if (req.query.q) {
+    delete formatedQueries.q;
+    formatedQueries["$or"] = [
+      { color: { $regex: req.query.q, $options: "i" } },
+      { title: { $regex: req.query.q, $options: "i" } },
+      { category: { $regex: req.query.q, $options: "i" } },
+      { brand: { $regex: req.query.q, $options: "i" } },
+    ];
+  }
+  //Filtering
+  if (queries?.title)
+    formatedQueries.title = { $regex: queries.title, $options: "i" };
+  let queryCommand = Product.find(formatedQueries);
+
+  if (queries?.category)
+    formatedQueries.category = { $regex: queries.category, $options: "i" };
+  queryCommand = Product.find(formatedQueries);
   //Sorting
   //abc, seg => [abc,efg]=> abc sfg
   if (req.query.sort) {
@@ -197,4 +255,5 @@ module.exports = {
   deleteProduct,
   ratings,
   uploadImagesProduct,
+  getProductsw,
 };
