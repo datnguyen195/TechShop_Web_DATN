@@ -7,10 +7,9 @@ import {
   apiGetCategores,
   apiUpdateProducts,
 } from "../../apis";
+import Swal from "sweetalert2";
 import { getBase64, validate } from "../../ultils/helper";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
 import icons from "../../ultils/icons";
 import path from "../../ultils/path";
 
@@ -19,7 +18,6 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
     const response = await apiGetCategores();
     if (response.success) setCategories(response.createCategory);
   };
-  const [isFocus, setIFocus] = useState(false);
   const fetchBrand = async () => {
     const response = await apiGetBrand();
     if (response.success) setBrand(response.getBrand);
@@ -62,7 +60,6 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
         file.type !== "image/jpeg" &&
         file.type !== "image/webp"
       ) {
-        toast.warning("File not supported!");
         return;
       }
       const base64 = await getBase64(file);
@@ -105,6 +102,13 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
           image: [],
         });
         handleCloseModal();
+        render();
+        Swal.fire({
+          icon: "success",
+          title: "Xử lý thành công.",
+          showConfirmButton: false,
+          timer: 1000,
+        });
       }
 
       // }

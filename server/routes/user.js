@@ -19,7 +19,13 @@ router.get("/forgotpassword", ctrls.forgotPassword);
 router.put("/resetpassword", ctrls.resetPassword);
 router.get("/", [verifyAccessToken, isAdmin], ctrls.getUsers);
 router.delete("/:uid", [verifyAccessToken, isAdmin], ctrls.deleteUser);
-router.put("/current", [verifyAccessToken], ctrls.updateUser);
+// router.put("/current", [verifyAccessToken], ctrls.updateUser);
+router.put(
+  "/current",
+  verifyAccessToken,
+  uploader.single("avatar"),
+  ctrls.updateOneUser
+);
 router.put("/address", verifyAccessToken, ctrls.updateAddress);
 router.put("/cart", verifyAccessToken, ctrls.updateCart);
 router.delete("/remove-cart/:pid/:color", verifyAccessToken, ctrls.deleteCart);

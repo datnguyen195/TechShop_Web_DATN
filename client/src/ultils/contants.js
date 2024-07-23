@@ -7,6 +7,7 @@ const {
   MdReceiptLong,
   MdAppRegistration,
   MdOutlineTrendingUp,
+  MdPerson,
 } = icons;
 export const adminSidebar = [
   {
@@ -42,9 +43,9 @@ export const adminSidebar = [
   {
     id: 4,
     type: "SINGLE",
-    text: "Manage orders",
-    path: `/${path.MANAGE_ORDER}`,
-    icon: <MdReceiptLong />,
+    text: "Profile",
+    path: `/${path.PRO_FILE}`,
+    icon: <MdPerson />,
   },
   {
     id: 5,

@@ -2,7 +2,6 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import path from "./ultils/path";
 import { Home, Public } from "./pages/public";
-
 import {
   AdminHome,
   CreateProducts,
@@ -12,6 +11,7 @@ import {
   ManageProducts,
   ManageUsers,
 } from "./pages/admin";
+import Profile from "./pages/admin/Profile";
 
 function App() {
   return (
@@ -24,6 +24,7 @@ function App() {
           <Route path={path.MANAGE_PRODUCTS} element={<ManageProducts />} />
           <Route path={path.MANAGE_USERS} element={<ManageUsers />} />
           <Route path={path.CREATEP_RODUCTS} element={<CreateProducts />} />
+          <Route path={path.PRO_FILE} element={<Profile />} />
         </Route>
         {/* <Route path={path.ADMIN} element={<AdminHome />}></Route> */}
       </Routes>
