@@ -5,3 +5,4 @@ export { default as ManageOrder } from "./ManageOrder";
 export { default as ManageProducts } from "./ManageProducts";
 export { default as ManageUsers } from "./ManageUsers";
 export { default as CreateProducts } from "./CreateProducts";
+export { default as Profile } from "./Profile";

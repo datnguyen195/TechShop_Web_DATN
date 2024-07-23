@@ -317,6 +317,21 @@ const updateUser = asyncHandler(async (req, res) => {
   });
 });
 
+const updateOneUser = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { name, email, phone } = req.body;
+  const data = { name, email, phone };
+  if (req.file) data.avatar = req.file.path;
+  if (!_id || Object.keys(req.body).length === 0)
+    throw new Error("Missing inputs");
+  const response = await User.findByIdAndUpdate(_id, data, {
+    new: true,
+  }).select("-password -role -refreshToken");
+  return res.status(200).json({
+    success: response ? true : false,
+    mes: response ? "Updated." : "Some thing went wrong",
+  });
+});
 const updateUserByAdmin = asyncHandler(async (req, res) => {
   //
   const { uid } = req.params;
@@ -462,4 +477,5 @@ module.exports = {
   uploadImagesAvatar,
   changePassUser,
   deleteCart,
+  updateOneUser,
 };

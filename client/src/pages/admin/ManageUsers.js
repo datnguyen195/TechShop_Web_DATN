@@ -10,9 +10,7 @@ import Pagination from "../../components/Pagination";
 import { useSearchParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button, Select } from "../../components";
-import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import "react-toastify/dist/ReactToastify.css";
 const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
 
 const ManageUsers = () => {
@@ -44,14 +42,11 @@ const ManageUsers = () => {
   }, [update]);
   const handleUpdate = async (data) => {
     const response = await apiUpdateUser(data, edit._id);
-    toast(response.mes);
     if (response.success) {
-      toast(response.mes);
       setEdit(null);
       render();
     } else {
       console.log(3);
-      toast(response.mes);
     }
   };
   const handleDeleteUser = (uid) => {
@@ -66,9 +61,7 @@ const ManageUsers = () => {
         console.log("response", uid);
         if (response.success) {
           render();
-          toast.success(response.mes);
         } else {
-          toast.error(response.mes);
         }
       }
     });

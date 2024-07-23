@@ -9,6 +9,12 @@ import "react-toastify/dist/ReactToastify.css";
 import icons from "../../ultils/icons";
 import path from "../../ultils/path";
 
+const types = [
+  { id: 1, name: "64 Gg" },
+  { id: 2, name: "128 Gg" },
+  { id: 3, name: "256 Gg" },
+  { id: 4, name: "512 Gg" },
+];
 const CreateProducts = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState(null);
@@ -22,6 +28,8 @@ const CreateProducts = () => {
     thumb: "",
     images: [],
   });
+  const [selectedTypes, setSelectedTypes] = useState([]);
+
   const fetchBrand = async () => {
     const response = await apiGetBrand();
     if (response.success) setBrand(response.getBrand);
@@ -61,22 +69,31 @@ const CreateProducts = () => {
       //     console.log(data.category);
       //   }
       // }
-      const finalPayload = { ...data, ...payload };
+      const finalPayload = {
+        ...data,
+        ...payload,
+        types: selectedTypes,
+      };
       const formData = new FormData();
+
       for (let i of Object.entries(finalPayload)) formData.append(i[0], i[1]);
+      for (let typeName of selectedTypes) formData.append("types", typeName);
+
       if (finalPayload.thumb) formData.append("thumb", finalPayload.thumb[0]);
       if (finalPayload.images) {
         for (let image of finalPayload.images) formData.append("images", image);
       }
+
       console.log("formData", formData);
       const response = await apiCreateProduct(formData);
       if (response.success) {
         reset();
+        setSelectedTypes([]);
         setPayload({
           thumb: "",
           image: [],
         });
-        navigate(`/${path.MANAGE_PRODUCTS}`);
+        // navigate(`/${path.MANAGE_PRODUCTS}`);
       }
     }
   };
@@ -214,6 +231,28 @@ const CreateProducts = () => {
                 options={brand}
               />
             </div>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-4 mb-6">
+            <p className="mr-2">Chọn loại:</p>
+            {types.map((type) => (
+              <label key={type.id} className="inline-flex items-center">
+                <input
+                  type="checkbox"
+                  value={type.name}
+                  onChange={(e) => {
+                    const typeName = e.target.value;
+                    if (e.target.checked) {
+                      setSelectedTypes((prevTypes) => [...prevTypes, typeName]);
+                    } else {
+                      setSelectedTypes((prevTypes) =>
+                        prevTypes.filter((name) => name !== typeName)
+                      );
+                    }
+                  }}
+                />
+                <span className="ml-2">{type.name}</span>
+              </label>
+            ))}
           </div>
 
           <MarkdownEditor

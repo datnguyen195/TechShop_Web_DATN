@@ -5,8 +5,6 @@ import icons from "../../ultils/icons";
 import useDebounce from "../../components/useDebounce";
 import InputFrom from "../../components/InputFrom";
 import Pagination from "../../components/Pagination";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import {
   createSearchParams,
   useLocation,
@@ -67,7 +65,6 @@ const ManageProducts = () => {
             timer: 1000,
           });
         else {
-          toast.error(response.mes);
           Swal.fire({
             icon: "error",
             title: "Xảy ra lỗi.",

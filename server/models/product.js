@@ -49,6 +49,9 @@ var productSchema = new mongoose.Schema(
       type: String,
       enum: ["Đỏ", "Xanh", "Vàng", "Tím", "Đen", "Trắng", "Xám"],
     },
+    types: {
+      type: Array,
+    },
     ratings: [
       {
         star: { type: Number },
