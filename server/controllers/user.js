@@ -346,7 +346,14 @@ const updateAddress = asyncHandler(async (req, res) => {
 
 const updateCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { pid, quantity = 1, color, price, thumb, title } = req.body;
+  const {
+    pid,
+    quantity = 1,
+    color,
+    price,
+    thumb,
+    title,
+  } = req.body.params ?? req.body;
   if (!pid || !color) throw new Error("Missing inputs");
   const user = await User.findById(_id).select("cart");
   const alreadyProduct = user?.cart?.find(
