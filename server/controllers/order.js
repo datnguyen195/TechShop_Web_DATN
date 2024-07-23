@@ -44,17 +44,21 @@ const createOrder = asyncHandler(async (req, res) => {
 
 const createOneOrder = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { productId, quantity, total, address } = req.body;
+  const { productId, quantity, total, color, address, types } = req.body;
 
   const product = await Product.findById(productId);
+  if (product.quantity < 1) {
+    return res.status(404).json({ success: false, error: "sản phẩm đã hết" });
+  }
   if (!product) {
     return res
       .status(404)
       .json({ success: false, error: "Không tìm thấy sản phẩm." });
   }
   const orderData = {
-    products: [{ product: productId, quantity }],
+    products: [{ product: productId, quantity, color, types }],
     total,
+    address,
     postedBy: _id,
   };
   const newOrder = await Order.create(orderData);
@@ -66,9 +70,8 @@ const createOneOrder = asyncHandler(async (req, res) => {
   product.quantity -= quantity;
   await product.save();
   return res.json({
-    success: rs ? true : false,
-    rs: rs ? rs : "Xảy ra lỗi ",
-    newOrder,
+    success: newOrder ? true : false,
+    rs: newOrder ? newOrder : "Xảy ra lỗi ",
   });
 });
 

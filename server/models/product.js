@@ -47,7 +47,7 @@ var productSchema = new mongoose.Schema(
     },
     color: {
       type: String,
-      enum: ["Đỏ", "Xanh", "Vàng", "Tím", "Đen", "Trắng", "Xám"],
+      enum: ["Đỏ", "Xanh", "Vàng", "Tím", "Đen", "Trắng", "Black", "Xám"],
     },
     types: {
       type: Array,
