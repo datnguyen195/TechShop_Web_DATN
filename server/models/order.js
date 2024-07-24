@@ -8,6 +8,7 @@ var OrderSchema = new mongoose.Schema({
       quantity: Number,
       color: String,
       price: Number,
+      types: String,
       thumb: String,
       title: String,
     },
@@ -25,6 +26,9 @@ var OrderSchema = new mongoose.Schema({
   orderBy: {
     type: mongoose.Types.ObjectId,
     ref: "User",
+  },
+  address: {
+    type: String,
   },
 });
 module.exports = mongoose.model("Order", OrderSchema);
