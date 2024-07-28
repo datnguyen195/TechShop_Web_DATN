@@ -359,6 +359,41 @@ const updateAddress = asyncHandler(async (req, res) => {
   });
 });
 
+const putAddress = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { addressId, newAddress } = req.body.params ?? req.body;
+
+  if (!addressId || !newAddress) throw new Error("Missing inputs");
+
+  const response = await User.findOneAndUpdate(
+    { _id, "address._id": addressId },
+    { $set: { "address.$": newAddress } },
+    { new: true }
+  ).select("-password -role -refreshToken");
+
+  return res.status(200).json({
+    success: response ? true : false,
+    updatedUser: response ? response : "Đã xảy ra lỗi",
+  });
+});
+
+const deleteAddress = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { aid } = req.params;
+  if (!aid) throw new Error("Missing inputs");
+
+  const response = await User.findByIdAndUpdate(
+    _id,
+    { $pull: { address: { _id: aid } } },
+    { new: true }
+  ).select("-password -role -refreshToken");
+
+  return res.status(200).json({
+    success: response ? true : false,
+    updatedUser: response ? response : "Đã xảy ra lỗi",
+  });
+});
+
 const updateCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const {
@@ -482,6 +517,8 @@ module.exports = {
   updateUser,
   updateUserByAdmin,
   updateAddress,
+  putAddress,
+  deleteAddress,
   updateCart,
   uploadImagesAvatar,
   changePassUser,

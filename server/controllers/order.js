@@ -13,7 +13,6 @@ const createOrder = asyncHandler(async (req, res) => {
   const data = { products, total, postedBy: _id };
 
   try {
-    const rs = await Order.create(data);
     for (let product of products) {
       const { _id } = product.product;
       const { quantity } = product;
@@ -36,9 +35,9 @@ const createOrder = asyncHandler(async (req, res) => {
         });
       }
     }
-    return res.status.json({
+    const rs = await Order.create(data);
+    return res.status(200).json({
       success: true,
-      rs: "Thành công ",
       order: rs,
     });
   } catch (error) {
