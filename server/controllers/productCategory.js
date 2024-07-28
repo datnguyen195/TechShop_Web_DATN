@@ -12,7 +12,7 @@ const getCategories = asyncHandler(async (req, res) => {
   const response = await ProductCategory.find().select("title _id image");
   return res.json({
     success: response ? true : false,
-    createCategory: response ? response : "ko xem Category",
+    res: response ? response : "ko xem Category",
   });
 });
 

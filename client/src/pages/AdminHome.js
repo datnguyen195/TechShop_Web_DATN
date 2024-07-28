@@ -1,9 +1,9 @@
 import React, { memo } from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import { Sidebar } from "../../components";
+import { Sidebar } from "../components";
 import { useSelector } from "react-redux";
-import path from "../../ultils/path";
-import TopHeader from "../../components/TopHeader";
+import path from "../ultils/path";
+import TopHeader from "../components/TopHeader";
 const AdminHome = () => {
   const { isLoggedIn, current } = useSelector((state) => state.user);
   // console.log("current", isLoggedIn);

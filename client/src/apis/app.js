@@ -20,7 +20,7 @@ export const apiCreateProduct = (data) =>
 
 export const apiGetProducts = (params) =>
   axios({
-    url: "/product/",
+    url: "/product/w",
     method: "get",
     params,
   });
@@ -36,4 +36,10 @@ export const apiDeleteProducts = (pid) =>
   axios({
     url: "/product/" + pid,
     method: "delete",
+  });
+
+export const apiGetOrder = (params) =>
+  axios({
+    url: "/order/admin",
+    method: "get",
   });

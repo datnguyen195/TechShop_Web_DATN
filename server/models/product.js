@@ -46,8 +46,7 @@ var productSchema = new mongoose.Schema(
       type: Array,
     },
     color: {
-      type: String,
-      enum: ["Đỏ", "Xanh", "Vàng", "Tím", "Đen", "Trắng", "Black", "Xám"],
+      type: Array,
     },
     types: {
       type: Array,
@@ -57,6 +56,8 @@ var productSchema = new mongoose.Schema(
         star: { type: Number },
         postedBy: { type: mongoose.Types.ObjectId, ref: "User" },
         comment: { type: String },
+        avatar: { type: String },
+        name: { type: String },
       },
     ],
     totalRatings: {

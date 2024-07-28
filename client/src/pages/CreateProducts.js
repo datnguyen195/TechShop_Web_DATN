@@ -1,49 +1,54 @@
-import React, { useEffect, useState, memo, useCallback } from "react";
-import { Button, InputFrom, MarkdownEditor, Select } from "../../components";
+import React, { useCallback, useEffect, useState } from "react";
+import { Button, InputFrom, MarkdownEditor, Select } from "../components";
 import { useForm } from "react-hook-form";
-import {
-  apiCreateProduct,
-  apiGetBrand,
-  apiGetCategores,
-  apiUpdateProducts,
-} from "../../apis";
-import Swal from "sweetalert2";
-import { getBase64, validate } from "../../ultils/helper";
+import { apiCreateProduct, apiGetBrand, apiGetCategores } from "../apis";
+import { getBase64, validate } from "../ultils/helper";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import icons from "../../ultils/icons";
-import path from "../../ultils/path";
+import "react-toastify/dist/ReactToastify.css";
+import icons from "../ultils/icons";
+import path from "../ultils/path";
 
-const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
+const types = [
+  { id: 1, name: "64 Gg" },
+  { id: 2, name: "128 Gg" },
+  { id: 3, name: "256 Gg" },
+  { id: 4, name: "512 Gg" },
+];
+const CreateProducts = () => {
+  const navigate = useNavigate();
+  const [categories, setCategories] = useState(null);
+  const [brand, setBrand] = useState(null);
+  const { MdClose } = icons;
   const fetchCategories = async () => {
     const response = await apiGetCategores();
     if (response.success) setCategories(response.createCategory);
   };
-  const fetchBrand = async () => {
-    const response = await apiGetBrand();
-    if (response.success) setBrand(response.getBrand);
-  };
-  const [payload, setPayload] = useState({
-    description: "",
-  });
   const [preiew, setPreview] = useState({
     thumb: "",
     images: [],
   });
+  const [selectedTypes, setSelectedTypes] = useState([]);
+
+  const fetchBrand = async () => {
+    const response = await apiGetBrand();
+    if (response.success) setBrand(response.getBrand);
+  };
+
   const {
     handleSubmit,
     register,
     formState: { errors },
     reset,
     watch,
-  } = useForm({});
-
+  } = useForm({
+    category: "",
+    brand: "",
+  });
+  const [payload, setPayload] = useState({
+    description: "",
+  });
   const [hoverElm, setHoverElm] = useState(null);
-  const navigate = useNavigate();
-  const [categories, setCategories] = useState(null);
-  const [brand, setBrand] = useState(null);
-  const [effectCount, setEffectCount] = useState(0);
-  const { MdClose } = icons;
-
   const [invalidFields, setInvalidFields] = useState([]);
   const changeValue = useCallback(
     (e) => {
@@ -51,6 +56,48 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
     },
     [payload]
   );
+
+  const handleCreateProduct = async (data) => {
+    const invalids = validate(payload, setInvalidFields);
+    if (invalids === 0) {
+      // if (data.category) {
+      //   const categoryItem = categories?.find(
+      //     (el) => el.title === data.category
+      //   );
+      //   if (categoryItem) {
+      //     data.category = categoryItem._id;
+      //     console.log(data.category);
+      //   }
+      // }
+      const finalPayload = {
+        ...data,
+        ...payload,
+        types: selectedTypes,
+      };
+      const formData = new FormData();
+
+      for (let i of Object.entries(finalPayload)) formData.append(i[0], i[1]);
+      for (let typeName of selectedTypes) formData.append("types", typeName);
+
+      if (finalPayload.thumb) formData.append("thumb", finalPayload.thumb[0]);
+      if (finalPayload.images) {
+        for (let image of finalPayload.images) formData.append("images", image);
+      }
+
+      console.log("formData", formData);
+      const response = await apiCreateProduct(formData);
+      if (response.success) {
+        reset();
+        setSelectedTypes([]);
+        setPayload({
+          thumb: "",
+          image: [],
+        });
+        // navigate(`/${path.MANAGE_PRODUCTS}`);
+      }
+    }
+  };
+
   const handlePreviewImages = async (files) => {
     const imagesPreview = [];
     for (let file of files) {
@@ -60,14 +107,25 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
         file.type !== "image/jpeg" &&
         file.type !== "image/webp"
       ) {
+        toast.warning("File not supported!");
         return;
       }
       const base64 = await getBase64(file);
-      imagesPreview.push(base64);
+      imagesPreview.push({ name: file.name, path: base64 });
     }
     setPreview((prev) => ({ ...prev, images: imagesPreview }));
   };
-
+  const handleChange = (e) => {
+    const typeName = e.target.value;
+    if (e.target.checked) {
+      setSelectedTypes((prevTypes) => [...prevTypes, typeName]);
+    } else {
+      setSelectedTypes((prevTypes) =>
+        prevTypes.filter((name) => name !== typeName)
+      );
+    }
+    console.log();
+  };
   const handlePreview = async (file) => {
     const base64Thumb = await getBase64(file);
     setPreview((prev) => ({ ...prev, thumb: base64Thumb }));
@@ -81,92 +139,24 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
         images: prev.images?.filter((el) => el.name != name),
       }));
   };
-  const handleUpdateProduct = async (data) => {
-    const invalids = validate(payload, setInvalidFields);
-    if (invalids === 0) {
-      const finalPayload = { ...data, ...payload };
-      finalPayload.thumb =
-        data?.thumb?.length === 0 ? preiew.thumb : data.thumb[0];
-      const formData = new FormData();
-      for (let i of Object.entries(finalPayload)) formData.append(i[0], i[1]);
-      finalPayload.thumb =
-        data?.image?.length === 0 ? preiew.images : data.images;
-      for (let image of finalPayload.images) formData.append("images", image);
-
-      const response = await apiUpdateProducts(formData, edit._id);
-      console.log("response", response);
-      if (response.success) {
-        reset();
-        setPayload({
-          thumb: "",
-          image: [],
-        });
-        handleCloseModal();
-        render();
-        Swal.fire({
-          icon: "success",
-          title: "Xử lý thành công.",
-          showConfirmButton: false,
-          timer: 1000,
-        });
-      }
-
-      // }
-    }
-  };
-  const handleCloseModal = () => {
-    setEdit(null);
-  };
-  useEffect(() => {
-    if (watch("thumb") instanceof FileList && watch("thumb").length > 0) {
-      handlePreview(watch("thumb")[0]);
-    }
-  }, [watch("thumb")]);
-
-  useEffect(() => {
-    if (watch("images") instanceof FileList && watch("images").length > 0) {
-      handlePreviewImages(watch("images"));
-    }
-  }, [watch("images")]);
-
   useEffect(() => {
     fetchCategories();
     fetchBrand();
-    reset({
-      title: edit?.title || "",
-      price: edit?.price || "",
-      quantity: edit?.quantity || "",
-      color: edit?.color || "",
-      category: edit?.category || "",
-      brand: edit?.brand || "",
-    });
-    setPayload({
-      description:
-        typeof edit.description === "object"
-          ? edit.description?.join(",")
-          : edit.description,
-    });
-    setPreview({
-      thumb: edit?.thumb || "",
-      images: edit?.images || [],
-    });
-  }, [edit]);
-  console.log(preiew);
-  console.log("88", watch("images")?.FileList?.length == 0);
+  }, []);
+  useEffect(() => {
+    handlePreview(watch("thumb")[0]);
+  }, [watch("thumb")]);
+  useEffect(() => {
+    handlePreviewImages(watch("images"));
+  }, [watch("images")]);
+  console.log("selectedTypes", selectedTypes);
   return (
-    <div className="w-full flex flex-col gap-4 relative">
-      <div className="h-[69px] w-full"></div>
-      <div className="p-4 border-b w-[80%] bg-gray-100 flex justify-between items-center fixed top-0">
-        <h1 className="text-3xl font-bold tracking-tight">Update products</h1>
-        <button
-          className=" text-red-600 hover: underline cursor-pointer"
-          onClick={handleCloseModal}
-        >
-          Trở về
-        </button>
-      </div>
+    <div className="w-full">
+      <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
+        <span>ManageUsers</span>
+      </h1>
       <div className="p-4 ">
-        <form onSubmit={handleSubmit(handleUpdateProduct)}>
+        <form onSubmit={handleSubmit(handleCreateProduct)}>
           <InputFrom
             label="Name product"
             register={register}
@@ -230,15 +220,11 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
                 fullwidth
                 style={"p-2 border  border-gray-950 "}
                 errors={errors}
-                defaulfValue={edit.category}
                 id={"category"}
                 validate={{
                   required: "Không được để trống",
                 }}
-                options={categories?.map((el) => ({
-                  code: el.title,
-                  title: el.title,
-                }))}
+                options={categories}
               />
             </div>
             <div className="flex-auto">
@@ -252,12 +238,23 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
                 validate={{
                   required: "Không được để trống",
                 }}
-                options={brand?.map((el) => ({
-                  code: el.title,
-                  title: el.title,
-                }))}
+                options={brand}
               />
             </div>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-4 mb-6">
+            <p className="mr-2">Chọn loại:</p>
+            {types.map((type) => (
+              <label key={type.id}>
+                <input
+                  type="checkbox"
+                  value={type.name}
+                  onChange={handleChange}
+                  checked={selectedTypes.includes(type.name)}
+                />
+                {type.name}
+              </label>
+            ))}
           </div>
 
           <MarkdownEditor
@@ -266,27 +263,35 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
             label="Description"
             invalidFields={invalidFields}
             setInvalidFields={setInvalidFields}
-            value={payload.description}
           />
           <div className="flex flex-col gap-2 mt-8">
             <label htmlFor="thumb">Upload ảnh</label>
-            <input type="file" id="thumb " {...register("thumb")} />
+            <input
+              type="file"
+              id="thumb "
+              {...register("thumb", { required: "Thêm ảnh" })}
+            />
             {errors["thumb"] && (
               <small className="text-red-600">{errors["thumb"]?.message}</small>
             )}
           </div>
-
-          <div className="my-4">
-            <img
-              src={preiew.thumb}
-              alt="hu"
-              className="w-[200px] object-contain"
-            />
-          </div>
-
+          {preiew.thumb && (
+            <div className="my-4">
+              <img
+                src={preiew.thumb}
+                alt="hu"
+                className="w-[200px] object-contain"
+              />
+            </div>
+          )}
           <div className="flex flex-col gap-2 mt-8">
             <label htmlFor="products">Upload ảnh</label>
-            <input type="file" id="products" multiple {...register("images")} />
+            <input
+              type="file"
+              id="products"
+              multiple
+              {...register("images", { required: "Thêm ảnh" })}
+            />
             {errors["images"] && (
               <small className="text-red-600">
                 {errors["images"]?.message}
@@ -304,7 +309,7 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
                 >
                   <img
                     key={idx}
-                    src={el}
+                    src={el.path}
                     alt="Sản phẩm"
                     className="w-[200px] object-contain"
                   />
@@ -330,4 +335,4 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
   );
 };
 
-export default memo(UpdateProducts);
+export default CreateProducts;

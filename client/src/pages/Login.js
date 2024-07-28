@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Button, InputField } from "../../components";
-import { apiLogin, apiRegister } from "../../apis/user";
+import { Button, InputField } from "../components";
+import { apiLogin, apiRegister } from "../apis/user";
 import { useNavigate } from "react-router-dom";
-import path from "../../ultils/path";
-import { getCurrent } from "../../store/user/asyncActions";
+import path from "../ultils/path";
+import { getCurrent } from "../store/user/asyncActions";
 import Swal from "sweetalert2";
-import { register } from "../../store/user/userStore";
+import { register } from "../store/user/userStore";
 import { useDispatch } from "react-redux";
-import { validate } from "../../ultils/helper";
+import { validate } from "../ultils/helper";
 
 const Login = () => {
   const navigate = useNavigate();

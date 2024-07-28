@@ -8,6 +8,7 @@ const {
   MdAppRegistration,
   MdOutlineTrendingUp,
   MdPerson,
+  IoIosToday,
 } = icons;
 export const adminSidebar = [
   {
@@ -40,23 +41,29 @@ export const adminSidebar = [
       },
     ],
   },
+
   {
     id: 4,
     type: "SINGLE",
-    text: "Profile",
-    path: `/${path.PRO_FILE}`,
-    icon: <MdPerson />,
+    text: "Manage Order",
+    path: `/${path.MANAGE_ORDER}`,
+    icon: <IoIosToday />,
   },
   {
     id: 5,
     type: "SINGLE",
-    text: "Manage orders",
-    path: `/${path.CREATEP_RODUCTS}`,
-    icon: <MdReceiptLong />,
+    text: "Profile",
+    path: `/${path.PRO_FILE}`,
+    icon: <MdPerson />,
   },
 ];
 
 export const roles = [
   { code: 0, title: "Admin" },
   { code: 1, title: "User" },
+];
+
+export const statusOrder = [
+  { label: "Cancelled", value: "Cancelled" },
+  { label: "Succeed", value: "Succeed" },
 ];

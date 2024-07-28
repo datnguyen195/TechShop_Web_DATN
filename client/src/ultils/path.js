@@ -1,9 +1,5 @@
 const path = {
   LOGIN: "login",
-  PUBLIC: "public",
-  HOME: "home",
-  ALL: "*",
-
   ADMIN: "",
   DASHBOARD: "dashboard",
   MANAGE_ORDER: "manageorder",

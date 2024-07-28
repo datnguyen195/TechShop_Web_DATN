@@ -1,21 +1,22 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { apiGetProducts } from "../../apis/app";
+import { apiDeleteProducts, apiGetProducts } from "../apis/app";
 import moment from "moment";
-import icons from "../../ultils/icons";
-import useDebounce from "../../components/useDebounce";
-import InputFrom from "../../components/InputFrom";
-import Pagination from "../../components/Pagination";
+import icons from "../ultils/icons";
+import useDebounce from "../components/useDebounce";
+import InputFrom from "../components/InputFrom";
+import Pagination from "../components/Pagination";
 import {
   createSearchParams,
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useForm, SubmitHandler } from "react-hook-form";
 import UpdateProducts from "./UpdateProducts";
 const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
 
-const ManageOrder = () => {
+const ManageProducts = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [params] = useSearchParams();
@@ -47,6 +48,35 @@ const ManageOrder = () => {
 
   const queryDebounce = useDebounce(watch("q"), 800);
 
+  const handleDeleteProduct = (pid) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Are you sure remove this product",
+      icon: "warning",
+      showCancelButton: true,
+    }).then(async (rs) => {
+      if (rs.isConfirmed) {
+        const response = await apiDeleteProducts(pid);
+        if (response.success)
+          Swal.fire({
+            icon: "success",
+            title: "Xử lý thành công.",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+        else {
+          Swal.fire({
+            icon: "error",
+            title: "Xảy ra lỗi.",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+        }
+        render();
+      }
+    });
+  };
+
   useEffect(() => {
     if (queryDebounce) {
       navigate({
@@ -74,7 +104,7 @@ const ManageOrder = () => {
       )}
 
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
-        <span>Manage Oder</span>
+        <span>Manage Products</span>
       </h1>
       <div className="w-full py-4 px-4">
         <form className="w-[45%]" onSu={handleSubmit(handleSearch)}>
@@ -99,7 +129,8 @@ const ManageOrder = () => {
               <th className="text-center py-2">Đã bán</th>
               <th className="text-center py-2">Màu</th>
               <th className="text-center py-2">Đánh giá</th>
-              <th className="text-center py-2">Ngày bán</th>
+              <th className="text-center py-2">Ngày tạo</th>
+              <th className="text-center">Sửa </th>
             </tr>
           </thead>
 
@@ -125,7 +156,26 @@ const ManageOrder = () => {
                 <td className="text-center py-2">
                   {moment(el.createdAt).format("DD / MM / YYYY")}
                 </td>
-                <td className="px-2 py-2 flex-row gap-2"></td>
+                <td className="px-2 py-2 flex-row gap-2">
+                  <td className="px-3 py-2">
+                    <MdEditSquare
+                      size={24}
+                      color="red"
+                      onClick={() => {
+                        setEdit(el);
+                      }}
+                    />
+                  </td>
+                  <td className="px-3 py-2">
+                    <MdDelete
+                      size={24}
+                      color="red"
+                      onClick={() => {
+                        handleDeleteProduct(el._id);
+                      }}
+                    />
+                  </td>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -139,4 +189,4 @@ const ManageOrder = () => {
   );
 };
 
-export default ManageOrder;
+export default ManageProducts;

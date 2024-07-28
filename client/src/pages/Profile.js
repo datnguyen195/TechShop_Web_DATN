@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Button, InputFrom } from "../../components";
+import { Button, InputFrom } from "../components";
 import { useSelector } from "react-redux";
-import { apiUpdateCurrent } from "../../apis/user";
+import { apiUpdateCurrent } from "../apis/user";
 import moment from "moment";
 import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
-import { getCurrent } from "../../store/user/asyncActions";
+import { getCurrent } from "../store/user/asyncActions";
 
 const Profile = () => {
   const {

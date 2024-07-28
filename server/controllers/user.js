@@ -382,7 +382,7 @@ const updateCart = asyncHandler(async (req, res) => {
     );
     return res.status(200).json({
       success: response ? true : false,
-      mes: response ? "cập nhật giỏ hàng" : "Đã xảy ra lỗi",
+      mes: response ? response : "Đã xảy ra lỗi",
     });
   } else {
     const response = await User.findByIdAndUpdate(
@@ -392,7 +392,7 @@ const updateCart = asyncHandler(async (req, res) => {
     );
     return res.status(200).json({
       success: response ? true : false,
-      mes: response ? "cập nhật giỏ hàng" : "Đã xảy ra lỗi",
+      mes: response ? response : "Đã xảy ra lỗi",
     });
   }
 });

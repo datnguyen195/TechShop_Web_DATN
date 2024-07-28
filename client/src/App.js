@@ -1,7 +1,6 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import path from "./ultils/path";
-import { Home, Public } from "./pages/public";
 import {
   AdminHome,
   CreateProducts,
@@ -10,8 +9,8 @@ import {
   ManageOrder,
   ManageProducts,
   ManageUsers,
-} from "./pages/admin";
-import Profile from "./pages/admin/Profile";
+} from "./pages";
+import Profile from "./pages/Profile";
 
 function App() {
   return (

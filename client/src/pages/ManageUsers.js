@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { apiDeleteUser, apiGetUser, apiUpdateUser } from "../../apis/user";
+import { apiDeleteUser, apiGetUser, apiUpdateUser } from "../apis/user";
 import moment from "moment";
-import { roles } from "../../ultils/contants";
-import icons from "../../ultils/icons";
-import InputField from "../../components/InputField";
-import useDebounce from "../../components/useDebounce";
-import InputFrom from "../../components/InputFrom";
-import Pagination from "../../components/Pagination";
+import { roles } from "../ultils/contants";
+import icons from "../ultils/icons";
+import InputField from "../components/InputField";
+import useDebounce from "../components/useDebounce";
+import InputFrom from "../components/InputFrom";
+import Pagination from "../components/Pagination";
 import { useSearchParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Button, Select } from "../../components";
+import { Button, Select } from "../components";
 import Swal from "sweetalert2";
 const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
 

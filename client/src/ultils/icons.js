@@ -1,4 +1,9 @@
-import { IoIosLogOut, IoIosSpeedometer, IoIosPeople } from "react-icons/io";
+import {
+  IoIosLogOut,
+  IoIosSpeedometer,
+  IoIosPeople,
+  IoIosToday,
+} from "react-icons/io";
 import {
   MdArrowDropDown,
   MdArrowLeft,
@@ -16,7 +21,7 @@ const icons = {
   IoIosLogOut,
   IoIosSpeedometer,
   IoIosPeople,
-
+  IoIosToday,
   MdArrowDropDown,
   MdArrowLeft,
   MdDelete,
