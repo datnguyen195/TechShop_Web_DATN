@@ -16,7 +16,7 @@ import path from "../ultils/path";
 const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
   const fetchCategories = async () => {
     const response = await apiGetCategores();
-    if (response.success) setCategories(response.createCategory);
+    if (response.success) setCategories(response.res);
   };
   const fetchBrand = async () => {
     const response = await apiGetBrand();

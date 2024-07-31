@@ -1,16 +1,5 @@
 import axios from "../axios";
 
-export const apiGetCategores = () =>
-  axios({
-    url: "/prodcategory/",
-    method: "get",
-  });
-
-export const apiGetBrand = () =>
-  axios({
-    url: "/brand/",
-    method: "get",
-  });
 export const apiCreateProduct = (data) =>
   axios({
     url: "/product/",
@@ -42,4 +31,74 @@ export const apiGetOrder = (params) =>
   axios({
     url: "/order/admin",
     method: "get",
+  });
+
+export const apiCreateBrand = (data) =>
+  axios({
+    url: "/brand/",
+    method: "post",
+    data,
+  });
+export const apiGetBrand = () =>
+  axios({
+    url: "/brand/",
+    method: "get",
+  });
+
+export const apiUpdateBrand = (data, pid) =>
+  axios({
+    url: "/brand/" + pid,
+    method: "put",
+    data,
+  });
+
+export const apiDeleteBrand = (bid) =>
+  axios({
+    url: "/brand/" + bid,
+    method: "delete",
+  });
+
+export const apiCreateCategores = (data) =>
+  axios({
+    url: "/prodcategory/",
+    method: "post",
+    data,
+  });
+
+export const apiGetCategores = () =>
+  axios({
+    url: "/prodcategory/",
+    method: "get",
+  });
+
+export const apiUpdateCategores = (data, pid) =>
+  axios({
+    url: "/prodcategory/" + pid,
+    method: "put",
+    data,
+  });
+
+export const apiDeleteCategores = (bid) =>
+  axios({
+    url: "/prodcategory/" + bid,
+    method: "delete",
+  });
+
+export const apiGetRatings = () =>
+  axios({
+    url: "/product/ratings",
+    method: "get",
+  });
+
+export const apiGetDetaiProduct = (pid) =>
+  axios({
+    url: "/product/detai/" + pid,
+    method: "get",
+  });
+
+export const apiDeleteRating = (rid, data) =>
+  axios({
+    url: "/product/removerating/" + rid,
+    method: "delete",
+    data,
   });

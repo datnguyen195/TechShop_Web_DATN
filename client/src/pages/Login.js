@@ -54,6 +54,7 @@ const Login = () => {
               userData: res.userData,
             })
           );
+
           Swal.fire("Thành công.", res.mes, "success");
           dispatch(getCurrent());
           navigate(`/${path.ADMIN}`);

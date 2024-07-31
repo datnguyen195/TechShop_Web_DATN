@@ -16,6 +16,7 @@ import {
   MdAppRegistration,
   MdOutlineTrendingUp,
   MdPerson,
+  MdRemoveRedEye,
 } from "react-icons/md";
 const icons = {
   IoIosLogOut,
@@ -33,5 +34,6 @@ const icons = {
   MdAppRegistration,
   MdOutlineTrendingUp,
   MdPerson,
+  MdRemoveRedEye,
 };
 export default icons;

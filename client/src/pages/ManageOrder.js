@@ -9,7 +9,7 @@ import { statusOrder } from "../ultils/contants";
 import icons from "../ultils/icons";
 import { useSearchParams } from "react-router-dom";
 import SusSelect from "../components/SusSelect";
-const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
+const { MdRemoveRedEye, MdSystemUpdateAlt } = icons;
 
 const ManageOrder = () => {
   const [orders, setOrders] = useState(null);
@@ -79,7 +79,7 @@ const ManageOrder = () => {
               <th className="text-center py-2">Tiền</th>
               <th className="text-center py-2">Trạng thái</th>
               <th className="text-center py-2">Ngày</th>
-              {/* <th className="text-center">Sửa </th> */}
+              <th>Xem </th>
             </tr>
           </thead>
 
@@ -102,7 +102,15 @@ const ManageOrder = () => {
                 <td className="text-center py-2">
                   {moment(el.createdAt).format("DD / MM / YYYY")}
                 </td>
-                <td className="px-2 py-2 flex-row gap-2"></td>
+                <td className=" py-2 flex-row gap-2">
+                  <MdRemoveRedEye
+                    size={24}
+                    color="red"
+                    onClick={() => {
+                      // setEdit(el);
+                    }}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>

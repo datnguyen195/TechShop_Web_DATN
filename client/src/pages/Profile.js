@@ -52,7 +52,6 @@ const Profile = () => {
       avatar: current?.avatar,
     });
   }, [current]);
-  console.log("current", current?.avatar);
   return (
     <div className="container mx-auto px-4">
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">

@@ -6,11 +6,10 @@ import path from "../ultils/path";
 import TopHeader from "../components/TopHeader";
 const AdminHome = () => {
   const { isLoggedIn, current } = useSelector((state) => state.user);
-  // console.log("current", isLoggedIn);
-  // console.log("current", current);
-  // if (!isLoggedIn || +current.role !== 0) {
-  //   return <Navigate to={`/${path.LOGIN}`} replace={true} />;
-  // }
+  console.log("isLoggedIn", current);
+  if (!isLoggedIn) {
+    return <Navigate to={`/${path.LOGIN}`} replace={true} />;
+  }
   return (
     <div className="h-full flex bg-white min-h-screen">
       <div className="w-[290px] flex-none fixed top-0 left-0 bottom-0">

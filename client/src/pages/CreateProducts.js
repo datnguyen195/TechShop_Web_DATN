@@ -22,7 +22,8 @@ const CreateProducts = () => {
   const { MdClose } = icons;
   const fetchCategories = async () => {
     const response = await apiGetCategores();
-    if (response.success) setCategories(response.createCategory);
+    console.log(response);
+    if (response.success) setCategories(response.res);
   };
   const [preiew, setPreview] = useState({
     thumb: "",
@@ -149,16 +150,16 @@ const CreateProducts = () => {
   useEffect(() => {
     handlePreviewImages(watch("images"));
   }, [watch("images")]);
-  console.log("selectedTypes", selectedTypes);
+  console.log("categories", categories);
   return (
     <div className="w-full">
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
-        <span>ManageUsers</span>
+        <span>Quản lý sản phẩm</span>
       </h1>
       <div className="p-4 ">
         <form onSubmit={handleSubmit(handleCreateProduct)}>
           <InputFrom
-            label="Name product"
+            label="Tên sản phẩm"
             register={register}
             errors={errors}
             id={"title"}
@@ -215,7 +216,7 @@ const CreateProducts = () => {
           <div className="w-full flex gap-4 mt-5">
             <div className="flex-auto">
               <Select
-                label="category"
+                label="Loại"
                 register={register}
                 fullwidth
                 style={"p-2 border  border-gray-950 "}
@@ -265,7 +266,7 @@ const CreateProducts = () => {
             setInvalidFields={setInvalidFields}
           />
           <div className="flex flex-col gap-2 mt-8">
-            <label htmlFor="thumb">Upload ảnh</label>
+            <label htmlFor="thumb">Ảnh bìa</label>
             <input
               type="file"
               id="thumb "
@@ -285,7 +286,7 @@ const CreateProducts = () => {
             </div>
           )}
           <div className="flex flex-col gap-2 mt-8">
-            <label htmlFor="products">Upload ảnh</label>
+            <label htmlFor="products">Ảnh sản phẩm</label>
             <input
               type="file"
               id="products"

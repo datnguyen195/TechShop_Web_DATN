@@ -13,7 +13,7 @@ import { Button, Select } from "../components";
 import Swal from "sweetalert2";
 const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
 
-const ManageUsers = () => {
+const ManageCategori = () => {
   const {
     handleSubmit,
     register,
@@ -82,7 +82,6 @@ const ManageUsers = () => {
         mobile: edit.mobile,
       });
   }, [edit]);
-
   return (
     <div className="w-full">
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
@@ -250,4 +249,4 @@ const ManageUsers = () => {
   );
 };
 
-export default ManageUsers;
+export default ManageCategori;

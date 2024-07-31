@@ -15,6 +15,9 @@ router.post(
 router.get("/", ctrls.getProducts);
 router.get("/w", ctrls.getProductsw);
 router.put("/ratings", verifyAccessToken, ctrls.ratings);
+router.get("/ratings", [verifyAccessToken, isAdmin], ctrls.getRatings);
+router.get("/detai/:_id", ctrls.getDetaiProduct);
+router.delete("/removrating/:rid", verifyAccessToken, ctrls.deleteRating);
 router.put(
   "/uploadimage/:pid",
   [verifyAccessToken, isAdmin],
