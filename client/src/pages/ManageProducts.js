@@ -14,7 +14,8 @@ import {
 import Swal from "sweetalert2";
 import { useForm, SubmitHandler } from "react-hook-form";
 import UpdateProducts from "./UpdateProducts";
-const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
+import { Varriants } from "../components";
+const { MdDelete, MdEditSquare, MdRemoveRedEye, MdDashboardCustomize } = icons;
 
 const ManageProducts = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const ManageProducts = () => {
   const [counts, setCounts] = useState(null);
   const [edit, setEdit] = useState(null);
   const [update, setUpdate] = useState(null);
+  const [varriant, setVarriant] = useState(null);
   const {
     handleSubmit,
     register,
@@ -102,6 +104,15 @@ const ManageProducts = () => {
           <UpdateProducts edit={edit} render={render} setEdit={setEdit} />
         </div>
       )}
+      {varriant && (
+        <div className="absolute inset-0 min-h-screen bg-gray-100 z-50 ">
+          <Varriants
+            varriant={varriant}
+            render={render}
+            setVarriant={setVarriant}
+          />
+        </div>
+      )}
 
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
         <span>Manage Products</span>
@@ -130,7 +141,7 @@ const ManageProducts = () => {
               <th className="text-center py-2">Màu</th>
               <th className="text-center py-2">Đánh giá</th>
               <th className="text-center py-2">Ngày tạo</th>
-              <th className="text-center">Sửa </th>
+              <th className="text-center py-2">Sửa </th>
             </tr>
           </thead>
 
@@ -153,28 +164,41 @@ const ManageProducts = () => {
                 <td className="text-center py-2">{el.sold}</td>
                 <td className="text-center py-2">{el.color}</td>
                 <td className="text-center py-2">{el.ratings.length}</td>
+
                 <td className="text-center py-2">
                   {moment(el.createdAt).format("DD / MM / YYYY")}
                 </td>
-                <td className="px-2 py-2 flex-row gap-2">
-                  <td className="px-3 py-2">
-                    <MdEditSquare
-                      size={24}
-                      color="red"
-                      onClick={() => {
-                        setEdit(el);
-                      }}
-                    />
-                  </td>
-                  <td className="px-3 py-2">
-                    <MdDelete
-                      size={24}
-                      color="red"
-                      onClick={() => {
-                        handleDeleteProduct(el._id);
-                      }}
-                    />
-                  </td>
+                <td className="py-4 flex justify-center items-center gap-2">
+                  <MdRemoveRedEye
+                    size={24}
+                    color="red"
+                    onClick={() => {
+                      navigate(`/detai/${el._id}`);
+                    }}
+                  />
+                  <MdEditSquare
+                    size={24}
+                    color="red"
+                    onClick={() => {
+                      setEdit(el);
+                    }}
+                  />
+
+                  <MdDelete
+                    size={24}
+                    color="red"
+                    onClick={() => {
+                      handleDeleteProduct(el._id);
+                    }}
+                  />
+
+                  <MdDashboardCustomize
+                    size={24}
+                    color="red"
+                    onClick={() => {
+                      setVarriant(el);
+                    }}
+                  />
                 </td>
               </tr>
             ))}

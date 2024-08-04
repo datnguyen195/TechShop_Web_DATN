@@ -96,9 +96,16 @@ export const apiGetDetaiProduct = (pid) =>
     method: "get",
   });
 
-export const apiDeleteRating = (rid, data) =>
+export const apiDeleteRating = (rid, pid) =>
   axios({
-    url: "/product/removerating/" + rid,
+    url: "/product/removrating/" + rid,
     method: "delete",
+    data: { pid },
+  });
+
+export const apiAddVarrianst = (data, pid) =>
+  axios({
+    url: "/product/varriants/" + pid,
+    method: "put",
     data,
   });

@@ -9,3 +9,5 @@ export { default as InputFrom } from "./InputFrom";
 export { default as Select } from "./Select";
 export { default as CustomSelect } from "./SusSelect";
 export { default as MarkdownEditor } from "./MarkdownEditor";
+export { default as Product } from "./Product";
+export { default as Varriants } from "./Varriants";

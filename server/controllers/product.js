@@ -2,28 +2,17 @@ const { response } = require("express");
 const Product = require("../models/product");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
-
-const createProduct1 = asyncHandler(async (req, res) => {
-  if (Object.keys(req.body).length === 0) throw new Error("Missing inputs");
-  if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
-  const newProduct = await Product.create(req.body);
-  return res.status(200).json({
-    success: newProduct ? true : false,
-    createdProduct: newProduct ? newProduct : "Cannot create new product",
-  });
-});
+const makeSku = require("uniqid");
 
 const createProduct = asyncHandler(async (req, res) => {
   const { title, price, description, brand, category, color, type } = req.body;
   const thumb = req?.files?.thumb[0]?.path;
   const images = req?.files?.images?.map((el) => el.path);
-  const types = req.body.type || [];
   // if (!(title && price && description && brand && category && color))
   //   throw new Error("Missing inputs");
   req.body.slug = slugify(title);
   if (thumb) req.body.thumb = thumb;
   if (images) req.body.images = images;
-  if (types.length > 0) req.body.type = types;
 
   const newProduct = await Product.create(req.body);
 
@@ -239,7 +228,6 @@ const ratings = asyncHandler(async (req, res) => {
 });
 
 const deleteRating = asyncHandler(async (req, res) => {
-  const { _id } = req.user; // Lấy ID của người dùng
   const { pid } = req.body; // Lấy ID sản phẩm từ yêu cầu
 
   if (!pid) throw new Error("Thiếu trường sản phẩm ID"); // Kiểm tra xem ID sản phẩm có được cung cấp không
@@ -331,6 +319,34 @@ const getDetaiProduct = asyncHandler(async (req, res) => {
   }
 });
 
+const addVarriant = asyncHandler(async (req, res) => {
+  const { pid } = req.params;
+  const { title, price, color } = req.body;
+  const thumb = req?.files?.thumb[0]?.path;
+  const images = req?.files?.images?.map((el) => el.path);
+  if (!(title && price && color)) throw new Error("Thiếu trường");
+  const response = await Product.findByIdAndUpdate(
+    pid,
+    {
+      $push: {
+        varriants: {
+          color,
+          price,
+          title,
+          thumb,
+          images,
+          sku: makeSku().toUpperCase(),
+        },
+      },
+    },
+    { new: true }
+  );
+  return res.status(200).json({
+    status: response ? true : false,
+    response: response ? response : "Ko thể thêm biến thể",
+  });
+});
+
 module.exports = {
   createProduct,
   getProduct,
@@ -343,4 +359,5 @@ module.exports = {
   getRatings,
   getDetaiProduct,
   deleteRating,
+  addVarriant,
 };

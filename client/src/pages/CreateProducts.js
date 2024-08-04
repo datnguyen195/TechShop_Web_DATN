@@ -9,12 +9,6 @@ import "react-toastify/dist/ReactToastify.css";
 import icons from "../ultils/icons";
 import path from "../ultils/path";
 
-const types = [
-  { id: 1, name: "64 Gg" },
-  { id: 2, name: "128 Gg" },
-  { id: 3, name: "256 Gg" },
-  { id: 4, name: "512 Gg" },
-];
 const CreateProducts = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState(null);
@@ -61,15 +55,6 @@ const CreateProducts = () => {
   const handleCreateProduct = async (data) => {
     const invalids = validate(payload, setInvalidFields);
     if (invalids === 0) {
-      // if (data.category) {
-      //   const categoryItem = categories?.find(
-      //     (el) => el.title === data.category
-      //   );
-      //   if (categoryItem) {
-      //     data.category = categoryItem._id;
-      //     console.log(data.category);
-      //   }
-      // }
       const finalPayload = {
         ...data,
         ...payload,
@@ -94,7 +79,7 @@ const CreateProducts = () => {
           thumb: "",
           image: [],
         });
-        // navigate(`/${path.MANAGE_PRODUCTS}`);
+        navigate(`/${path.MANAGE_PRODUCTS}`);
       }
     }
   };
@@ -213,7 +198,7 @@ const CreateProducts = () => {
               />
             </div>
           </div>
-          <div className="w-full flex gap-4 mt-5">
+          <div className="w-full flex gap-4 mt-5 mb-5">
             <div className="flex-auto">
               <Select
                 label="Loại"
@@ -243,25 +228,11 @@ const CreateProducts = () => {
               />
             </div>
           </div>
-          <div className="mt-4 flex flex-wrap gap-4 mb-6">
-            <p className="mr-2">Chọn loại:</p>
-            {types.map((type) => (
-              <label key={type.id}>
-                <input
-                  type="checkbox"
-                  value={type.name}
-                  onChange={handleChange}
-                  checked={selectedTypes.includes(type.name)}
-                />
-                {type.name}
-              </label>
-            ))}
-          </div>
 
           <MarkdownEditor
             name="description"
             changeValue={changeValue}
-            label="Description"
+            label="Mô tả"
             invalidFields={invalidFields}
             setInvalidFields={setInvalidFields}
           />

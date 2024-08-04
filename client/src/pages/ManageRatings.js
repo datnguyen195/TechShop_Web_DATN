@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { apiDeleteRating, apiGetRatings } from "../apis/app";
 import moment from "moment";
 import icons from "../ultils/icons";
@@ -10,13 +10,14 @@ const { MdRemoveRedEye, MdDelete } = icons;
 const ManageRatings = () => {
   const navigate = useNavigate();
   const [ratings, setRatings] = useState(null);
-
+  const [update, setUpdate] = useState(false);
   const fetchRatings = async () => {
     const response = await apiGetRatings();
     if (response) {
       setRatings(response);
     }
   };
+
   console.log("ratings", ratings);
   const handleDeleteRatings = (rid, pid) => {
     Swal.fire({
@@ -26,20 +27,17 @@ const ManageRatings = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         console.log("uid", rid);
-        const response = await apiDeleteRating(rid, {
-          pid: pid,
-        });
+        const response = await apiDeleteRating(rid, pid);
+
+        window.location.reload();
         console.log("response", response);
-        console.log("response", pid);
-        if (response.success) {
-        }
       }
     });
   };
 
   useEffect(() => {
     fetchRatings();
-  }, []);
+  }, [update]);
 
   return (
     <div className="w-full">
@@ -86,10 +84,7 @@ const ManageRatings = () => {
                         size={24}
                         color="red"
                         onClick={() => {
-                          handleDeleteRatings(
-                            "66a8a2f62a62cab0ec90506e",
-                            el.productId
-                          );
+                          handleDeleteRatings(el._id, el.productId);
                         }}
                       />
                     </td>

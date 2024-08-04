@@ -2,12 +2,16 @@ const ProductCategory = require("../models/productCategory");
 const asyncHandler = require("express-async-handler");
 
 const createCategory = asyncHandler(async (req, res) => {
+  const { title } = req.body;
+  const image = req?.files?.image[0]?.path;
+  if (image) req.body.image = image;
   const respone = await ProductCategory.create(req.body);
   return res.json({
     success: respone ? true : false,
     createCategory: respone ? respone : "ko tạo thêm Category mới ",
   });
 });
+
 const getCategories = asyncHandler(async (req, res) => {
   const response = await ProductCategory.find().select("title _id image");
   return res.json({

@@ -3,6 +3,9 @@ import {
   IoIosSpeedometer,
   IoIosPeople,
   IoIosToday,
+  IoIosStar,
+  IoIosStarHalf,
+  IoIosStarOutline,
 } from "react-icons/io";
 import {
   MdArrowDropDown,
@@ -17,6 +20,7 @@ import {
   MdOutlineTrendingUp,
   MdPerson,
   MdRemoveRedEye,
+  MdDashboardCustomize,
 } from "react-icons/md";
 const icons = {
   IoIosLogOut,
@@ -35,5 +39,9 @@ const icons = {
   MdOutlineTrendingUp,
   MdPerson,
   MdRemoveRedEye,
+  IoIosStar,
+  IoIosStarHalf,
+  IoIosStarOutline,
+  MdDashboardCustomize,
 };
 export default icons;

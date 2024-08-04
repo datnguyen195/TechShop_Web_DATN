@@ -11,6 +11,7 @@ import { useSearchParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button, Select } from "../components";
 import Swal from "sweetalert2";
+import { apiGetCategores } from "../apis";
 const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
 
 const ManageCategori = () => {
@@ -25,17 +26,19 @@ const ManageCategori = () => {
     role: "",
     mobile: "",
   });
-  const [users, setUsers] = useState(null);
-  const [search, setSearch] = useState({ searchKey: "" });
+  const [category, setCategory] = useState(null);
+  const [preiew, setPreview] = useState({
+    thumb: "",
+    images: [],
+  });
   const [edit, setEdit] = useState(null);
   const [update, setUpdate] = useState(false);
   const [params] = useSearchParams();
 
-  const fetchUser = async (parmas) => {
-    const response = await apiGetUser(parmas);
-    if (response.success) setUsers(response);
+  const fetchCategory = async () => {
+    const response = await apiGetCategores();
+    if (response.success) setCategory(response.res);
   };
-  const searchDebounce = useDebounce(search.searchKey, 800);
 
   const render = useCallback(() => {
     setUpdate(!update);
@@ -68,10 +71,8 @@ const ManageCategori = () => {
   };
 
   useEffect(() => {
-    const queries = Object.fromEntries([...params]);
-    if (searchDebounce) queries.searchKey = searchDebounce;
-    fetchUser(queries);
-  }, [searchDebounce, params, update]);
+    fetchCategory();
+  }, []);
 
   useEffect(() => {
     if (edit)
@@ -85,60 +86,35 @@ const ManageCategori = () => {
   return (
     <div className="w-full">
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
-        <span>Quản lý người dùng</span>
+        <span>Quản lý thể loại</span>
       </h1>
       <div className="w-full py-4 px-4">
-        <div className="flex justify-end ">
-          <InputField
-            namekey={"searchKey"}
-            value={search.searchKey}
-            setValue={setSearch}
-            fw="w-[500px]"
-            placeholder={"Tìm người dùng..."}
-            title
-          />
-        </div>
-
         <form onSubmit={handleSubmit(handleUpdate)}>
           {edit && <Button type="submit" name="Cập nhật" />}
           <table className="table-auto mb-6 text-left w-full ">
             <thead className="font-bold bg-gray-500 text-[13px] text-white">
               <tr>
                 <th className="px-2 py-2">STT</th>
-                <th className="px-2 py-2">Email</th>
+                <th className="px-2 py-2">Ảnh</th>
                 <th className="px-2 py-2">Tên</th>
-
-                <th className="px-2 py-2">Số điện thoại</th>
-                <th className="px-2 py-2">Quyềns</th>
                 <th className="px-2 py-2">Ngày tạo</th>
                 <th className="px-5 py-2">Sửa</th>
               </tr>
             </thead>
             <tbody>
-              {users?.users?.map((el, idx) => (
+              {category?.map((el, idx) => (
                 <tr key={el._id} className="border border-b-1">
                   <td className="px-4 py-2">{idx + 1}</td>
-                  <td className="px-2 py-2">
-                    {edit?._id === el._id ? (
-                      <InputFrom
-                        register={register}
-                        fullwidth
-                        errors={errors}
-                        defaulfValue={edit?.email}
-                        id={"email"}
-                        validate={{
-                          required: true,
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "Vui long nhap mail",
-                          },
-                        }}
+
+                  <td className="px-4 py-2">
+                    {el.image && (
+                      <img
+                        src={el.image}
+                        alt="hu"
+                        className="w-[100px] h-[80px] object-contain"
                       />
-                    ) : (
-                      <span>{el.email}</span>
                     )}
                   </td>
-
                   <td className="px-2 py-2">
                     {edit?._id === el._id ? (
                       <InputFrom
@@ -149,48 +125,10 @@ const ManageCategori = () => {
                         validate={{ required: "Không được để trống" }}
                       />
                     ) : (
-                      <span>{el.name}</span>
+                      <span>{el.title}</span>
                     )}
                   </td>
 
-                  <td className="px-2 py-2">
-                    {edit?._id === el._id ? (
-                      <InputFrom
-                        register={register}
-                        errors={errors}
-                        defaulfValue={edit?.mobile}
-                        id={"mobile"}
-                        validate={{
-                          required: "Không được để trống",
-                          pattern: {
-                            value: /^[62|0]+\d{9}/gi,
-                            message: "Số điện thoại không hợp lệ.",
-                          },
-                        }}
-                      />
-                    ) : (
-                      <span>{el.mobile}</span>
-                    )}
-                  </td>
-                  <td className="px-2 py-2">
-                    {edit?._id === el._id ? (
-                      <Select
-                        register={register}
-                        fullwidth
-                        errors={errors}
-                        defaulfValue={+el.role}
-                        id={"role"}
-                        validate={{
-                          required: "Không được để trống",
-                        }}
-                        options={roles}
-                      />
-                    ) : (
-                      <span>
-                        {roles.find((role) => +role.code === +el.role)?.title}
-                      </span>
-                    )}
-                  </td>
                   <td className="px-2 py-2">
                     {moment(el.createdAt).format("DD / MM / YYYY")}
                   </td>
@@ -242,7 +180,7 @@ const ManageCategori = () => {
           </table>
         </form>
         <div className="w-full flex justify-b">
-          <Pagination totalCount={users?.counts} />
+          <Pagination totalCount={category?.counts} />
         </div>
       </div>
     </div>
