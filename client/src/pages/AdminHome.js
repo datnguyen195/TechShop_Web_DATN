@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { Sidebar } from "../components";
 import { useSelector } from "react-redux";
@@ -10,6 +10,7 @@ const AdminHome = () => {
   if (!isLoggedIn) {
     return <Navigate to={`/${path.LOGIN}`} replace={true} />;
   }
+
   return (
     <div className="h-full flex bg-white min-h-screen">
       <div className="w-[290px] flex-none fixed top-0 left-0 bottom-0">

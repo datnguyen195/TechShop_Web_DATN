@@ -17,6 +17,7 @@ const TopHeader = () => {
     dispatch(logout());
     navigate(`/${path.LOGIN}`);
   };
+
   useEffect(() => {
     if (isLoggedIn) {
       dispatch(getCurrent());

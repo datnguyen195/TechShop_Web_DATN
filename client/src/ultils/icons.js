@@ -21,6 +21,8 @@ import {
   MdPerson,
   MdRemoveRedEye,
   MdDashboardCustomize,
+  MdOutlineCategory,
+  MdComment,
 } from "react-icons/md";
 const icons = {
   IoIosLogOut,
@@ -43,5 +45,7 @@ const icons = {
   IoIosStarHalf,
   IoIosStarOutline,
   MdDashboardCustomize,
+  MdOutlineCategory,
+  MdComment,
 };
 export default icons;

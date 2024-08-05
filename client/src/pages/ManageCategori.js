@@ -1,17 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { apiDeleteUser, apiGetUser, apiUpdateUser } from "../apis/user";
 import moment from "moment";
-import { roles } from "../ultils/contants";
 import icons from "../ultils/icons";
-import InputField from "../components/InputField";
-import useDebounce from "../components/useDebounce";
 import InputFrom from "../components/InputFrom";
 import Pagination from "../components/Pagination";
-import { useSearchParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button, Select } from "../components";
 import Swal from "sweetalert2";
-import { apiGetCategores } from "../apis";
+import { apiDeleteCategores, apiGetCategores } from "../apis";
 const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
 
 const ManageCategori = () => {
@@ -20,38 +15,23 @@ const ManageCategori = () => {
     register,
     formState: { errors },
     reset,
-  } = useForm({
-    email: "",
-    name: "",
-    role: "",
-    mobile: "",
-  });
+  } = useForm({});
   const [category, setCategory] = useState(null);
-  const [preiew, setPreview] = useState({
-    thumb: "",
-    images: [],
-  });
   const [edit, setEdit] = useState(null);
-  const [update, setUpdate] = useState(false);
-  const [params] = useSearchParams();
-
   const fetchCategory = async () => {
     const response = await apiGetCategores();
     if (response.success) setCategory(response.res);
   };
 
-  const render = useCallback(() => {
-    setUpdate(!update);
-  }, [update]);
-  const handleUpdate = async (data) => {
-    const response = await apiUpdateUser(data, edit._id);
-    if (response.success) {
-      setEdit(null);
-      render();
-    } else {
-      console.log(3);
-    }
-  };
+  // const handleUpdate = async (data) => {
+  //   const response = await apiUpdateUser(data, edit._id);
+  //   if (response.success) {
+  //     setEdit(null);
+  //     render();
+  //   } else {
+  //     console.log(3);
+  //   }
+  // };
   const handleDeleteUser = (uid) => {
     Swal.fire({
       title: "Are you sure...",
@@ -60,11 +40,13 @@ const ManageCategori = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         console.log("uid", uid);
-        const response = await apiDeleteUser(uid);
+        const response = await apiDeleteCategores(uid);
         console.log("response", uid);
         if (response.success) {
-          render();
+          Swal.fire("Thành công.", response.mes, "success");
+          window.location.reload();
         } else {
+          Swal.fire("Đã sảy ra lỗi.", response.mes, "error");
         }
       }
     });
@@ -89,7 +71,7 @@ const ManageCategori = () => {
         <span>Quản lý thể loại</span>
       </h1>
       <div className="w-full py-4 px-4">
-        <form onSubmit={handleSubmit(handleUpdate)}>
+        <form>
           {edit && <Button type="submit" name="Cập nhật" />}
           <table className="table-auto mb-6 text-left w-full ">
             <thead className="font-bold bg-gray-500 text-[13px] text-white">

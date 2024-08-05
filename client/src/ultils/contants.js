@@ -2,13 +2,14 @@ import path from "./path";
 import icons from "./icons";
 
 const {
-  IoIosLogOut,
   IoIosPeople,
   MdReceiptLong,
   MdAppRegistration,
   MdOutlineTrendingUp,
   MdPerson,
   IoIosToday,
+  MdOutlineCategory,
+  MdComment,
 } = icons;
 export const adminSidebar = [
   {
@@ -46,7 +47,7 @@ export const adminSidebar = [
     id: 4,
     type: "PARENT",
     text: "Quản lý loại",
-    icon: <MdAppRegistration />,
+    icon: <MdOutlineCategory />,
     submenu: [
       {
         text: "Tạo loại sản phẩm",
@@ -58,22 +59,22 @@ export const adminSidebar = [
       },
     ],
   },
-  {
-    id: 5,
-    type: "PARENT",
-    text: "Quản lý hãng",
-    icon: <MdAppRegistration />,
-    submenu: [
-      {
-        text: "Tạo hãng sản phẩm",
-        path: `/${path.CREATEP_BRAND}`,
-      },
-      {
-        text: "Quản lý hãng sản phẩm",
-        path: `/${path.MANAGE_BRAND}`,
-      },
-    ],
-  },
+  // {
+  //   id: 5,
+  //   type: "PARENT",
+  //   text: "Quản lý hãng",
+  //   icon: <MdAppRegistration />,
+  //   submenu: [
+  //     {
+  //       text: "Tạo hãng sản phẩm",
+  //       path: `/${path.CREATEP_BRAND}`,
+  //     },
+  //     {
+  //       text: "Quản lý hãng sản phẩm",
+  //       path: `/${path.MANAGE_BRAND}`,
+  //     },
+  //   ],
+  // },
   {
     id: 6,
     type: "SINGLE",
@@ -86,7 +87,7 @@ export const adminSidebar = [
     type: "SINGLE",
     text: "Quản bình luận",
     path: `/${path.MANAGE_RATINGS}`,
-    icon: <IoIosToday />,
+    icon: <MdComment />,
   },
   {
     id: 8,

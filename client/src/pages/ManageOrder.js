@@ -10,13 +10,7 @@ import icons from "../ultils/icons";
 import { useSearchParams } from "react-router-dom";
 import DetaiOder from "./DetaiOder";
 
-const {
-  MdRemoveRedEye,
-  MdSystemUpdateAlt,
-  MdOutlineClear,
-  MdDelete,
-  MdEditSquare,
-} = icons;
+const { MdRemoveRedEye } = icons;
 
 const ManageOrder = () => {
   const [orders, setOrders] = useState(null);
@@ -59,7 +53,7 @@ const ManageOrder = () => {
     fetchOrder();
   }, []);
   return (
-    <div className="container mx-auto px-4">
+    <div className="w-full flex-col gap-4 relative">
       {edit && (
         <div className="absolute inset-0 min-h-screen bg-gray-100 z-50 ">
           <DetaiOder edit={edit} render={render} setEdit={setEdit} />
@@ -115,23 +109,7 @@ const ManageOrder = () => {
                     </span>
                   </td>
                   <td className="text-center py-2">{el.total + " " + "VND"}</td>
-                  <td className="text-center py-2">
-                    {edit?._id === el._id ? (
-                      <Select
-                        register={register}
-                        fullwidth
-                        errors={errors}
-                        defaulfValue={+el.status}
-                        id={"status"}
-                        validate={{
-                          required: "Không được để trống",
-                        }}
-                        options={statusOrder}
-                      />
-                    ) : (
-                      <span>{el.status}</span>
-                    )}
-                  </td>
+                  <td className="text-center py-2">{el.status}</td>
                   <td className="text-center py-2">
                     {moment(el.createdAt).format("DD / MM / YYYY")}
                   </td>

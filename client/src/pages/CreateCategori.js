@@ -25,17 +25,11 @@ const CreateCategori = () => {
   });
 
   const handleCreateProduct = async (data) => {
-    const finalPayload = {
-      ...data,
-      ...payload,
-    };
     const formData = new FormData();
-
-    for (let i of Object.entries(finalPayload)) formData.append(i[0], i[1]);
-
-    if (finalPayload.image) formData.append("image", finalPayload.image[0]);
-
-    console.log("formData", formData);
+    if (data.image.length > 0) formData.append("image", data.image[0]);
+    delete data.image;
+    console.log(data);
+    for (let i of Object.entries(data)) formData.append(i[0], i[1]);
     const response = await apiCreateCategores(formData);
     if (response.success) {
       reset();
@@ -52,7 +46,9 @@ const CreateCategori = () => {
   };
 
   useEffect(() => {
-    handlePreview(watch("image")[0]);
+    if (watch("image")) {
+      handlePreview(watch("image")[0]);
+    }
   }, [watch("image")]);
 
   return (

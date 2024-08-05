@@ -133,7 +133,7 @@ const ManageProducts = () => {
               <th className="text-center py-2">STT</th>
               <th className="text-center py-2">Ảnh</th>
               <th className="text-center py-2">Tên</th>
-              <th className="text-center py-2">Hãng</th>
+
               <th className="text-center py-2">Loại</th>
               <th className="text-center py-2">Giá</th>
               <th className="text-center py-2">Số lượng</th>
@@ -157,7 +157,6 @@ const ManageProducts = () => {
                   />
                 </td>
                 <td className="text-center py-2">{el.title}</td>
-                <td className="text-center py-2">{el.brand}</td>
                 <td className="text-center py-2">{el.category}</td>
                 <td className="text-center py-2">{el.price}</td>
                 <td className="text-center py-2">{el.quantity}</td>

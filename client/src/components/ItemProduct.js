@@ -1,6 +1,6 @@
 import React from "react";
 import { formatMoney, renderStarFromNumber } from "../ultils/helper";
-const Product = ({ productData }) => {
+const ItemProduct = ({ productData }) => {
   return (
     <div className="w-full text-base px-[10px]">
       <div className="w-full border p-[15px] flex flex-col items-center">
@@ -23,4 +23,4 @@ const Product = ({ productData }) => {
     </div>
   );
 };
-export default Product;
+export default ItemProduct;

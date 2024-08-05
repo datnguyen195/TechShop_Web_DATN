@@ -28,9 +28,7 @@ const ManageRatings = () => {
       if (result.isConfirmed) {
         console.log("uid", rid);
         const response = await apiDeleteRating(rid, pid);
-
         window.location.reload();
-        console.log("response", response);
       }
     });
   };

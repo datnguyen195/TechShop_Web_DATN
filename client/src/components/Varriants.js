@@ -50,8 +50,6 @@ const Varriants = ({ varriant, render, setVarriant }) => {
   const handleAddVarriant = async (data) => {
     if (data.color === varriant.color) {
       Swal.fire("Oops!", "Color not changed", "info");
-    } else if (data.type === varriant.type) {
-      Swal.fire("Oops!", "Color not changed", "info");
     } else {
       const formData = new FormData();
       for (let i of Object.entries(data)) formData.append(i[0], i[1]);
@@ -68,7 +66,7 @@ const Varriants = ({ varriant, render, setVarriant }) => {
           thumb: "",
           image: [],
         });
-        navigate(`/${path.MANAGE_PRODUCTS}`);
+        handleCloseModal();
       }
     }
   };
@@ -181,20 +179,19 @@ const Varriants = ({ varriant, render, setVarriant }) => {
             <small className="text-red-600">{errors["images"]?.message}</small>
           )}
         </div>
-        {preiew.images.length > 0 && (
-          <div className="my-4 flex w-full gap-3 flex-wrap">
-            {preiew.images?.map((el, idx) => (
-              <div key={idx} className="w-fit relative">
-                <img
-                  key={idx}
-                  src={el}
-                  alt="Sản phẩm"
-                  className="w-[200px] object-contain"
-                />
-              </div>
-            ))}
-          </div>
-        )}
+
+        <div className="my-4 flex w-full gap-3 flex-wrap">
+          {preiew.images?.map((el, idx) => (
+            <div key={idx} className="w-fit relative">
+              <img
+                key={idx}
+                src={el}
+                alt="Sản phẩm"
+                className="w-[200px] object-contain"
+              />
+            </div>
+          ))}
+        </div>
 
         <div className="mt-3">
           <Button type="submit" name="Thêm biến thể" />
