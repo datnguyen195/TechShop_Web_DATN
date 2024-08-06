@@ -11,11 +11,12 @@ const InputForm = ({
   placeholder,
   fullwidth,
   style,
+  readOnly,
   layout,
   defaulfValue,
 }) => {
   return (
-    <div className={clsx("flex flex-col mt-4 h-[65px] gap-2", layout)}>
+    <div className={clsx("flex flex-col w-full mt-4 h-[65px] gap-2", layout)}>
       {label && <label htmlFor={id}>{label}</label>}
       <input
         type={type}
@@ -29,6 +30,7 @@ const InputForm = ({
           style
         )}
         defaultValue={defaulfValue}
+        readOnly={readOnly}
       />
 
       {errors[id] && (

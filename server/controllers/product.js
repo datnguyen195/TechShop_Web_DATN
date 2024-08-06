@@ -2,28 +2,17 @@ const { response } = require("express");
 const Product = require("../models/product");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
-
-const createProduct1 = asyncHandler(async (req, res) => {
-  if (Object.keys(req.body).length === 0) throw new Error("Missing inputs");
-  if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
-  const newProduct = await Product.create(req.body);
-  return res.status(200).json({
-    success: newProduct ? true : false,
-    createdProduct: newProduct ? newProduct : "Cannot create new product",
-  });
-});
+const makeSku = require("uniqid");
 
 const createProduct = asyncHandler(async (req, res) => {
   const { title, price, description, brand, category, color, type } = req.body;
   const thumb = req?.files?.thumb[0]?.path;
   const images = req?.files?.images?.map((el) => el.path);
-  const types = req.body.type || [];
   // if (!(title && price && description && brand && category && color))
   //   throw new Error("Missing inputs");
   req.body.slug = slugify(title);
   if (thumb) req.body.thumb = thumb;
   if (images) req.body.images = images;
-  if (types.length > 0) req.body.type = types;
 
   const newProduct = await Product.create(req.body);
 
@@ -187,7 +176,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 const ratings = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { star, comment, pid } = req.body;
+  const { star, comment, pid, avatar, name } = req.body;
   if (!star || !pid) throw new Error("Thiếu trường");
   const ratingProduct = await Product.findById(pid);
   const alreadyRating = ratingProduct?.ratings?.find(
@@ -208,7 +197,16 @@ const ratings = asyncHandler(async (req, res) => {
     await Product.findByIdAndUpdate(
       pid,
       {
-        $push: { ratings: { star, comment, postedBy: _id } },
+        $push: {
+          ratings: {
+            star,
+            comment,
+            postedBy: _id,
+            productId: pid,
+            avatar,
+            name,
+          },
+        },
       },
       { new: true }
     );
@@ -223,6 +221,52 @@ const ratings = asyncHandler(async (req, res) => {
   );
   updateProduct.totalRatings = Math.round((sumRatings * 10) / ratingCount) / 10;
   await updateProduct.save();
+  return res.status(200).json({
+    status: true,
+    updateProduct,
+  });
+});
+
+const deleteRating = asyncHandler(async (req, res) => {
+  const { pid } = req.body; // Lấy ID sản phẩm từ yêu cầu
+
+  if (!pid) throw new Error("Thiếu trường sản phẩm ID"); // Kiểm tra xem ID sản phẩm có được cung cấp không
+
+  // Tìm sản phẩm theo ID
+  const ratingProduct = await Product.findById(pid);
+
+  if (!ratingProduct) throw new Error("Sản phẩm không tồn tại"); // Kiểm tra xem sản phẩm có tồn tại không
+
+  // // Tìm đánh giá của người dùng trong danh sách đánh giá của sản phẩm
+  // const alreadyRating = ratingProduct.ratings.find(
+  //   (el) => el.postedBy.toString() === _id
+  // );
+
+  // if (!alreadyRating) throw new Error("Bạn chưa đánh giá sản phẩm này"); // Kiểm tra xem người dùng đã đánh giá chưa
+
+  // Xoá đánh giá của người dùng khỏi sản phẩm
+  await Product.findByIdAndUpdate(
+    pid,
+    {
+      $pull: {
+        ratings: { productId: pid }, // Sử dụng $pull để xoá đánh giá của người dùng khỏi mảng đánh giá
+      },
+    },
+    { new: true }
+  );
+
+  // Cập nhật tổng số sao của sản phẩm
+  const updateProduct = await Product.findById(pid);
+  const ratingCount = updateProduct.ratings.length;
+  const sumRatings = updateProduct.ratings.reduce(
+    (sum, el) => sum + +el.star,
+    0
+  );
+  updateProduct.totalRatings =
+    ratingCount > 0 ? Math.round((sumRatings * 10) / ratingCount) / 10 : 0; // Tránh chia cho 0
+  await updateProduct.save();
+
+  // Trả về kết quả
   return res.status(200).json({
     status: true,
     updateProduct,
@@ -246,6 +290,62 @@ const uploadImagesProduct = asyncHandler(async (req, res) => {
   // console.log(req.files);
   // return res.json("oke");
 });
+const getRatings = asyncHandler(async (req, res) => {
+  try {
+    // Fetch all products and select only the ratings field
+    const products = await Product.find({}).select("ratings");
+
+    // Extract ratings from each product
+    const allRatings = products.flatMap((product) => product.ratings);
+
+    res.json({ ratings: allRatings });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+const getDetaiProduct = asyncHandler(async (req, res) => {
+  try {
+    const _id = req.params;
+    const product = await Product.findById(_id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Sản phẩm không tồn tại" });
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ message: "Đã xảy ra lỗi", error });
+  }
+});
+
+const addVarriant = asyncHandler(async (req, res) => {
+  const { pid } = req.params;
+  const { title, price, color } = req.body;
+  const thumb = req?.files?.thumb[0]?.path;
+  const images = req?.files?.images?.map((el) => el.path);
+  if (!(title && price && color)) throw new Error("Thiếu trường");
+  const response = await Product.findByIdAndUpdate(
+    pid,
+    {
+      $push: {
+        varriants: {
+          color,
+          price,
+          title,
+          thumb,
+          images,
+          sku: makeSku().toUpperCase(),
+        },
+      },
+    },
+    { new: true }
+  );
+  return res.status(200).json({
+    status: response ? true : false,
+    response: response ? response : "Ko thể thêm biến thể",
+  });
+});
 
 module.exports = {
   createProduct,
@@ -256,4 +356,8 @@ module.exports = {
   ratings,
   uploadImagesProduct,
   getProductsw,
+  getRatings,
+  getDetaiProduct,
+  deleteRating,
+  addVarriant,
 };

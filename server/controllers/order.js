@@ -50,7 +50,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
 const createOneOrder = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { productId, quantity, total, color, address, types } = req.body;
+  const { productId, title, quantity, total, color, address, types } = req.body;
 
   const product = await Product.findById(productId);
   if (product.quantity < 1) {
@@ -62,7 +62,7 @@ const createOneOrder = asyncHandler(async (req, res) => {
       .json({ success: false, error: "Không tìm thấy sản phẩm." });
   }
   const orderData = {
-    products: [{ product: productId, quantity, color, types }],
+    products: [{ product: productId, quantity, color, types, title }],
     total,
     address,
     postedBy: _id,
@@ -105,10 +105,42 @@ const getUserOrder = asyncHandler(async (req, res) => {
   });
 });
 const getsOrder = asyncHandler(async (req, res) => {
-  const response = await Order.find();
-  return res.json({
-    success: response ? true : false,
-    response: response ? response : "ko co du lieu",
+  const queries = { ...req.query };
+  const excludeFields = ["limit", "sort", "page", "fields"];
+  excludeFields.forEach((el) => delete queries[el]);
+
+  let queryString = JSON.stringify(queries);
+  queryString = queryString.replace(
+    /\b(gte|gt|lt|lte)\b/g,
+    (macthedEl) => `$${macthedEl}`
+  );
+  const formatedQueries = JSON.parse(queryString);
+
+  const qr = { ...formatedQueries };
+  let queryCommand = Order.find(qr);
+
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    queryCommand = queryCommand.sort(sortBy);
+  }
+
+  if (req.query.fields) {
+    const fields = req.query.fields.split(",").join(" ");
+    queryCommand = queryCommand.select(fields);
+  }
+  const page = +req.query.page || 1;
+  const limit = +req.query.limit || process.env.LIMIT_PRODUCTS;
+  const skip = (page - 1) * limit;
+  queryCommand.skip(skip).limit(limit);
+
+  queryCommand.exec(async (err, response) => {
+    if (err) throw new Error(err.message);
+    const counts = await User.find(formatedQueries).countDocuments();
+    return res.status(200).json({
+      success: response ? true : false,
+      counts,
+      orders: response ? response : "Cannot get users",
+    });
   });
 });
 

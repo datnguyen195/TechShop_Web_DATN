@@ -15,11 +15,24 @@ router.post(
 router.get("/", ctrls.getProducts);
 router.get("/w", ctrls.getProductsw);
 router.put("/ratings", verifyAccessToken, ctrls.ratings);
+router.get("/ratings", [verifyAccessToken, isAdmin], ctrls.getRatings);
+router.get("/detai/:_id", ctrls.getDetaiProduct);
+router.delete("/removrating/:rid", verifyAccessToken, ctrls.deleteRating);
 router.put(
   "/uploadimage/:pid",
   [verifyAccessToken, isAdmin],
   uploader.array("images", 10),
   ctrls.uploadImagesProduct
+);
+router.put(
+  "/varriants/:pid",
+  verifyAccessToken,
+  isAdmin,
+  uploader.fields([
+    { name: "images", maxCount: 10 },
+    { name: "thumb", maxCount: 1 },
+  ]),
+  ctrls.addVarriant
 );
 router.put(
   "/:pid",
@@ -31,6 +44,7 @@ router.put(
   ]),
   ctrls.updateProduct
 );
+
 router.delete("/:pid", [verifyAccessToken, isAdmin], ctrls.deleteProduct);
 router.get("/:pid", ctrls.getProduct);
 

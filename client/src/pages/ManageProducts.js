@@ -1,21 +1,23 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { apiGetProducts } from "../../apis/app";
+import { apiDeleteProducts, apiGetProducts } from "../apis/app";
 import moment from "moment";
-import icons from "../../ultils/icons";
-import useDebounce from "../../components/useDebounce";
-import InputFrom from "../../components/InputFrom";
-import Pagination from "../../components/Pagination";
+import icons from "../ultils/icons";
+import useDebounce from "../components/useDebounce";
+import InputFrom from "../components/InputFrom";
+import Pagination from "../components/Pagination";
 import {
   createSearchParams,
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useForm, SubmitHandler } from "react-hook-form";
 import UpdateProducts from "./UpdateProducts";
-const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
+import { Varriants } from "../components";
+const { MdDelete, MdEditSquare, MdRemoveRedEye, MdDashboardCustomize } = icons;
 
-const ManageOrder = () => {
+const ManageProducts = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [params] = useSearchParams();
@@ -23,6 +25,7 @@ const ManageOrder = () => {
   const [counts, setCounts] = useState(null);
   const [edit, setEdit] = useState(null);
   const [update, setUpdate] = useState(null);
+  const [varriant, setVarriant] = useState(null);
   const {
     handleSubmit,
     register,
@@ -46,6 +49,35 @@ const ManageOrder = () => {
   };
 
   const queryDebounce = useDebounce(watch("q"), 800);
+
+  const handleDeleteProduct = (pid) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Are you sure remove this product",
+      icon: "warning",
+      showCancelButton: true,
+    }).then(async (rs) => {
+      if (rs.isConfirmed) {
+        const response = await apiDeleteProducts(pid);
+        if (response.success)
+          Swal.fire({
+            icon: "success",
+            title: "Xử lý thành công.",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+        else {
+          Swal.fire({
+            icon: "error",
+            title: "Xảy ra lỗi.",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+        }
+        render();
+      }
+    });
+  };
 
   useEffect(() => {
     if (queryDebounce) {
@@ -72,9 +104,18 @@ const ManageOrder = () => {
           <UpdateProducts edit={edit} render={render} setEdit={setEdit} />
         </div>
       )}
+      {varriant && (
+        <div className="absolute inset-0 min-h-screen bg-gray-100 z-50 ">
+          <Varriants
+            varriant={varriant}
+            render={render}
+            setVarriant={setVarriant}
+          />
+        </div>
+      )}
 
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
-        <span>Manage Oder</span>
+        <span>Manage Products</span>
       </h1>
       <div className="w-full py-4 px-4">
         <form className="w-[45%]" onSu={handleSubmit(handleSearch)}>
@@ -92,14 +133,15 @@ const ManageOrder = () => {
               <th className="text-center py-2">STT</th>
               <th className="text-center py-2">Ảnh</th>
               <th className="text-center py-2">Tên</th>
-              <th className="text-center py-2">Hãng</th>
+
               <th className="text-center py-2">Loại</th>
               <th className="text-center py-2">Giá</th>
               <th className="text-center py-2">Số lượng</th>
               <th className="text-center py-2">Đã bán</th>
               <th className="text-center py-2">Màu</th>
               <th className="text-center py-2">Đánh giá</th>
-              <th className="text-center py-2">Ngày bán</th>
+              <th className="text-center py-2">Ngày tạo</th>
+              <th className="text-center py-2">Sửa </th>
             </tr>
           </thead>
 
@@ -115,17 +157,48 @@ const ManageOrder = () => {
                   />
                 </td>
                 <td className="text-center py-2">{el.title}</td>
-                <td className="text-center py-2">{el.brand}</td>
                 <td className="text-center py-2">{el.category}</td>
                 <td className="text-center py-2">{el.price}</td>
                 <td className="text-center py-2">{el.quantity}</td>
                 <td className="text-center py-2">{el.sold}</td>
                 <td className="text-center py-2">{el.color}</td>
                 <td className="text-center py-2">{el.ratings.length}</td>
+
                 <td className="text-center py-2">
                   {moment(el.createdAt).format("DD / MM / YYYY")}
                 </td>
-                <td className="px-2 py-2 flex-row gap-2"></td>
+                <td className="py-4 flex justify-center items-center gap-2">
+                  <MdRemoveRedEye
+                    size={24}
+                    color="red"
+                    onClick={() => {
+                      navigate(`/detai/${el._id}`);
+                    }}
+                  />
+                  <MdEditSquare
+                    size={24}
+                    color="red"
+                    onClick={() => {
+                      setEdit(el);
+                    }}
+                  />
+
+                  <MdDelete
+                    size={24}
+                    color="red"
+                    onClick={() => {
+                      handleDeleteProduct(el._id);
+                    }}
+                  />
+
+                  <MdDashboardCustomize
+                    size={24}
+                    color="red"
+                    onClick={() => {
+                      setVarriant(el);
+                    }}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -139,4 +212,4 @@ const ManageOrder = () => {
   );
 };
 
-export default ManageOrder;
+export default ManageProducts;

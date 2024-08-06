@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { apiDeleteUser, apiGetUser, apiUpdateUser } from "../../apis/user";
+import { apiDeleteUser, apiGetUser, apiUpdateUser } from "../apis/user";
 import moment from "moment";
-import { roles } from "../../ultils/contants";
-import icons from "../../ultils/icons";
-import InputField from "../../components/InputField";
-import useDebounce from "../../components/useDebounce";
-import InputFrom from "../../components/InputFrom";
-import Pagination from "../../components/Pagination";
+import { roles } from "../ultils/contants";
+import icons from "../ultils/icons";
+import InputField from "../components/InputField";
+import useDebounce from "../components/useDebounce";
+import InputFrom from "../components/InputFrom";
+import Pagination from "../components/Pagination";
 import { useSearchParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Button, Select } from "../../components";
+import { Button, Select } from "../components";
 import Swal from "sweetalert2";
 const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
 
@@ -86,7 +86,7 @@ const ManageUsers = () => {
   return (
     <div className="w-full">
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
-        <span>ManageUsers</span>
+        <span>Quản lý người dùng</span>
       </h1>
       <div className="w-full py-4 px-4">
         <div className="flex justify-end ">
@@ -107,12 +107,12 @@ const ManageUsers = () => {
               <tr>
                 <th className="px-2 py-2">STT</th>
                 <th className="px-2 py-2">Email</th>
-                <th className="px-2 py-2">Name</th>
-                <th className="px-2 py-2">Avatar</th>
-                <th className="px-2 py-2">Phone</th>
-                <th className="px-2 py-2">Role</th>
-                <th className="px-2 py-2">Create At</th>
-                <th className="px-5 py-2">Actions</th>
+                <th className="px-2 py-2">Tên</th>
+
+                <th className="px-2 py-2">Số điện thoại</th>
+                <th className="px-2 py-2">Quyềns</th>
+                <th className="px-2 py-2">Ngày tạo</th>
+                <th className="px-5 py-2">Sửa</th>
               </tr>
             </thead>
             <tbody>
@@ -153,13 +153,7 @@ const ManageUsers = () => {
                       <span>{el.name}</span>
                     )}
                   </td>
-                  <td className="px-2 py-2">
-                    <img
-                      src={el.avatar}
-                      alt="logo"
-                      className="w-[40px] h-[50px] "
-                    />
-                  </td>
+
                   <td className="px-2 py-2">
                     {edit?._id === el._id ? (
                       <InputFrom
