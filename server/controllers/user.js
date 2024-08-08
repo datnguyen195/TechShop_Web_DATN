@@ -12,99 +12,59 @@ const product = require("../models/product");
 const makeToken = require("uniqid");
 
 const register = asyncHandler(async (req, res) => {
-  const { email, password, name } = req.body.params ?? req.body;
-  if (!email || !password || !name)
+  const { email, password, name, mobile } = req.body.params ?? req.body;
+  if (!email || !password || !name || !mobile)
     return res.status(400).json({
       success: false,
       message: "Thiếu dữ liệu",
     });
   const user = await User.findOne({ email });
-  if (user) {
-    return res.status(400).json({
-      sucess: false,
-      error: "User has expired",
+  if (user) throw new Error("Người dùng đã tồn tại");
+  else {
+    const token = makeToken();
+    const emailEdit = btoa(email) + "@" + token;
+    const newUser = await User.create({
+      email: emailEdit,
+      password,
+      name,
+      mobile,
     });
-  } else {
-    const newUser = await User.create(req.body.params ?? req.body);
+    if (newUser) {
+      const html = `<h2>Token này sẽ hết hạn sau 15 phút kể từ bây giờ</h2> <br/> <blockquote>${token}</blockquote>.`;
+      const data = {
+        email,
+        html,
+        title: "Đăng ký tài khoản",
+      };
+      await sendMail(data);
+    }
+    setTimeout(async () => {
+      await User.deleteOne({ email: emailEdit });
+    }, 180000);
+
     return res.status(200).json({
-      success: newUser ? true : false,
-      mes: newUser
-        ? "Đăng ký thành công. Vui lòng đăng nhập~"
-        : "Đã xảy ra lỗi",
+      success: true,
+      mes: "vui lòng kiểm tra email",
     });
   }
 });
 
-// const register1 = asyncHandler(async (req, res) => {
-//   const { email, password, name, mobile } = req.body;
-
-//   if (!email || !password || !name || !mobile)
-//     return res.status(400).json({
-//       success: false,
-//       mes: "Thiếu dữ liệu",
-//     });
-//   const user = await User.findOne({ email });
-//   if (user) {
-//     throw new Error("Người dùng đã tồn tại");
-//   } else {
-//     const token = makeToken();
-//     res.cookie(
-//       "dataregister",
-//       { ...req.body, token },
-//       {
-//         httpOnly: true,
-//         maxAge: 15 * 60 * 1000,
-//       }
-//     );
-//     const html = `này sẽ hết hạn sau 15 phút kể từ bây giờ. ${token}{' '}
-//    <a href=${process.env.URL_SERVER}/api/user/finalregister/${token}>Click here</a>`;
-
-//     const data = {
-//       email,
-//       html,
-//       title: "Hoàn tất đăng ký",
-//     };
-//     const rs = await sendMail(data);
-//     return res.status(200).json({
-//       success: true,
-//       mes: "Vui lòng check mail của bạn",
-//     });
-//   }
-//   //lưư dươi cookei
-// });
-
-// const finalRegister = asyncHandler(async (req, res) => {
-//   const { token } = req.body;
-//   if (!token) throw new Error("Thiếu dữ liệu");
-//   const checkToken = await User.findOne({ token });
-//   if (!checkToken) throw new Error("Token không hợp lệ");
-//   return res.status(200).json({
-//     success: checkToken ? true : false,
-//     mes: checkToken ? "Đăng Ký thành công" : "Đã xảy ra lỗi",
-//   });
-// });
-
-// const finalRegister = asyncHandler(async (req, res) => {
-//   const cookie = req.cookies;
-//   const { token } = req.params;
-//   if (!cookie || cookie?.dataregister?.token !== token)
-//     throw new Error("Đăng ký bị lỗi");
-//   const newUser = await User.create({
-//     email: cookie?.dataregister?.email,
-//     password: cookie?.dataregister?.password,
-//     name: cookie?.dataregister?.name,
-//     mobile: cookie?.dataregister?.mobile,
-//   });
-//   return res.status(200).json({
-//     success: newUser ? true : false,
-//     mes: newUser ? "Đăng ký thành công. Vui lòng đăng nhập~" : "Đã xảy ra lỗi",
-//     newUser,
-//   });
-//   // return res.status(200).json({
-//   //   success: true,
-//   //   cookie,
-//   // });
-// });
+const finalRegister = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const notActivedEmail = await User.findOne({
+    email: new RegExp(`${token}$`),
+  });
+  if (notActivedEmail) {
+    notActivedEmail.email = atob(notActivedEmail?.email?.split("@")[0]);
+    notActivedEmail.save();
+  }
+  return res.json({
+    success: notActivedEmail ? true : false,
+    res: notActivedEmail
+      ? notActivedEmail
+      : " Đã sảy ra lỗi xin vui lòng thử lại",
+  });
+});
 
 // Refresh token => Cấp mới access token
 // Access token => Xác thực người dùng, quân quyên người dùng
@@ -144,6 +104,7 @@ const login = asyncHandler(async (req, res) => {
     throw new Error("Thông tin không hợp lệ!");
   }
 });
+
 const getCurrent = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const user = await User.findById(_id)
@@ -317,6 +278,21 @@ const updateUser = asyncHandler(async (req, res) => {
   });
 });
 
+const updateOneUser = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { name, email, phone } = req.body;
+  const data = { name, email, phone };
+  if (req.file) data.avatar = req.file.path;
+  if (!_id || Object.keys(req.body).length === 0)
+    throw new Error("Missing inputs");
+  const response = await User.findByIdAndUpdate(_id, data, {
+    new: true,
+  }).select("-password -role -refreshToken");
+  return res.status(200).json({
+    success: response ? true : false,
+    mes: response ? "Updated." : "Some thing went wrong",
+  });
+});
 const updateUserByAdmin = asyncHandler(async (req, res) => {
   //
   const { uid } = req.params;
@@ -367,7 +343,7 @@ const updateCart = asyncHandler(async (req, res) => {
     );
     return res.status(200).json({
       success: response ? true : false,
-      mes: response ? "cập nhật giỏ hàng" : "Đã xảy ra lỗi",
+      mes: response ? response : "Đã xảy ra lỗi",
     });
   } else {
     const response = await User.findByIdAndUpdate(
@@ -377,7 +353,7 @@ const updateCart = asyncHandler(async (req, res) => {
     );
     return res.status(200).json({
       success: response ? true : false,
-      mes: response ? "cập nhật giỏ hàng" : "Đã xảy ra lỗi",
+      mes: response ? response : "Đã xảy ra lỗi",
     });
   }
 });
@@ -453,6 +429,7 @@ module.exports = {
   logout,
   forgotPassword,
   resetPassword,
+  finalRegister,
   getUsers,
   deleteUser,
   updateUser,
@@ -462,4 +439,5 @@ module.exports = {
   uploadImagesAvatar,
   changePassUser,
   deleteCart,
+  updateOneUser,
 };

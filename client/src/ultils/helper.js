@@ -1,3 +1,18 @@
+import icons from "./icons";
+const { IoIosStar, IoIosStarHalf, IoIosStarOutline } = icons;
+
+export const createslug = (string) =>
+  string
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .split(" ")
+    .join("-");
+export const formatMoney = (number) =>
+  Number(number.toFixed(1)).toLocaleString();
+
+export const formatPrice = (number) => Math.round(number / 1000) * 1000;
+
 export const generateRange = (start, end) => {
   const length = end + 1 - start;
   return Array.from({ length }, (_, index) => start + index);
@@ -52,3 +67,12 @@ export function getBase64(file) {
     reader.onerror = (error) => reject(error);
   });
 }
+
+export const renderStarFromNumber = (number) => {
+  if (!Number(number)) return;
+  const stars = [];
+  for (let i = 0; i < +number; i++) stars.push(<IoIosStar color="orange" />);
+  for (let i = 5; i > +number; i--)
+    stars.push(<IoIosStarOutline color="orange" />);
+  return stars;
+};

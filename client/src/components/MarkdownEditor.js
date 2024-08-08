@@ -9,7 +9,6 @@ const MarkdownEditor = ({
   invalidFields,
   setInvalidFields,
 }) => {
-  console.log(invalidFields?.some((el) => el.name === name));
   return (
     <div className="flex flex-col">
       <span>{label}</span>
@@ -50,7 +49,6 @@ const MarkdownEditor = ({
         onChange={(e) =>
           changeValue((prev) => ({ ...prev, [name]: e.target.getContent() }))
         }
-        onfocus={() => setInvalidFields && setInvalidFields([])}
       />
       {invalidFields?.some((el) => el.name === name) && (
         <small className="text-sm">

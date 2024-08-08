@@ -58,6 +58,9 @@ var userSchema = new mongoose.Schema(
     passwordResetExpires: {
       type: String,
     },
+    registerToken: {
+      type: String,
+    },
     gender: {
       type: String,
       enum: [0, 1, 2],

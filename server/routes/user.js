@@ -4,13 +4,14 @@ const uploader = require("../config/cloudinary.config");
 const { verifyAccessToken, isAdmin } = require("../middlewares/verifyToken");
 
 router.post("/register", ctrls.register);
-// router.post("/finalregister", ctrls.finalRegister);
+
 router.put(
   "/avatar",
   verifyAccessToken,
   uploader.single("avatar"),
   ctrls.uploadImagesAvatar
 );
+router.put("/finalregister/:token", ctrls.finalRegister);
 router.post("/login", ctrls.login);
 router.get("/current", verifyAccessToken, ctrls.getCurrent);
 router.post("/refreshtoken", ctrls.refreshAccessToken);
@@ -19,7 +20,13 @@ router.get("/forgotpassword", ctrls.forgotPassword);
 router.put("/resetpassword", ctrls.resetPassword);
 router.get("/", [verifyAccessToken, isAdmin], ctrls.getUsers);
 router.delete("/:uid", [verifyAccessToken, isAdmin], ctrls.deleteUser);
-router.put("/current", [verifyAccessToken], ctrls.updateUser);
+// router.put("/current", [verifyAccessToken], ctrls.updateUser);
+router.put(
+  "/current",
+  verifyAccessToken,
+  uploader.single("avatar"),
+  ctrls.updateOneUser
+);
 router.put("/address", verifyAccessToken, ctrls.updateAddress);
 router.put("/cart", verifyAccessToken, ctrls.updateCart);
 router.delete("/remove-cart/:pid/:color", verifyAccessToken, ctrls.deleteCart);

@@ -1,5 +1,5 @@
 import React, { Fragment, memo, useState } from "react";
-import logo from "../assets/1.jpg";
+import logo from "../assets/log.png";
 import { NavLink } from "react-router-dom";
 import { adminSidebar } from "../ultils/contants";
 import clsx from "clsx";
@@ -20,7 +20,6 @@ const Sidebar = () => {
     <div className="py-4 bg-blue-100 h-full">
       <div className="flex flex-col justify-center items-center py-4 gap-2">
         <img src={logo} alt="logo" className="w-[200px] object-contain" />
-        <small>Quản lý</small>
       </div>
       <div>
         {adminSidebar.map((el) => (
