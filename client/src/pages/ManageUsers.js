@@ -108,11 +108,11 @@ const ManageUsers = () => {
                 <th className="px-2 py-2">STT</th>
                 <th className="px-2 py-2">Email</th>
                 <th className="px-2 py-2">Tên</th>
-
                 <th className="px-2 py-2">Số điện thoại</th>
-                <th className="px-2 py-2">Quyềns</th>
-                <th className="px-2 py-2">Ngày tạo</th>
-                <th className="px-5 py-2">Sửa</th>
+                <th className="px-2 py-2">Quyền</th>
+                <th className="px-2 py-2">Địa chỉ</th>
+
+                <th className="px-6 py-2">Sửa</th>
               </tr>
             </thead>
             <tbody>
@@ -154,7 +154,7 @@ const ManageUsers = () => {
                     )}
                   </td>
 
-                  <td className="px-2 py-2">
+                  <td className="py-2">
                     {edit?._id === el._id ? (
                       <InputFrom
                         register={register}
@@ -193,10 +193,23 @@ const ManageUsers = () => {
                     )}
                   </td>
                   <td className="px-2 py-2">
-                    {moment(el.createdAt).format("DD / MM / YYYY")}
+                    {edit?._id === el._id ? (
+                      <InputFrom
+                        register={register}
+                        errors={errors}
+                        defaulfValue={edit?.address}
+                        id={"address"}
+                        validate={{
+                          required: "Không được để trống",
+                        }}
+                      />
+                    ) : (
+                      <span>{el.address}</span>
+                    )}
                   </td>
+                  {/* <td className="px-2 py-2">{el.isBlocked ? "Khoá" : "Mở"}</td> */}
                   <td className="px-2 py-2 flex-row gap-2">
-                    <td className="px-3 py-2">
+                    <td className="px-2 py-2">
                       {edit?._id === el._id ? (
                         <MdOutlineClear
                           size={24}
@@ -215,7 +228,7 @@ const ManageUsers = () => {
                         />
                       )}
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-2 py-2">
                       {edit?._id === el._id ? (
                         <button type="submit">
                           <MdSystemUpdateAlt

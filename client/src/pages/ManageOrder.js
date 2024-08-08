@@ -38,6 +38,7 @@ const ManageOrder = () => {
       setCounts(response.counts);
     }
   };
+
   const render = () => {
     setUpdate(!update);
   };
@@ -109,7 +110,13 @@ const ManageOrder = () => {
                     </span>
                   </td>
                   <td className="text-center py-2">{el.total + " " + "VND"}</td>
-                  <td className="text-center py-2">{el.status}</td>
+                  <td className="text-center py-2">
+                    {
+                      statusOrder.find((status) => +status.code === +el.status)
+                        ?.title
+                    }
+                  </td>
+
                   <td className="text-center py-2">
                     {moment(el.createdAt).format("DD / MM / YYYY")}
                   </td>

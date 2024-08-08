@@ -3,6 +3,9 @@ const mongoose = require("mongoose"); // Erase if already required
 // Declare the Schema of the Mongo model
 var OrderSchema = new mongoose.Schema(
   {
+    code: {
+      type: String,
+    },
     products: [
       {
         product: { type: mongoose.Types.ObjectId, ref: "Product" },
@@ -14,10 +17,16 @@ var OrderSchema = new mongoose.Schema(
         title: String,
       },
     ],
+    // status: {
+    //   type: String,
+    //   default: "Chờ xác nhận",
+    //   enum: ["Chờ xác nhận", "Thành công", "Đã huỷ"],
+    // },
+
     status: {
-      type: String,
-      default: "Chờ xác nhận",
-      enum: ["Chờ xác nhận", "Thành công", "Đã huỷ"],
+      type: Number,
+      default: "0",
+      enum: ["0", "1", "2"],
     },
     total: Number,
     coupon: {

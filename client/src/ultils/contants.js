@@ -104,6 +104,7 @@ export const roles = [
 ];
 
 export const statusOrder = [
-  { label: "Cancelled", value: "Cancelled" },
-  { label: "Succeed", value: "Succeed" },
+  { code: 0, title: "Chờ xác nhận" },
+  { code: 1, title: "Thành công" },
+  { code: 2, title: "Huỷ đơn" },
 ];
