@@ -1,23 +1,30 @@
 import React from "react";
 import { formatMoney, renderStarFromNumber } from "../ultils/helper";
 const ItemProduct = ({ productData }) => {
+  console.log("productData", productData);
   return (
-    <div className="w-full text-base px-[10px]">
-      <div className="w-full border p-[15px] flex flex-col items-center">
+    <div className="w-full text-base px-[10px] mt-2 rounded-3xl">
+      <div className="w-full border p-[10px] gap-6  flex flex-row bg-slate-100 rounded-2xl">
         <img
-          src={
-            productData?.thumb ||
-            "https://apollobattery.com.au/wp-content/uploads/2022/08/default-product-image.png"
-          }
-          alt=""
-          className="w-[243px] h-[243px] object-cover"
+          src="https://peticon.edu.vn/wp-content/uploads/2023/10/meo_ragdoll2.jpeg"
+          alt="logo"
+          className="w-[80px] h-[50px] object-contain"
         />
-        <div className="flex flex-col mt-[15px] items-start gap-1 w-full">
-          <span className="flex h-4">
-            {renderStarFromNumber(productData?.totalRatings)}
-          </span>
-          <span className="line-clamp-1">{productData?.title}</span>
-          <span>{`${formatMoney(productData?.price)} VNĐ`}</span>
+        <div className="w-full gap-10">
+          <div className=" flex flex-row justify-between">
+            <div>{productData.title}</div>
+            <div>
+              {"x"}
+              {productData.quantity}
+            </div>
+          </div>
+          <div className=" flex flex-row justify-between">
+            <div>{productData.color}</div>
+            <div>
+              {productData.price}
+              {" VND"}
+            </div>
+          </div>
         </div>
       </div>
     </div>
