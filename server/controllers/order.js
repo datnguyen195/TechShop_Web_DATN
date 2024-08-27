@@ -12,15 +12,15 @@ function generateShortToken(length) {
 
 const createOrder = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { products, total, address } = req.body;
+  const { products, total, address } = req.body.params ?? req.body;
   if (address) {
     await User.findByIdAndUpdate(_id, { address, cart: [] });
   }
   const code = generateShortToken(5);
-  const data = { code: code, products, total, postedBy: _id };
+  const data = { code: code, products, total, orderBy: _id };
   const newOrder = await Order.create(data);
 
-  return res.status.json({
+  return res.status(200).json({
     success: newOrder ? true : false,
     res: newOrder ? "Thành công " : "Xảy ra lỗi ",
     order: newOrder,
@@ -130,6 +130,7 @@ const getUserOrder = asyncHandler(async (req, res) => {
     response: response ? response : "ko co du lieu",
   });
 });
+
 const getsOrder = asyncHandler(async (req, res) => {
   const queries = { ...req.query };
   const excludeFields = ["limit", "sort", "page", "fields"];

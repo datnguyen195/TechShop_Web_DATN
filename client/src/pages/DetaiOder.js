@@ -47,11 +47,19 @@ const DetaiOder = ({ edit, render, setEdit }) => {
             <span className=" text-base">Ngày đặt đơn: </span>
             <span className=" text-base">
               {moment(edit.createdAt).format("DD / MM / YYYY")}
-            </span>{" "}
+            </span>
           </div>
+
           <div>
-            <span className=" text-base">Trạng thái đơn: </span>
-            <span className=" text-base">
+            <span className=" text-base">Người đặt: </span>
+            <span className=" text-base">{}</span>
+          </div>
+        </div>
+        <div className="flex flex-row mt-4 justify-between">
+          <div></div>
+          <div>
+            <span className="text-base">Trạng thái đơn: </span>
+            <span className="text-base">
               {
                 statusOrder.find((status) => +status.code === +edit.status)
                   ?.title

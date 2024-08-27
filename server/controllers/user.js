@@ -111,16 +111,13 @@ const getCurrent = asyncHandler(async (req, res) => {
     .select("-refreshToken -password ")
     .populate({
       path: "cart",
-      populate: {
-        path: "product",
-        select: "title thumb price",
-      },
     });
   return res.status(200).json({
     success: user ? true : false,
     rs: user ? user : "Không tìm thấy người dùng",
   });
 });
+
 const refreshAccessToken = asyncHandler(async (req, res) => {
   // Lấy token từ cookies
   const cookie = req.cookies;
@@ -320,19 +317,62 @@ const updateAddress = asyncHandler(async (req, res) => {
   });
 });
 
+const putAddress = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { addressId, newAddress } = req.body.params ?? req.body;
+
+  if (!addressId || !newAddress) throw new Error("Missing inputs");
+
+  const response = await User.findOneAndUpdate(
+    { _id, "address._id": addressId },
+    { $set: { "address.$": newAddress } },
+    { new: true }
+  ).select("-password -role -refreshToken");
+
+  return res.status(200).json({
+    success: response ? true : false,
+    updatedUser: response ? response : "Đã xảy ra lỗi",
+  });
+});
+
+const deleteAddress = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { aid } = req.params;
+  if (!aid) throw new Error("Missing inputs");
+
+  const response = await User.findByIdAndUpdate(
+    _id,
+    { $pull: { address: { _id: aid } } },
+    { new: true }
+  ).select("-password -role -refreshToken");
+
+  return res.status(200).json({
+    success: response ? true : false,
+    updatedUser: response ? response : "Đã xảy ra lỗi",
+  });
+});
+
 const updateCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { pid, quantity = 1, color, price, thumb, title } = req.body;
+  const {
+    pid,
+    quantity = 1,
+    color,
+    price,
+    thumb,
+    title,
+  } = req.body.params ?? req.body;
   if (!pid || !color) throw new Error("Missing inputs");
   const user = await User.findById(_id).select("cart");
   const alreadyProduct = user?.cart?.find(
-    (el) => el.product.toString() === pid && el.color === color
+    (el) => el.product === pid && el.color === color
   );
   if (alreadyProduct && alreadyProduct.color === color) {
     const response = await User.updateOne(
       { cart: { $elemMatch: alreadyProduct } },
       {
         $set: {
+          "cart.$.product": pid,
           "cart.$.quantity": quantity,
           "cart.$.price": price,
           "cart.$.thumb": thumb,
@@ -348,7 +388,9 @@ const updateCart = asyncHandler(async (req, res) => {
   } else {
     const response = await User.findByIdAndUpdate(
       _id,
-      { $push: { cart: { product: pid, quantity, color, price, title } } },
+      {
+        $push: { cart: { product: pid, quantity, color, price, thumb, title } },
+      },
       { new: true }
     );
     return res.status(200).json({
@@ -363,17 +405,17 @@ const deleteCart = asyncHandler(async (req, res) => {
   const { pid, color } = req.params;
   const user = await User.findById(_id).select("cart");
   const alreadyProduct = user?.cart?.find(
-    (el) => el.product.toString() === pid && el.color === color
+    (el) => el.product === pid && el.color === color
   );
   if (alreadyProduct) {
     return res.status(200).json({
       success: false,
-      mes: "cập nhật giỏ hàng",
+      mes: "Sửa giỏ hàng",
     });
   }
   const response = await User.findByIdAndUpdate(
     _id,
-    { $push: { cart: { product: pid, color } } },
+    { $pull: { cart: { product: pid } } },
     { new: true }
   );
   return res.status(200).json({
@@ -440,4 +482,6 @@ module.exports = {
   changePassUser,
   deleteCart,
   updateOneUser,
+  putAddress,
+  deleteAddress,
 };

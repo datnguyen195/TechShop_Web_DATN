@@ -28,6 +28,8 @@ router.put(
   ctrls.updateOneUser
 );
 router.put("/address", verifyAccessToken, ctrls.updateAddress);
+router.put("/putaddress", verifyAccessToken, ctrls.putAddress);
+router.delete("/address/:aid", verifyAccessToken, ctrls.deleteAddress);
 router.put("/cart", verifyAccessToken, ctrls.updateCart);
 router.delete("/remove-cart/:pid/:color", verifyAccessToken, ctrls.deleteCart);
 router.put("/:uid", [verifyAccessToken, isAdmin], ctrls.updateUserByAdmin);

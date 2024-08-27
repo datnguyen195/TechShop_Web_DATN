@@ -16,7 +16,7 @@ const Login = () => {
   const dispatch = useDispatch();
 
   const { isLoggedIn, current } = useSelector((state) => state.user);
-  console.log("current", current.role);
+
   const [payload, setPayload] = useState({
     email: "",
     password: "",
