@@ -1,13 +1,25 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { Button, ItemProduct } from "../components";
 import moment from "moment";
 import { statusOrder } from "../ultils/contants";
+import { apiBuyOrder, apiDeteOrder, apiUpdateOrder } from "../apis";
+import { useParams } from "react-router-dom";
 
 const DetaiOder = ({ edit, render, setEdit }) => {
-  console.log("edir", edit);
+  const [detai, setDetai] = useState(null);
   const handleCloseModal = () => {
     setEdit(null);
   };
+
+  const fetchUpdateOder = async () => {
+    const response = await apiBuyOrder(edit._id);
+    setDetai(response);
+  };
+  const fetchDeteOder = async () => {
+    const response = await apiDeteOrder(edit._id);
+    setDetai(response);
+  };
+
   return (
     <div className="w-full flex flex-col gap-4 relative">
       <div className="h-[20px] w-full"></div>
@@ -57,8 +69,8 @@ const DetaiOder = ({ edit, render, setEdit }) => {
         <div className="flex flex-row mt-4 justify-between">
           <div></div>
           <div className="flex flex-row gap-4 ">
-            <Button name="Xác nhận đơn" />
-            <Button name="Huỷ đơn" />
+            <Button name="Xác nhận đơn" onClick={{ fetchUpdateOder }} />
+            <Button name="Huỷ đơn" onClick={{ fetchDeteOder }} />
           </div>
         </div>
       </div>

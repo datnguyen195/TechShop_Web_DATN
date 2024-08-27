@@ -21,8 +21,8 @@ const settings = {
 
 const DetaiProduct = () => {
   const { pid } = useParams();
-  const [detai, setDetai] = useState(null);
   const [varriant, setVarriant] = useState(null);
+  const [detai, setDetai] = useState(null);
 
   const fetchProduct = async () => {
     const response = await apiGetDetaiProduct(pid);
@@ -32,7 +32,6 @@ const DetaiProduct = () => {
   useEffect(() => {
     fetchProduct();
   }, [pid]);
-  console.log("detai?.description?", detai?.description);
 
   return (
     <div className="w-[90%]">
