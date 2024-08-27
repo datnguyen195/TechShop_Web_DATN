@@ -77,23 +77,23 @@ const ManageCategori = () => {
             <thead className="font-bold bg-gray-500 text-[13px] text-white">
               <tr>
                 <th className="px-2 py-2">STT</th>
-                <th className="px-2 py-2">Ảnh</th>
+                <th className="px-5 py-2">Ảnh</th>
                 <th className="px-2 py-2">Tên</th>
                 <th className="px-2 py-2">Ngày tạo</th>
-                <th className="px-5 py-2">Sửa</th>
+                <th className="px-5 py-2">Xoá</th>
               </tr>
             </thead>
             <tbody>
               {category?.map((el, idx) => (
                 <tr key={el._id} className="border border-b-1">
-                  <td className="px-4 py-2">{idx + 1}</td>
+                  <td className="px-2 py-2">{idx + 1}</td>
 
-                  <td className="px-4 py-2">
+                  <td className="px-2 py-2">
                     {el.image && (
                       <img
                         src={el.image}
                         alt="hu"
-                        className="w-[100px] h-[80px] object-contain"
+                        className="w-[60px] h-[60px] object-contain"
                       />
                     )}
                   </td>
@@ -116,44 +116,13 @@ const ManageCategori = () => {
                   </td>
                   <td className="px-2 py-2 flex-row gap-2">
                     <td className="px-3 py-2">
-                      {edit?._id === el._id ? (
-                        <MdOutlineClear
-                          size={24}
-                          color="red"
-                          onClick={() => {
-                            setEdit(null);
-                          }}
-                        />
-                      ) : (
-                        <MdEditSquare
-                          size={24}
-                          color="red"
-                          onClick={() => {
-                            setEdit(el);
-                          }}
-                        />
-                      )}
-                    </td>
-                    <td className="px-3 py-2">
-                      {edit?._id === el._id ? (
-                        <button type="submit">
-                          <MdSystemUpdateAlt
-                            size={24}
-                            color="red"
-                            onClick={() => {
-                              setEdit(el);
-                            }}
-                          />
-                        </button>
-                      ) : (
-                        <MdDelete
-                          size={24}
-                          color="red"
-                          onClick={() => {
-                            handleDeleteUser(el._id);
-                          }}
-                        />
-                      )}
+                      <MdDelete
+                        size={24}
+                        color="red"
+                        onClick={() => {
+                          handleDeleteUser(el._id);
+                        }}
+                      />
                     </td>
                   </td>
                 </tr>
@@ -161,9 +130,6 @@ const ManageCategori = () => {
             </tbody>
           </table>
         </form>
-        <div className="w-full flex justify-b">
-          <Pagination totalCount={category?.counts} />
-        </div>
       </div>
     </div>
   );

@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, InputField } from "../components";
 import { apiLogin, apiRegister } from "../apis/user";
 import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import path from "../ultils/path";
 import { getCurrent } from "../store/user/asyncActions";
 import Swal from "sweetalert2";
@@ -12,6 +14,8 @@ import { validate } from "../ultils/helper";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const { isLoggedIn, current } = useSelector((state) => state.user);
 
   const [payload, setPayload] = useState({
     email: "",
@@ -64,6 +68,7 @@ const Login = () => {
       }
     }
   };
+
   return (
     <div className="w-full h-screen relative">
       <img
@@ -108,14 +113,6 @@ const Login = () => {
             fw
           />
           <div className="flex items-center my-2 w-full justify-between">
-            {!isRegister && (
-              <span
-                className="text-blue-500 hover:underline cursor-pointer"
-                onClick={() => setIsRegister(true)}
-              >
-                Tạo tài khảo
-              </span>
-            )}
             {isRegister && (
               <span
                 className="text-blue-500 hover:underline cursor-pointer"

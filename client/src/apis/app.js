@@ -33,6 +33,18 @@ export const apiGetOrder = (params) =>
     method: "get",
   });
 
+export const apiBuyOrder = (oid) =>
+  axios({
+    url: "/buystatus/" + oid,
+    method: "put",
+  });
+
+export const apiDeteOrder = (oid) =>
+  axios({
+    url: "/detestatus/" + oid,
+    method: "put",
+  });
+
 export const apiCreateBrand = (data) =>
   axios({
     url: "/brand/",

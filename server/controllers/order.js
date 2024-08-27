@@ -12,41 +12,19 @@ function generateShortToken(length) {
 
 const createOrder = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { products, total, address } = req.body;
+  const { products, total, address } = req.body.params ?? req.body;
   if (address) {
     await User.findByIdAndUpdate(_id, { address, cart: [] });
   }
   const code = generateShortToken(5);
-  const data = { code: code, products, total, postedBy: _id };
-  const rs = await Order.create(data);
+  const data = { code: code, products, total, orderBy: _id };
+  const newOrder = await Order.create(data);
 
-  try {
-    for (let product of products) {
-      const { productId, quantity } = product;
-      const foundProduct = await Product.findById(productId);
-
-      if (foundProduct) {
-        foundProduct.quantity -= quantity;
-        await foundProduct.save();
-      } else {
-        return res.status(404).json({
-          success: false,
-          error: `Không tìm thấy sản phẩm với ID ${productId}`,
-        });
-      }
-    }
-    return res.status.json({
-      success: true,
-      rs: "Thành công ",
-      order: rs,
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: "Đã xảy ra lỗi khi cập nhật số lượng sản phẩm.",
-    });
-  }
+  return res.status(200).json({
+    success: newOrder ? true : false,
+    res: newOrder ? "Thành công " : "Xảy ra lỗi ",
+    order: newOrder,
+  });
 });
 
 const createOneOrder = asyncHandler(async (req, res) => {
@@ -97,9 +75,9 @@ const createOneOrder = asyncHandler(async (req, res) => {
 //   });
 // });
 
-const updateStatus = asyncHandler(async (req, res) => {
+const buyStatus = asyncHandler(async (req, res) => {
   const { oid } = req.params;
-  const { status } = req.body;
+  const status = 1;
   if (!status) throw new Error("Thiếu trường");
   const response = await Order.findByIdAndUpdate(
     oid,
@@ -128,6 +106,22 @@ const updateStatus = asyncHandler(async (req, res) => {
   });
 });
 
+const deteStatus = asyncHandler(async (req, res) => {
+  const { oid } = req.params;
+  const status = 2;
+  if (!status) throw new Error("Thiếu trường");
+  const response = await Order.findByIdAndUpdate(
+    oid,
+    { status },
+    { new: true }
+  );
+
+  return res.json({
+    success: response ? true : false,
+    response: response ? response : "ko tạo thêm mới ",
+  });
+});
+
 const getUserOrder = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const response = await Order.find({ orderBy: _id });
@@ -136,6 +130,7 @@ const getUserOrder = asyncHandler(async (req, res) => {
     response: response ? response : "ko co du lieu",
   });
 });
+
 const getsOrder = asyncHandler(async (req, res) => {
   const queries = { ...req.query };
   const excludeFields = ["limit", "sort", "page", "fields"];
@@ -178,7 +173,8 @@ const getsOrder = asyncHandler(async (req, res) => {
 
 module.exports = {
   createOrder,
-  updateStatus,
+  buyStatus,
+  deteStatus,
   getUserOrder,
   getsOrder,
   createOneOrder,
