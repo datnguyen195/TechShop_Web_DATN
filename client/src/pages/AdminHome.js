@@ -3,13 +3,17 @@ import { Outlet, Navigate } from "react-router-dom";
 import { Sidebar } from "../components";
 import { useSelector } from "react-redux";
 import path from "../ultils/path";
+import { useNavigate } from "react-router-dom";
 import TopHeader from "../components/TopHeader";
 const AdminHome = () => {
+  const navigate = useNavigate();
   const { isLoggedIn, current } = useSelector((state) => state.user);
-  console.log("isLoggedIn", current);
-  if (!isLoggedIn) {
-    return <Navigate to={`/${path.LOGIN}`} replace={true} />;
-  }
+
+  useEffect(() => {
+    if (!isLoggedIn && !current.role == 0) {
+      navigate(`/${path.LOGIN}`);
+    }
+  }, []);
 
   return (
     <div className="h-full flex bg-white min-h-screen">

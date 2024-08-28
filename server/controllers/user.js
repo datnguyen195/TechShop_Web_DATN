@@ -111,16 +111,13 @@ const getCurrent = asyncHandler(async (req, res) => {
     .select("-refreshToken -password ")
     .populate({
       path: "cart",
-      populate: {
-        path: "product",
-        select: "title thumb price",
-      },
     });
   return res.status(200).json({
     success: user ? true : false,
     rs: user ? user : "Không tìm thấy người dùng",
   });
 });
+
 const refreshAccessToken = asyncHandler(async (req, res) => {
   // Lấy token từ cookies
   const cookie = req.cookies;
@@ -368,13 +365,14 @@ const updateCart = asyncHandler(async (req, res) => {
   if (!pid || !color) throw new Error("Missing inputs");
   const user = await User.findById(_id).select("cart");
   const alreadyProduct = user?.cart?.find(
-    (el) => el.product.toString() === pid && el.color === color
+    (el) => el.product === pid && el.color === color
   );
   if (alreadyProduct && alreadyProduct.color === color) {
     const response = await User.updateOne(
       { cart: { $elemMatch: alreadyProduct } },
       {
         $set: {
+          "cart.$.product": pid,
           "cart.$.quantity": quantity,
           "cart.$.price": price,
           "cart.$.thumb": thumb,
@@ -390,7 +388,9 @@ const updateCart = asyncHandler(async (req, res) => {
   } else {
     const response = await User.findByIdAndUpdate(
       _id,
-      { $push: { cart: { product: pid, quantity, color, price, title } } },
+      {
+        $push: { cart: { product: pid, quantity, color, price, thumb, title } },
+      },
       { new: true }
     );
     return res.status(200).json({
@@ -405,17 +405,17 @@ const deleteCart = asyncHandler(async (req, res) => {
   const { pid, color } = req.params;
   const user = await User.findById(_id).select("cart");
   const alreadyProduct = user?.cart?.find(
-    (el) => el.product.toString() === pid && el.color === color
+    (el) => el.product === pid && el.color === color
   );
   if (alreadyProduct) {
     return res.status(200).json({
       success: false,
-      mes: "cập nhật giỏ hàng",
+      mes: "Sửa giỏ hàng",
     });
   }
   const response = await User.findByIdAndUpdate(
     _id,
-    { $pull: { cart: { _id: pid, color } } },
+    { $pull: { cart: { product: pid } } },
     { new: true }
   );
 
@@ -486,4 +486,6 @@ module.exports = {
   changePassUser,
   deleteCart,
   updateOneUser,
+  putAddress,
+  deleteAddress,
 };
