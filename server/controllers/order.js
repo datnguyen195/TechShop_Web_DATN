@@ -7,7 +7,7 @@ const makeToken = require("uniqid");
 
 function generateShortToken(length) {
   const uniqueId = makeToken();
-  return uniqueId.slice(0, length).toUpperCase();
+  return uniqueId.slice(-length).toUpperCase();
 }
 
 const createOrder = asyncHandler(async (req, res) => {
@@ -17,7 +17,14 @@ const createOrder = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(_id, { address, cart: [] });
   }
   const code = generateShortToken(5);
-  const data = { code: code, products, total, orderBy: _id };
+
+  const data = {
+    code: code,
+    products,
+    total,
+    orderBy: _id,
+    address,
+  };
   const newOrder = await Order.create(data);
 
   return res.status(200).json({
@@ -77,25 +84,36 @@ const createOneOrder = asyncHandler(async (req, res) => {
 
 const buyStatus = asyncHandler(async (req, res) => {
   const { oid } = req.params;
-  const status = 1;
-  if (!status) throw new Error("Thiếu trường");
+  const status = 0;
   const response = await Order.findByIdAndUpdate(
     oid,
     { status },
     { new: true }
   );
 
-  for (let product of response.products) {
-    const { productId, quantity } = product;
-    const foundProduct = await Product.findById(productId);
+  for (let productOne of response.products) {
+    const { product, productVid, quantity } = productOne;
+    const foundProduct = await Product.findById(product);
+
+    // const variantIndex = foundProduct.varriants.find((item) =>
+    //   item._id.equals(productVid)
+    // );
+    // console.log("variantIndex", variantIndex);
+    // console.log("variant", variant);
+    // variant.quantity -= quantity;
+    // console.log("variant", variant._id);
 
     if (foundProduct) {
-      foundProduct.quantity -= quantity;
-      await foundProduct.save();
+      const updatedProduct = await Product.findByIdAndUpdate(
+        foundProduct._id,
+        { quantity: (foundProduct.quantity -= quantity) }, // Fields to update
+        { new: true }
+      );
+      console.log("updatedProduct", updatedProduct);
     } else {
       return res.status(404).json({
         success: false,
-        error: `Không tìm thấy sản phẩm với ID ${productId}`,
+        error: `Không tìm thấy sản phẩm với ID ${product}`,
       });
     }
   }
@@ -109,7 +127,6 @@ const buyStatus = asyncHandler(async (req, res) => {
 const deteStatus = asyncHandler(async (req, res) => {
   const { oid } = req.params;
   const status = 2;
-  if (!status) throw new Error("Thiếu trường");
   const response = await Order.findByIdAndUpdate(
     oid,
     { status },
@@ -171,6 +188,110 @@ const getsOrder = asyncHandler(async (req, res) => {
   });
 });
 
+const aggregateOrders = async (year, period) => {
+  const matchStage = {
+    $match: {
+      $expr: {
+        $and: [{ $eq: [{ $year: "$createdAt" }, year] }],
+      },
+    },
+  };
+
+  const groupStage = {
+    $group: {
+      _id:
+        period === "quarterly"
+          ? {
+              $concat: [
+                {
+                  $toString: {
+                    $ceil: { $divide: [{ $month: "$createdAt" }, 3] },
+                  },
+                },
+                "-Q",
+              ],
+            }
+          : { $month: "$createdAt" },
+      totalSales: { $sum: { $cond: [{ $eq: ["$status", 1] }, 1, 0] } },
+      canceledOrders: { $sum: { $cond: [{ $eq: ["$status", 2] }, 1, 0] } },
+      totalRevenue: { $sum: { $cond: [{ $eq: ["$status", 1] }, "$total", 0] } },
+    },
+  };
+
+  const projectStage = {
+    $project: {
+      _id: 0,
+      period: {
+        $concat: [{ $toString: "$_id" }, period === "quarterly" ? "" : "-"],
+      },
+      totalSales: 1,
+      canceledOrders: 1,
+      totalRevenue: 1,
+    },
+  };
+
+  return Order.aggregate([matchStage, groupStage, projectStage]);
+};
+
+const getDashboard = asyncHandler(async (req, res) => {
+  const { year, period } = req.query; // Use GET
+  // period could be 'yearly' or 'quarterly'
+
+  try {
+    const data = await aggregateOrders(Number(year), period);
+    res.json({
+      labels:
+        period === "quarterly"
+          ? ["Q1", "Q2", "Q3", "Q4"]
+          : [
+              "Tháng 1",
+              "Tháng 2",
+              "Tháng 3",
+              "Tháng 4",
+              "Tháng 5",
+              "Tháng 6",
+              "Tháng 7",
+              "Tháng 8",
+              "Tháng 9",
+              "Tháng 10",
+              "Tháng 11",
+              "Tháng 12",
+            ],
+      datasets: [
+        {
+          label: `Đã bán ${period !== "quarterly" ? year : ""}`,
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: "rgba(75,192,192,0.4)",
+          borderColor: "rgba(75,192,192,1)",
+          data: data.map((item) => item.totalSales),
+          yAxisID: "y1",
+        },
+        {
+          label: `Huỷ hàng  ${period !== "quarterly" ? year : ""}`,
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: "rgba(192,75,75,0.4)",
+          borderColor: "rgba(192,75,75,1)",
+          data: data.map((item) => item.canceledOrders),
+          yAxisID: "y1",
+        },
+        {
+          label: `Doanh thu ${period !== "quarterly" ? year : ""}`,
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: "rgba(255,206,86,0.4)",
+          borderColor: "rgba(255,206,86,1)",
+          data: data.map((item) => item.totalRevenue),
+          yAxisID: "y2",
+        },
+      ],
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = {
   createOrder,
   buyStatus,
@@ -178,4 +299,5 @@ module.exports = {
   getUserOrder,
   getsOrder,
   createOneOrder,
+  getDashboard,
 };

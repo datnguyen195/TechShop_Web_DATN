@@ -14,10 +14,13 @@ const DetaiOder = ({ edit, render, setEdit }) => {
   const fetchUpdateOder = async () => {
     const response = await apiBuyOrder(edit._id);
     setDetai(response);
+    // window.location.reload();
+    console.log(response);
   };
   const fetchDeteOder = async () => {
     const response = await apiDeteOrder(edit._id);
-    setDetai(response);
+    window.location.reload();
+    console.log(response);
   };
 
   return (
@@ -44,9 +47,9 @@ const DetaiOder = ({ edit, render, setEdit }) => {
       <div className="px-10">
         <div className="flex flex-row mt-4 justify-between">
           <div>
-            <span className=" text-base">Ngày đặt đơn: </span>
+            <span className=" text-base">Thời gian đặt đơn: </span>
             <span className=" text-base">
-              {moment(edit.createdAt).format("DD / MM / YYYY")}
+              {moment(edit.createdAt).format("hh:mm - DD / MM / YYYY")}
             </span>
           </div>
 
@@ -77,8 +80,30 @@ const DetaiOder = ({ edit, render, setEdit }) => {
         <div className="flex flex-row mt-4 justify-between">
           <div></div>
           <div className="flex flex-row gap-4 ">
-            <Button name="Xác nhận đơn" onClick={{ fetchUpdateOder }} />
-            <Button name="Huỷ đơn" onClick={{ fetchDeteOder }} />
+            {edit.status != 1 ? (
+              <button
+                className=" text-green-500 bg-green-200 border p-[10px]  rounded-2xl"
+                onClick={fetchUpdateOder}
+              >
+                Xác nhận đơn
+              </button>
+            ) : (
+              <button className=" text-gray-900 bg-gray-200 border p-[10px]  rounded-2xl">
+                Xác nhận đơn
+              </button>
+            )}
+            {edit.status != 2 ? (
+              <button
+                className="text-red-600  bg-red-200 border p-[10px]  rounded-2xl"
+                onClick={fetchDeteOder}
+              >
+                Huỷ đơn
+              </button>
+            ) : (
+              <button className=" text-gray-900 bg-gray-200 border p-[10px]  rounded-2xl">
+                Huỷ đơn
+              </button>
+            )}
           </div>
         </div>
       </div>

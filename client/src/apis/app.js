@@ -35,13 +35,13 @@ export const apiGetOrder = (params) =>
 
 export const apiBuyOrder = (oid) =>
   axios({
-    url: "/buystatus/" + oid,
+    url: "/order/buystatus/" + oid,
     method: "put",
   });
 
 export const apiDeteOrder = (oid) =>
   axios({
-    url: "/detestatus/" + oid,
+    url: "/order/detestatus/" + oid,
     method: "put",
   });
 
@@ -120,4 +120,11 @@ export const apiAddVarrianst = (data, pid) =>
     url: "/product/varriants/" + pid,
     method: "put",
     data,
+  });
+
+export const apiDashboard = (params) =>
+  axios({
+    url: "/order/dashboard", // Keep the base endpoint
+    method: "get",
+    params: params, // Add the query parameters here
   });

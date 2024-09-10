@@ -110,7 +110,7 @@ const ManageUsers = () => {
                 <th className="px-2 py-2">Tên</th>
                 <th className="px-2 py-2">Số điện thoại</th>
                 <th className="px-2 py-2">Quyền</th>
-                <th className="px-2 py-2">Địa chỉ</th>
+                {/* <th className="px-2 py-2">Địa chỉ</th> */}
 
                 <th className="px-6 py-2">Sửa</th>
               </tr>
@@ -192,7 +192,7 @@ const ManageUsers = () => {
                       </span>
                     )}
                   </td>
-                  <td className="px-2 py-2">
+                  {/* <td className="px-2 py-2">
                     {edit?._id === el._id ? (
                       <InputFrom
                         register={register}
@@ -206,7 +206,7 @@ const ManageUsers = () => {
                     ) : (
                       <span>{el.address}</span>
                     )}
-                  </td>
+                  </td> */}
                   {/* <td className="px-2 py-2">{el.isBlocked ? "Khoá" : "Mở"}</td> */}
                   <td className="px-2 py-2 flex-row gap-2">
                     <td className="px-2 py-2">

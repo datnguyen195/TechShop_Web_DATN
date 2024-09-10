@@ -9,6 +9,7 @@ var OrderSchema = new mongoose.Schema(
     products: [
       {
         product: { type: mongoose.Types.ObjectId, ref: "Product" },
+        productVid: { type: mongoose.Types.ObjectId, ref: "Product" },
         quantity: Number,
         color: String,
         price: Number,
@@ -37,9 +38,16 @@ var OrderSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
-    address: {
-      type: String,
-    },
+    address: [
+      {
+        name: String,
+        street: String,
+        district: String,
+        city: String,
+        ward: String,
+        phone: String,
+      },
+    ],
   },
   {
     timestamps: true,

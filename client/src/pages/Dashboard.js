@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   LineElement,
@@ -9,6 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { apiDashboard } from "../apis";
 
 ChartJS.register(
   LineElement,
@@ -20,48 +21,66 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const data = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-      {
-        label: "Sales",
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: "rgba(75,192,192,0.4)",
-        borderColor: "rgba(75,192,192,1)",
-        borderCapStyle: "round",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: "rgba(75,192,192,1)",
-        pointBackgroundColor: "#fff",
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: "rgba(75,192,192,1)",
-        pointHoverBorderColor: "rgba(220,220,220,1)",
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: [65, 59, 80, 81, 56, 55, 40],
-      },
-    ],
-  };
+  const [period, setPeriod] = useState("yearly");
+  const [selectedYear, setSelectedYear] = useState(2024);
+  const [dataDashboard, setDataDashboard] = useState({
+    labels: [],
+    datasets: [],
+  });
 
   const options = {
     scales: {
-      yAxes: [
-        {
-          ticks: {
-            beginAtZero: true,
-          },
+      y1: {
+        type: "linear",
+        position: "left",
+        ticks: {
+          beginAtZero: true,
         },
-      ],
+        max: 100,
+      },
+      y2: {
+        type: "linear",
+        position: "right",
+        ticks: {
+          beginAtZero: true,
+        },
+      },
     },
   };
 
+  const fetchDashboard = async () => {
+    const params = { year: selectedYear, period: period };
+    try {
+      const response = await apiDashboard(params);
+      if (response) {
+        setDataDashboard(response);
+        console.log("response", response);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboard();
+  }, [selectedYear, period]);
+
   return (
     <div className="px-[59px] mt-12 relative">
-      <Line data={data} options={options} />
+      <div className="flex justify-between w-[210px]">
+        <button onClick={() => setSelectedYear((prev) => prev - 1)}>
+          {"<<"}
+        </button>
+        <div>{selectedYear}</div>
+        <button onClick={() => setSelectedYear((prev) => prev + 1)}>
+          {">>"}
+        </button>
+      </div>
+      <div className="flex justify-between w-[210px]">
+        <button onClick={() => setPeriod("yearly")}>Năm</button>
+        <button onClick={() => setPeriod("quarterly")}>Quý</button>
+      </div>
+      <Line data={dataDashboard} options={options} />
     </div>
   );
 };

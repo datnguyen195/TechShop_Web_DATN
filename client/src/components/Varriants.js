@@ -146,6 +146,17 @@ const Varriants = ({ varriant, render, setVarriant }) => {
             }}
             placeholder="màu sản phẩm "
           />
+          <InputFrom
+            label="Số lương"
+            register={register}
+            errors={errors}
+            id={"quantity"}
+            fullwidth
+            validate={{
+              required: "Cần nhập thông tin",
+            }}
+            placeholder="Số lượng"
+          />
         </div>
         <div className="flex flex-col gap-2 mt-8">
           <label htmlFor="thumb">Ảnh bìa</label>
