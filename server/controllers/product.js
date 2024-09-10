@@ -321,7 +321,7 @@ const getDetaiProduct = asyncHandler(async (req, res) => {
 
 const addVarriant = asyncHandler(async (req, res) => {
   const { pid } = req.params;
-  const { title, price, color } = req.body;
+  const { title, price, color, quantity } = req.body;
   const thumb = req?.files?.thumb[0]?.path;
   const images = req?.files?.images?.map((el) => el.path);
   if (!(title && price && color)) throw new Error("Thiếu trường");
@@ -334,6 +334,7 @@ const addVarriant = asyncHandler(async (req, res) => {
           price,
           title,
           thumb,
+          quantity,
           images,
           sku: makeSku().toUpperCase(),
         },

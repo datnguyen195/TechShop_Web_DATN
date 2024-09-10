@@ -7,6 +7,7 @@ router.post("/one", verifyAccessToken, ctrls.createOneOrder);
 router.put("/buystatus/:oid", [verifyAccessToken, isAdmin], ctrls.buyStatus);
 router.put("/detestatus/:oid", [verifyAccessToken, isAdmin], ctrls.deteStatus);
 router.get("/", verifyAccessToken, ctrls.getUserOrder);
+router.get("/dashboard", [verifyAccessToken, isAdmin], ctrls.getDashboard);
 router.get("/admin", verifyAccessToken, isAdmin, ctrls.getsOrder);
 module.exports = router;
 
