@@ -45,6 +45,19 @@ const DetaiOder = ({ edit, render, setEdit }) => {
         </div>
       </div>
       <div className="px-10">
+        <span className=" text-base">Người đặt: </span>
+        <span className=" text-base">Trần Linh Chi</span>
+      </div>
+      <div className="px-10">
+        <span className=" text-base">Số điện Thoại: </span>
+        <span className=" text-base">0327852479 </span>
+      </div>
+
+      <div className="px-10">
+        <span className=" text-base">Địa Chỉ: </span>
+        <span className=" text-base">Xóm 5, Ứng Hoà, Thạch Thất, Hà Nội </span>
+      </div>
+      <div className="px-10">
         <div className="flex flex-row mt-4 justify-between">
           <div>
             <span className=" text-base">Thời gian đặt đơn: </span>
@@ -52,14 +65,6 @@ const DetaiOder = ({ edit, render, setEdit }) => {
               {moment(edit.createdAt).format("hh:mm - DD / MM / YYYY")}
             </span>
           </div>
-
-          <div>
-            <span className=" text-base">Người đặt: </span>
-            <span className=" text-base">{}</span>
-          </div>
-        </div>
-        <div className="flex flex-row mt-4 justify-between">
-          <div></div>
           <div>
             <span className="text-base">Trạng thái đơn: </span>
             <span className="text-base">

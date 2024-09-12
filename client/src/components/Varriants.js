@@ -136,7 +136,7 @@ const Varriants = ({ varriant, render, setVarriant }) => {
           />
 
           <InputFrom
-            label="Màu"
+            label="Biến thể"
             register={register}
             errors={errors}
             id={"color"}
@@ -144,7 +144,7 @@ const Varriants = ({ varriant, render, setVarriant }) => {
             validate={{
               required: "Cần nhập thông tin",
             }}
-            placeholder="màu sản phẩm "
+            placeholder="Biến thể sản phẩm "
           />
           <InputFrom
             label="Số lương"

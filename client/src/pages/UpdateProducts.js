@@ -210,7 +210,7 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
             </div>
             <div className="flex-auto">
               <InputFrom
-                label="Màu"
+                label="Biến thể"
                 register={register}
                 errors={errors}
                 id={"color"}
@@ -218,7 +218,7 @@ const UpdateProducts = ({ edit, render, setEdit, onClose }) => {
                 validate={{
                   required: "Cần nhập thông tin",
                 }}
-                placeholder="Giá sản phẩm mới"
+                placeholder="Biến thể sản phẩm mới"
               />
             </div>
           </div>

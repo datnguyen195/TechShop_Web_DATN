@@ -21,12 +21,15 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const [period, setPeriod] = useState("yearly");
+  const [month, setMonth] = useState();
   const [selectedYear, setSelectedYear] = useState(2024);
   const [dataDashboard, setDataDashboard] = useState({
     labels: [],
     datasets: [],
   });
+
+  const years = [2024, 2025, 2026];
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   const options = {
     scales: {
@@ -49,7 +52,7 @@ const Dashboard = () => {
   };
 
   const fetchDashboard = async () => {
-    const params = { year: selectedYear, period: period };
+    const params = { year: selectedYear, month: month };
     try {
       const response = await apiDashboard(params);
       if (response) {
@@ -63,23 +66,39 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchDashboard();
-  }, [selectedYear, period]);
+  }, [selectedYear, month]);
 
   return (
     <div className="px-[59px] mt-12 relative">
-      <div className="flex justify-between w-[210px]">
-        <button onClick={() => setSelectedYear((prev) => prev - 1)}>
-          {"<<"}
-        </button>
-        <div>{selectedYear}</div>
-        <button onClick={() => setSelectedYear((prev) => prev + 1)}>
-          {">>"}
-        </button>
+      {/* Chọn năm */}
+      <div className="flex justify-between w-[410px] mb-4">
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(Number(e.target.value))}
+        >
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {"Năm " + year}
+            </option>
+          ))}
+        </select>
+        <select
+          value={month}
+          onChange={(e) => setMonth(Number(e.target.value))}
+        >
+          {months.map((month) => (
+            <option key={month} value={month}>
+              {"Thàng  " + month}
+            </option>
+          ))}
+        </select>
+        {/* <button className="flex justify-between items-center bg-slate-500 text-white text-sm p-1.5 rounded-md shadow-md hover:bg-slate-600 transition duration-300">
+          Sản phẩm bán chạy
+        </button> */}
       </div>
-      <div className="flex justify-between w-[210px]">
-        <button onClick={() => setPeriod("yearly")}>Năm</button>
-        <button onClick={() => setPeriod("quarterly")}>Quý</button>
-      </div>
+
+      {/* Chọn tháng */}
+
       <Line data={dataDashboard} options={options} />
     </div>
   );

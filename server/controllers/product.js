@@ -145,7 +145,7 @@ const getProductsw = asyncHandler(async (req, res) => {
     return res.status(200).json({
       success: response ? true : false,
       counts,
-      products: response ? response : "Cannot get products",
+      products: response ? response : "Không thấy sản phẩm",
     });
   });
 });

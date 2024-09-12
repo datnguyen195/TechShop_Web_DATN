@@ -18,16 +18,11 @@ var OrderSchema = new mongoose.Schema(
         title: String,
       },
     ],
-    // status: {
-    //   type: String,
-    //   default: "Chờ xác nhận",
-    //   enum: ["Chờ xác nhận", "Thành công", "Đã huỷ"],
-    // },
 
     status: {
       type: Number,
       default: "0",
-      enum: ["0", "1", "2"],
+      enum: ["0", "1", "2", "3"],
     },
     total: Number,
     coupon: {
@@ -37,6 +32,12 @@ var OrderSchema = new mongoose.Schema(
     orderBy: {
       type: mongoose.Types.ObjectId,
       ref: "User",
+    },
+    orderByName: {
+      type: String,
+    },
+    orderByPhone: {
+      type: String,
     },
     address: [
       {

@@ -31,6 +31,7 @@ export const apiGetOrder = (params) =>
   axios({
     url: "/order/admin",
     method: "get",
+    params,
   });
 
 export const apiBuyOrder = (oid) =>
