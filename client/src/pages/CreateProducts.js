@@ -171,6 +171,21 @@ const CreateProducts = () => {
             </div>
             <div className="flex-auto">
               <InputFrom
+                label="Số lượng"
+                register={register}
+                errors={errors}
+                id={"quantity"}
+                fullwidth
+                validate={{
+                  required: "Cần nhập thông tin",
+                }}
+                style="flex-auto"
+                placeholder="Số lượng sản phẩm mới"
+                type="number"
+              />
+            </div>
+            <div className="flex-auto">
+              <InputFrom
                 label="Biến thể"
                 register={register}
                 errors={errors}

@@ -87,7 +87,7 @@ const createOneOrder = asyncHandler(async (req, res) => {
 
 const buyStatus = asyncHandler(async (req, res) => {
   const { oid } = req.params;
-  const status = 0;
+  const status = 1;
   const response = await Order.findByIdAndUpdate(
     oid,
     { status },
@@ -106,35 +106,16 @@ const buyStatus = asyncHandler(async (req, res) => {
     variant.sold += quantity;
 
     // Cập nhật lại sản phẩm với biến thể đã thay đổi
-    const updatedProduct = await Product.findByIdAndUpdate(
+    await Product.findByIdAndUpdate(
       foundProduct._id,
-      { varriants: foundProduct.varriants }, // Cập nhật lại danh sách biến thể
+      {
+        varriants: foundProduct.varriants,
+        quantity: (foundProduct.quantity -= quantity),
+        sold: (foundProduct.sold += quantity),
+      },
+      // Cập nhật lại danh sách biến thể
       { new: true }
     );
-
-    console.log("Sản phẩm đã cập nhật:", updatedProduct);
-
-    // const variantIndex = foundProduct.varriants.find((item) =>
-    //   item._id.equals(productVid)
-    // );
-    // console.log("variantIndex", variantIndex);
-    // console.log("variant", variant);
-    // variant.quantity -= quantity;
-    // console.log("variant", variant._id);
-
-    // if (foundProduct) {
-    //   const updatedProduct = await Product.findByIdAndUpdate(
-    //     foundProduct._id,
-    //     { quantity: (foundProduct.quantity -= quantity) }, // Fields to update
-    //     { new: true }
-    //   );
-    //   console.log("updatedProduct", updatedProduct);
-    // } else {
-    //   return res.status(404).json({
-    //     success: false,
-    //     error: `Không tìm thấy sản phẩm với ID ${product}`,
-    //   });
-    // }
   }
 
   return res.json({
@@ -145,7 +126,11 @@ const buyStatus = asyncHandler(async (req, res) => {
 
 const deteStatus = asyncHandler(async (req, res) => {
   const { oid } = req.params;
-  const status = 2;
+  const { status } = req.body;
+  // status = Number(status);
+
+  // Check if the status is a valid number
+  console.log("status", status);
   const response = await Order.findByIdAndUpdate(
     oid,
     { status },

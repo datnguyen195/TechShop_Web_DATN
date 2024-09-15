@@ -321,7 +321,7 @@ const getDetaiProduct = asyncHandler(async (req, res) => {
 
 const addVarriant = asyncHandler(async (req, res) => {
   const { pid } = req.params;
-  const { title, price, color, quantity } = req.body;
+  const { title, price, color } = req.body;
   const thumb = req?.files?.thumb[0]?.path;
   const images = req?.files?.images?.map((el) => el.path);
   if (!(title && price && color)) throw new Error("Thiếu trường");
@@ -334,11 +334,27 @@ const addVarriant = asyncHandler(async (req, res) => {
           price,
           title,
           thumb,
-          quantity,
           images,
           sku: makeSku().toUpperCase(),
         },
       },
+    },
+    { new: true }
+  );
+  return res.status(200).json({
+    status: response ? true : false,
+    response: response ? response : "Ko thể thêm biến thể",
+  });
+});
+
+const deleVarriant = asyncHandler(async (req, res) => {
+  const { pid } = req.params;
+  const { _id } = req.body;
+
+  const response = await Product.findByIdAndUpdate(
+    pid,
+    {
+      $pull: { varriants: { _id } },
     },
     { new: true }
   );
@@ -361,4 +377,5 @@ module.exports = {
   getDetaiProduct,
   deleteRating,
   addVarriant,
+  deleVarriant,
 };

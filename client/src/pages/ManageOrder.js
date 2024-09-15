@@ -39,7 +39,7 @@ const ManageOrder = () => {
       setCounts(response.counts);
     }
   };
-
+  console.log("response", orders);
   const render = () => {
     setUpdate(!update);
   };
@@ -62,6 +62,7 @@ const ManageOrder = () => {
     const searchParams = Object.fromEntries([...params]);
     fetchOrder(searchParams);
   }, [params]);
+
   return (
     <div className="w-full flex-col gap-4 relative">
       {edit && (
@@ -69,6 +70,7 @@ const ManageOrder = () => {
           <DetaiOder edit={edit} render={render} setEdit={setEdit} />
         </div>
       )}
+
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
         <span>Quản lý đơn hàng</span>
       </h1>

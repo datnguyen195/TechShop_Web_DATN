@@ -14,11 +14,12 @@ const DetaiOder = ({ edit, render, setEdit }) => {
   const fetchUpdateOder = async () => {
     const response = await apiBuyOrder(edit._id);
     setDetai(response);
-    // window.location.reload();
+    window.location.reload();
     console.log(response);
   };
-  const fetchDeteOder = async () => {
-    const response = await apiDeteOrder(edit._id);
+  const fetchDeteOder = async (data) => {
+    // const data = { status: 2 };
+    const response = await apiDeteOrder(data, edit._id);
     window.location.reload();
     console.log(response);
   };
@@ -100,13 +101,25 @@ const DetaiOder = ({ edit, render, setEdit }) => {
             {edit.status != 2 ? (
               <button
                 className="text-red-600  bg-red-200 border p-[10px]  rounded-2xl"
-                onClick={fetchDeteOder}
+                onClick={() => fetchDeteOder({ status: 0 })}
               >
                 Huỷ đơn
               </button>
             ) : (
               <button className=" text-gray-900 bg-gray-200 border p-[10px]  rounded-2xl">
                 Huỷ đơn
+              </button>
+            )}
+            {edit.status == 2 ? (
+              <button
+                className="text-red-600  bg-red-200 border p-[10px]  rounded-2xl"
+                onClick={() => fetchDeteOder({ status: 3 })}
+              >
+                Đã giao
+              </button>
+            ) : (
+              <button className=" text-gray-900 bg-gray-200 border p-[10px]  rounded-2xl">
+                Đã giao
               </button>
             )}
           </div>

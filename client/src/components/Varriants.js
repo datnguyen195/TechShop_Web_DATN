@@ -57,9 +57,9 @@ const Varriants = ({ varriant, render, setVarriant }) => {
       if (data.images) {
         for (let image of data.images) formData.append("images", image);
       }
-      const response = await apiAddVarrianst(formData, varriant._id);
-      console.log("response", response);
-      if (response.status) {
+      const response = apiAddVarrianst(formData, varriant._id);
+
+      if (response) {
         Swal.fire("Thành công.", response.mes, "success");
         reset();
         setPreview({
@@ -78,7 +78,6 @@ const Varriants = ({ varriant, render, setVarriant }) => {
       type: varriant?.type,
     });
   }, [varriant]);
-  console.log(varriant);
   useEffect(() => {
     if (watch("thumb") instanceof FileList && watch("thumb").length > 0) {
       handlePreview(watch("thumb")[0]);
