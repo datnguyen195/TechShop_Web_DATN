@@ -80,7 +80,7 @@ var userSchema = new mongoose.Schema(
     wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
     isBlocked: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     refreshToken: {
       type: String,

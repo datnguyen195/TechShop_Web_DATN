@@ -75,6 +75,22 @@ export const adminSidebar = [
   //     },
   //   ],
   // },
+  // {
+  //   id: 6,
+  //   type: "PARENT",
+  //   text: "Quản đơn hàng",
+  //   icon: <IoIosToday />,
+  //   submenu: [
+  //     {
+  //       text: "Quản Lý đơn",
+  //       path: `/${path.MANAGE_ORDER}`,
+  //     },
+  //     {
+  //       text: "Chờ xác nhận",
+  //       path: `/${path.MANAGE_ORDER}`,
+  //     },
+  //   ],
+  // },
   {
     id: 6,
     type: "SINGLE",

@@ -77,31 +77,36 @@ const login = asyncHandler(async (req, res) => {
     });
   // plain object
   const response = await User.findOne({ email });
-  if (response && (await response.isCorrectPassword(password))) {
-    // Tách password và role ra khỏi response
-    const { password, role, refreshToken, ...userData } = response.toObject();
-    // Tạo access token
-    const accessToken = generateAccessToken(response._id, role);
-    // Tạo refresh token
-    const newRefreshToken = generateRefreshToken(response._id);
-    // // Lưu refresh token vào database
-    await User.findByIdAndUpdate(
-      response._id,
-      { refreshToken: newRefreshToken },
-      { new: true }
-    );
-    // // Lưu refresh token vào cookie
-    res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-    return res.status(200).json({
-      success: true,
-      accessToken,
-      userData,
-    });
+
+  if (response.isBlocked) {
+    if (response && (await response.isCorrectPassword(password))) {
+      // Tách password và role ra khỏi response
+      const { password, role, refreshToken, ...userData } = response.toObject();
+      // Tạo access token
+      const accessToken = generateAccessToken(response._id, role);
+      // Tạo refresh token
+      const newRefreshToken = generateRefreshToken(response._id);
+      // // Lưu refresh token vào database
+      await User.findByIdAndUpdate(
+        response._id,
+        { refreshToken: newRefreshToken },
+        { new: true }
+      );
+      // // Lưu refresh token vào cookie
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+      return res.status(200).json({
+        success: true,
+        accessToken,
+        userData,
+      });
+    } else {
+      throw new Error("Thông tin không hợp lệ!");
+    }
   } else {
-    throw new Error("Thông tin không hợp lệ!");
+    throw new Error("Tài khoản bị khoá!");
   }
 });
 

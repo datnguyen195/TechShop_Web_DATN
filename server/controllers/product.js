@@ -145,7 +145,7 @@ const getProductsw = asyncHandler(async (req, res) => {
     return res.status(200).json({
       success: response ? true : false,
       counts,
-      products: response ? response : "Cannot get products",
+      products: response ? response : "Không thấy sản phẩm",
     });
   });
 });
@@ -343,6 +343,32 @@ const addVarriant = asyncHandler(async (req, res) => {
   );
   return res.status(200).json({
     status: response ? true : false,
+    mes: response ? response : "Ko thể thêm biến thể",
+  });
+});
+
+const deleVarriant = asyncHandler(async (req, res) => {
+  const { pid } = req.params;
+  const { _id } = req.body;
+
+  const product = await Product.findById(pid);
+  if (!product) throw new Error("Sản phẩm không tồn tại");
+  const variantToDelete = product.varriants.find(
+    (variant) => variant._id.toString() === _id
+  );
+  if (!variantToDelete) throw new Error("Biến thể không tồn tại");
+
+  const newTotalQuantity = product.quantity - variantToDelete.quantity;
+  const response = await Product.findByIdAndUpdate(
+    pid,
+    {
+      $pull: { varriants: { _id } },
+      $set: { quantity: newTotalQuantity },
+    },
+    { new: true }
+  );
+  return res.status(200).json({
+    status: response ? true : false,
     response: response ? response : "Ko thể thêm biến thể",
   });
 });
@@ -360,4 +386,5 @@ module.exports = {
   getDetaiProduct,
   deleteRating,
   addVarriant,
+  deleVarriant,
 };

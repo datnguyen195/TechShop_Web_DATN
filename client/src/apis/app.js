@@ -31,6 +31,7 @@ export const apiGetOrder = (params) =>
   axios({
     url: "/order/admin",
     method: "get",
+    params,
   });
 
 export const apiBuyOrder = (oid) =>
@@ -39,10 +40,11 @@ export const apiBuyOrder = (oid) =>
     method: "put",
   });
 
-export const apiDeteOrder = (oid) =>
+export const apiDeteOrder = (data, oid) =>
   axios({
     url: "/order/detestatus/" + oid,
     method: "put",
+    data,
   });
 
 export const apiCreateBrand = (data) =>
@@ -114,13 +116,19 @@ export const apiDeleteRating = (rid, pid) =>
     method: "delete",
     data: { pid },
   });
-
 export const apiAddVarrianst = (data, pid) =>
   axios({
     url: "/product/varriants/" + pid,
     method: "put",
     data,
   });
+export const apiDeleteVarrianst = (_id, pid) => {
+  axios({
+    url: "/product/updateVar/" + pid,
+    method: "put",
+    data: { _id },
+  });
+};
 
 export const apiDashboard = (params) =>
   axios({
