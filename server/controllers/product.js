@@ -321,7 +321,7 @@ const getDetaiProduct = asyncHandler(async (req, res) => {
 
 const addVarriant = asyncHandler(async (req, res) => {
   const { pid } = req.params;
-  const { title, price, color } = req.body;
+  const { title, price, color, quantity } = req.body;
   const thumb = req?.files?.thumb[0]?.path;
   const images = req?.files?.images?.map((el) => el.path);
   if (!(title && price && color)) throw new Error("Thiếu trường");
@@ -334,6 +334,7 @@ const addVarriant = asyncHandler(async (req, res) => {
           price,
           title,
           thumb,
+          quantity,
           images,
           sku: makeSku().toUpperCase(),
         },
@@ -343,7 +344,7 @@ const addVarriant = asyncHandler(async (req, res) => {
   );
   return res.status(200).json({
     status: response ? true : false,
-    response: response ? response : "Ko thể thêm biến thể",
+    mes: response ? response : "Ko thể thêm biến thể",
   });
 });
 
@@ -351,10 +352,19 @@ const deleVarriant = asyncHandler(async (req, res) => {
   const { pid } = req.params;
   const { _id } = req.body;
 
+  const product = await Product.findById(pid);
+  if (!product) throw new Error("Sản phẩm không tồn tại");
+  const variantToDelete = product.varriants.find(
+    (variant) => variant._id.toString() === _id
+  );
+  if (!variantToDelete) throw new Error("Biến thể không tồn tại");
+
+  const newTotalQuantity = product.quantity - variantToDelete.quantity;
   const response = await Product.findByIdAndUpdate(
     pid,
     {
       $pull: { varriants: { _id } },
+      $set: { quantity: newTotalQuantity },
     },
     { new: true }
   );

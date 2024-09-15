@@ -31,9 +31,8 @@ const DetaiProduct = () => {
     setDetai(response);
   };
 
-  const handleDelete = async (_id) => {
+  const handleDelete = (_id) => {
     const response = apiDeleteVarrianst(_id, pid);
-    setDetai(response);
   };
 
   useEffect(() => {
@@ -64,18 +63,18 @@ const DetaiProduct = () => {
           </div>
         </div>
         <div className="border p-6 border-red-300 lg:w-2/3 rounded-md shadow-md">
-          <h2 className="text-2xl font-semibold mb-2">{varriant?.title}</h2>
+          <h2 className="text-2xl font-semibold mb-2">{detai?.title}</h2>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl text-red-600 font-semibold">
               {`${formatMoney(formatPrice(detai?.price))} VND`}
             </h2>
-            <span className="text-sm">{`In Stock: ${detai?.quantity}`}</span>
+            <span className="text-sm">{`Số lượng: ${detai?.quantity}`}</span>
           </div>
           <div className="flex items-center mb-4 gap-2">
             {renderStarFromNumber(detai?.totalRatings)?.map((el) => (
               <span key={el}>{el}</span>
             ))}
-            <span className="text-sm text-red-500">{`(Sold: ${detai?.sold})`}</span>
+            <span className="text-sm text-red-500">{`(Đã bán: ${detai?.sold})`}</span>
           </div>
           <div
             className="text-sm text-gray-600 mb-4"
@@ -84,7 +83,7 @@ const DetaiProduct = () => {
             }}
           ></div>
           <div className="my-4">
-            <span className="font-semibold">Variants:</span>
+            <span className="font-semibold">Loại:</span>
             <div className="w-21 flex flex-wrap gap-2 mt-2">
               {detai?.varriants?.map((el) => (
                 <div
