@@ -176,7 +176,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 const ratings = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { star, comment, pid, avatar, name } = req.body;
+  const { star, comment, pid, avatar, name } = req.body.params ?? req.body;
   if (!star || !pid) throw new Error("Thiếu trường");
   const ratingProduct = await Product.findById(pid);
   const alreadyRating = ratingProduct?.ratings?.find(
@@ -210,7 +210,6 @@ const ratings = asyncHandler(async (req, res) => {
       },
       { new: true }
     );
-    console.log(response);
   }
 
   const updateProduct = await Product.findById(pid);
