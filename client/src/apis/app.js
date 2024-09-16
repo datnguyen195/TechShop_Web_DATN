@@ -122,13 +122,18 @@ export const apiAddVarrianst = (data, pid) =>
     method: "put",
     data,
   });
-export const apiDeleteVarrianst = (_id, pid) => {
+export const apiUpdateVarrianst = (data, pid) =>
   axios({
     url: "/product/updateVar/" + pid,
     method: "put",
+    data,
+  });
+export const apiDeleteVarrianst = (_id, pid) =>
+  axios({
+    url: "/product/deleteVar/" + pid,
+    method: "put",
     data: { _id },
   });
-};
 
 export const apiDashboard = (params) =>
   axios({

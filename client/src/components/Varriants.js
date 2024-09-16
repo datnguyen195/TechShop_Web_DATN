@@ -10,6 +10,7 @@ import path from "../ultils/path";
 
 const Varriants = ({ varriant, render, setVarriant }) => {
   const navigate = useNavigate();
+  console.log(varriant);
   const {
     handleSubmit,
     register,
@@ -94,7 +95,7 @@ const Varriants = ({ varriant, render, setVarriant }) => {
       <div className="h-[69px] w-full"></div>
       <div className="p-4 border-b w-[80%] bg-gray-100 flex justify-between items-center fixed top-0">
         <h1 className="text-3xl font-bold tracking-tight">
-          Varriants products
+          Thêm biến thể sản phẩm
         </h1>
         <button
           className=" text-red-600 hover: underline cursor-pointer"

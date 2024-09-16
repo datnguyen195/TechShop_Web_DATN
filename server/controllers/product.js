@@ -348,6 +348,35 @@ const addVarriant = asyncHandler(async (req, res) => {
   });
 });
 
+const updateVarriant = asyncHandler(async (req, res) => {
+  const { pid, vid } = req.params; // pid: product ID, vid: variant ID
+  const { title, price, color, quantity } = req.body;
+
+  // Find the product by id
+  const product = await Product.findById(pid);
+  if (!product) throw new Error("Sản phẩm không tồn tại");
+
+  // Find the specific variant by variant ID
+  const variant = product.varriants.find(
+    (variant) => variant._id.toString() === vid
+  );
+  if (!variant) throw new Error("Biến thể không tồn tại");
+
+  // Update the variant fields
+  if (title) variant.title = title;
+  if (price) variant.price = price;
+  if (color) variant.color = color;
+  if (quantity) variant.quantity = quantity;
+
+  // Save updated product
+  const response = await product.save();
+
+  return res.status(200).json({
+    status: response ? true : false,
+    mes: response ? response : "Ko thể cập nhật biến thể",
+  });
+});
+
 const deleVarriant = asyncHandler(async (req, res) => {
   const { pid } = req.params;
   const { _id } = req.body;
@@ -388,4 +417,5 @@ module.exports = {
   deleteRating,
   addVarriant,
   deleVarriant,
+  updateVarriant,
 };

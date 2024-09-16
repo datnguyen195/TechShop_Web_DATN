@@ -11,6 +11,7 @@ const DetaiOder = ({ edit, render, setEdit }) => {
     setEdit(null);
   };
 
+  console.log("edit", edit);
   const fetchUpdateOder = async () => {
     const response = await apiBuyOrder(edit._id);
     setDetai(response);
@@ -47,16 +48,24 @@ const DetaiOder = ({ edit, render, setEdit }) => {
       </div>
       <div className="px-10">
         <span className=" text-base">Người đặt: </span>
-        <span className=" text-base">Trần Linh Chi</span>
+        <span className=" text-base">{edit.address[0]?.name}</span>
       </div>
       <div className="px-10">
         <span className=" text-base">Số điện Thoại: </span>
-        <span className=" text-base">0327852479 </span>
+        <span className=" text-base">{edit.address[0]?.phone} </span>
       </div>
 
       <div className="px-10">
         <span className=" text-base">Địa Chỉ: </span>
-        <span className=" text-base">Xóm 5, Ứng Hoà, Thạch Thất, Hà Nội </span>
+        <span className=" text-base">
+          {edit.address[0]?.ward +
+            ", " +
+            edit.address[0]?.street +
+            ", " +
+            edit.address[0]?.district +
+            ", " +
+            edit.address[0]?.city}
+        </span>
       </div>
       <div className="px-10">
         <div className="flex flex-row mt-4 justify-between">

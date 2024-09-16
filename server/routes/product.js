@@ -34,7 +34,8 @@ router.put(
   ]),
   ctrls.addVarriant
 );
-router.put("/updateVar/:pid", [verifyAccessToken, isAdmin], ctrls.deleVarriant);
+router.put("/deleteVar/:pid", [verifyAccessToken, isAdmin], ctrls.deleVarriant);
+router.put("/updateVar/:pid", verifyAccessToken, isAdmin, ctrls.updateVarriant);
 router.put(
   "/:pid",
   verifyAccessToken,
