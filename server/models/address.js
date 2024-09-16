@@ -9,7 +9,7 @@ var addressSchema = new mongoose.Schema({
       index: true,
     },
   ],
-  email: {
+  name: {
     type: String,
     required: true,
     unique: true,
@@ -18,10 +18,6 @@ var addressSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
   },
 });
 module.exports = mongoose.model("Address", addressSchema);
