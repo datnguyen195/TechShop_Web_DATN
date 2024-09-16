@@ -10,7 +10,7 @@ const socket = require("./middlewares/socketio");
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://techshop-web-datn.onrender.com",
     methods: ["POST", "GET", "PUT", "DELETE"],
   })
 );
