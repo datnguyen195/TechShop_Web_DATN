@@ -139,7 +139,7 @@ const CreateProducts = () => {
   return (
     <div className="w-full">
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
-        <span>Quản lý sản phẩm</span>
+        <span>Thêm sản phẩm</span>
       </h1>
       <div className="p-4 ">
         <form onSubmit={handleSubmit(handleCreateProduct)}>
@@ -171,7 +171,7 @@ const CreateProducts = () => {
             </div>
             <div className="flex-auto">
               <InputFrom
-                label="Số lương"
+                label="Số lượng"
                 register={register}
                 errors={errors}
                 id={"quantity"}
@@ -180,13 +180,13 @@ const CreateProducts = () => {
                   required: "Cần nhập thông tin",
                 }}
                 style="flex-auto"
-                placeholder="Giá sản phẩm mới"
+                placeholder="Số lượng sản phẩm mới"
                 type="number"
               />
             </div>
             <div className="flex-auto">
               <InputFrom
-                label="Màu"
+                label="Biến thể"
                 register={register}
                 errors={errors}
                 id={"color"}
@@ -194,7 +194,7 @@ const CreateProducts = () => {
                 validate={{
                   required: "Cần nhập thông tin",
                 }}
-                placeholder="Giá sản phẩm mới"
+                placeholder="Biến thể sản phẩm mới"
               />
             </div>
           </div>
@@ -211,20 +211,6 @@ const CreateProducts = () => {
                   required: "Không được để trống",
                 }}
                 options={categories}
-              />
-            </div>
-            <div className="flex-auto">
-              <Select
-                label="Hãng"
-                register={register}
-                fullwidth
-                style={"p-2 border flex-auto  border-gray-950 "}
-                errors={errors}
-                id={"brand"}
-                validate={{
-                  required: "Không được để trống",
-                }}
-                options={brand}
               />
             </div>
           </div>

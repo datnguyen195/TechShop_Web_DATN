@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { apiDeleteUser, apiGetUser, apiUpdateUser } from "../apis/user";
-import moment from "moment";
 import { roles } from "../ultils/contants";
 import icons from "../ultils/icons";
 import InputField from "../components/InputField";
@@ -11,7 +10,14 @@ import { useSearchParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button, Select } from "../components";
 import Swal from "sweetalert2";
-const { MdDelete, MdEditSquare, MdOutlineClear, MdSystemUpdateAlt } = icons;
+import DetaiUser from "./DetaiUser";
+const {
+  MdDelete,
+  MdEditSquare,
+  MdOutlineClear,
+  MdSystemUpdateAlt,
+  MdRemoveRedEye,
+} = icons;
 
 const ManageUsers = () => {
   const {
@@ -26,6 +32,7 @@ const ManageUsers = () => {
     mobile: "",
   });
   const [users, setUsers] = useState(null);
+  const [show, setShow] = useState(null);
   const [search, setSearch] = useState({ searchKey: "" });
   const [edit, setEdit] = useState(null);
   const [update, setUpdate] = useState(false);
@@ -45,8 +52,6 @@ const ManageUsers = () => {
     if (response.success) {
       setEdit(null);
       render();
-    } else {
-      console.log(3);
     }
   };
   const handleDeleteUser = (uid) => {
@@ -84,40 +89,51 @@ const ManageUsers = () => {
   }, [edit]);
 
   return (
-    <div className="w-full">
-      <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
-        <span>Quản lý người dùng</span>
+    <div className="w-full flex flex-col gap-4 relative">
+      {/* Modal nếu có */}
+      {show && (
+        <div className="absolute inset-0 min-h-screen bg-gray-100 z-50">
+          <DetaiUser show={show} render={render} setShow={setShow} />
+        </div>
+      )}
+
+      {/* Tiêu đề */}
+      <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b bg-white">
+        <span>Quản lý khách hàng</span>
       </h1>
+
+      {/* Nội dung chính */}
       <div className="w-full py-4 px-4">
-        <div className="flex justify-end ">
+        {/* Ô tìm kiếm */}
+        <div className="flex justify-end mb-4">
           <InputField
-            namekey={"searchKey"}
+            namekey="searchKey"
             value={search.searchKey}
             setValue={setSearch}
             fw="w-[500px]"
-            placeholder={"Tìm người dùng..."}
+            placeholder="Tìm người dùng..."
             title
           />
         </div>
 
+        {/* Biểu mẫu và bảng */}
         <form onSubmit={handleSubmit(handleUpdate)}>
           {edit && <Button type="submit" name="Cập nhật" />}
-          <table className="table-auto mb-6 text-left w-full ">
-            <thead className="font-bold bg-gray-500 text-[13px] text-white">
+
+          <table className="table-auto mb-6 text-left w-full border-collapse">
+            <thead className="font-bold bg-gray-500 text-white text-sm">
               <tr>
                 <th className="px-2 py-2">STT</th>
                 <th className="px-2 py-2">Email</th>
                 <th className="px-2 py-2">Tên</th>
                 <th className="px-2 py-2">Số điện thoại</th>
                 <th className="px-2 py-2">Quyền</th>
-                <th className="px-2 py-2">Địa chỉ</th>
-
-                <th className="px-6 py-2">Sửa</th>
+                <th className="px-6 py-2">Hành động</th>
               </tr>
             </thead>
             <tbody>
               {users?.users?.map((el, idx) => (
-                <tr key={el._id} className="border border-b-1">
+                <tr key={el._id} className="border-b">
                   <td className="px-4 py-2">{idx + 1}</td>
                   <td className="px-2 py-2">
                     {edit?._id === el._id ? (
@@ -125,13 +141,13 @@ const ManageUsers = () => {
                         register={register}
                         fullwidth
                         errors={errors}
-                        defaulfValue={edit?.email}
-                        id={"email"}
+                        defaultValue={edit?.email}
+                        id="email"
                         validate={{
                           required: true,
                           pattern: {
                             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "Vui long nhap mail",
+                            message: "Vui lòng nhập email hợp lệ",
                           },
                         }}
                       />
@@ -139,28 +155,26 @@ const ManageUsers = () => {
                       <span>{el.email}</span>
                     )}
                   </td>
-
                   <td className="px-2 py-2">
                     {edit?._id === el._id ? (
                       <InputFrom
                         register={register}
                         errors={errors}
-                        defaulfValue={edit?.name}
-                        id={"name"}
+                        defaultValue={edit?.name}
+                        id="name"
                         validate={{ required: "Không được để trống" }}
                       />
                     ) : (
                       <span>{el.name}</span>
                     )}
                   </td>
-
-                  <td className="py-2">
+                  <td className="px-2 py-2">
                     {edit?._id === el._id ? (
                       <InputFrom
                         register={register}
                         errors={errors}
-                        defaulfValue={edit?.mobile}
-                        id={"mobile"}
+                        defaultValue={edit?.mobile}
+                        id="mobile"
                         validate={{
                           required: "Không được để trống",
                           pattern: {
@@ -179,11 +193,9 @@ const ManageUsers = () => {
                         register={register}
                         fullwidth
                         errors={errors}
-                        defaulfValue={+el.role}
-                        id={"role"}
-                        validate={{
-                          required: "Không được để trống",
-                        }}
+                        defaultValue={+el.role}
+                        id="role"
+                        validate={{ required: "Không được để trống" }}
                         options={roles}
                       />
                     ) : (
@@ -192,70 +204,58 @@ const ManageUsers = () => {
                       </span>
                     )}
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-2 py-2 flex gap-2 items-center">
+                    <MdRemoveRedEye
+                      size={24}
+                      color="red"
+                      onClick={() => setShow(el)}
+                      className="cursor-pointer"
+                    />
+
                     {edit?._id === el._id ? (
-                      <InputFrom
-                        register={register}
-                        errors={errors}
-                        defaulfValue={edit?.address}
-                        id={"address"}
-                        validate={{
-                          required: "Không được để trống",
-                        }}
-                      />
-                    ) : (
-                      <span>{el.address}</span>
-                    )}
-                  </td>
-                  {/* <td className="px-2 py-2">{el.isBlocked ? "Khoá" : "Mở"}</td> */}
-                  <td className="px-2 py-2 flex-row gap-2">
-                    <td className="px-2 py-2">
-                      {edit?._id === el._id ? (
+                      <>
                         <MdOutlineClear
                           size={24}
                           color="red"
-                          onClick={() => {
-                            setEdit(null);
-                          }}
+                          onClick={() => setEdit(null)}
+                          className="cursor-pointer"
                         />
-                      ) : (
-                        <MdEditSquare
-                          size={24}
-                          color="red"
-                          onClick={() => {
-                            setEdit(el);
-                          }}
-                        />
-                      )}
-                    </td>
-                    <td className="px-2 py-2">
-                      {edit?._id === el._id ? (
-                        <button type="submit">
+                        <button
+                          type="submit"
+                          className="p-0 border-none bg-transparent cursor-pointer"
+                        >
                           <MdSystemUpdateAlt
                             size={24}
                             color="red"
-                            onClick={() => {
-                              setEdit(el);
-                            }}
+                            onClick={() => setEdit(el)}
                           />
                         </button>
-                      ) : (
+                      </>
+                    ) : (
+                      <>
+                        <MdEditSquare
+                          size={24}
+                          color="red"
+                          onClick={() => setEdit(el)}
+                          className="cursor-pointer"
+                        />
                         <MdDelete
                           size={24}
                           color="red"
-                          onClick={() => {
-                            handleDeleteUser(el._id);
-                          }}
+                          onClick={() => handleDeleteUser(el._id)}
+                          className="cursor-pointer"
                         />
-                      )}
-                    </td>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </form>
-        <div className="w-full flex justify-b">
+
+        {/* Phân trang */}
+        <div className="w-full flex justify-center mt-4">
           <Pagination totalCount={users?.counts} />
         </div>
       </div>

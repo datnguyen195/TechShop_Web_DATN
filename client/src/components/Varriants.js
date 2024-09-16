@@ -10,6 +10,7 @@ import path from "../ultils/path";
 
 const Varriants = ({ varriant, render, setVarriant }) => {
   const navigate = useNavigate();
+  console.log(varriant);
   const {
     handleSubmit,
     register,
@@ -57,9 +58,9 @@ const Varriants = ({ varriant, render, setVarriant }) => {
       if (data.images) {
         for (let image of data.images) formData.append("images", image);
       }
-      const response = await apiAddVarrianst(formData, varriant._id);
-      console.log("response", response);
-      if (response.status) {
+      const response = apiAddVarrianst(formData, varriant._id);
+
+      if (response) {
         Swal.fire("Thành công.", response.mes, "success");
         reset();
         setPreview({
@@ -78,7 +79,6 @@ const Varriants = ({ varriant, render, setVarriant }) => {
       type: varriant?.type,
     });
   }, [varriant]);
-  console.log(varriant);
   useEffect(() => {
     if (watch("thumb") instanceof FileList && watch("thumb").length > 0) {
       handlePreview(watch("thumb")[0]);
@@ -95,7 +95,7 @@ const Varriants = ({ varriant, render, setVarriant }) => {
       <div className="h-[69px] w-full"></div>
       <div className="p-4 border-b w-[80%] bg-gray-100 flex justify-between items-center fixed top-0">
         <h1 className="text-3xl font-bold tracking-tight">
-          Varriants products
+          Thêm biến thể sản phẩm
         </h1>
         <button
           className=" text-red-600 hover: underline cursor-pointer"
@@ -136,7 +136,7 @@ const Varriants = ({ varriant, render, setVarriant }) => {
           />
 
           <InputFrom
-            label="Màu"
+            label="Biến thể"
             register={register}
             errors={errors}
             id={"color"}
@@ -144,7 +144,18 @@ const Varriants = ({ varriant, render, setVarriant }) => {
             validate={{
               required: "Cần nhập thông tin",
             }}
-            placeholder="màu sản phẩm "
+            placeholder="Biến thể sản phẩm "
+          />
+          <InputFrom
+            label="Số lương"
+            register={register}
+            errors={errors}
+            id={"quantity"}
+            fullwidth
+            validate={{
+              required: "Cần nhập thông tin",
+            }}
+            placeholder="Số lượng"
           />
         </div>
         <div className="flex flex-col gap-2 mt-8">

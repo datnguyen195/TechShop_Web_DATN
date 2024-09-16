@@ -145,7 +145,7 @@ const getProductsw = asyncHandler(async (req, res) => {
     return res.status(200).json({
       success: response ? true : false,
       counts,
-      products: response ? response : "Cannot get products",
+      products: response ? response : "Không thấy sản phẩm",
     });
   });
 });
@@ -321,7 +321,7 @@ const getDetaiProduct = asyncHandler(async (req, res) => {
 
 const addVarriant = asyncHandler(async (req, res) => {
   const { pid } = req.params;
-  const { title, price, color } = req.body;
+  const { title, price, color, quantity } = req.body;
   const thumb = req?.files?.thumb[0]?.path;
   const images = req?.files?.images?.map((el) => el.path);
   if (!(title && price && color)) throw new Error("Thiếu trường");
@@ -334,10 +334,66 @@ const addVarriant = asyncHandler(async (req, res) => {
           price,
           title,
           thumb,
+          quantity,
           images,
           sku: makeSku().toUpperCase(),
         },
       },
+    },
+    { new: true }
+  );
+  return res.status(200).json({
+    status: response ? true : false,
+    mes: response ? response : "Ko thể thêm biến thể",
+  });
+});
+
+const updateVarriant = asyncHandler(async (req, res) => {
+  const { pid, vid } = req.params; // pid: product ID, vid: variant ID
+  const { title, price, color, quantity } = req.body;
+
+  // Find the product by id
+  const product = await Product.findById(pid);
+  if (!product) throw new Error("Sản phẩm không tồn tại");
+
+  // Find the specific variant by variant ID
+  const variant = product.varriants.find(
+    (variant) => variant._id.toString() === vid
+  );
+  if (!variant) throw new Error("Biến thể không tồn tại");
+
+  // Update the variant fields
+  if (title) variant.title = title;
+  if (price) variant.price = price;
+  if (color) variant.color = color;
+  if (quantity) variant.quantity = quantity;
+
+  // Save updated product
+  const response = await product.save();
+
+  return res.status(200).json({
+    status: response ? true : false,
+    mes: response ? response : "Ko thể cập nhật biến thể",
+  });
+});
+
+const deleVarriant = asyncHandler(async (req, res) => {
+  const { pid } = req.params;
+  const { _id } = req.body;
+
+  const product = await Product.findById(pid);
+  if (!product) throw new Error("Sản phẩm không tồn tại");
+  const variantToDelete = product.varriants.find(
+    (variant) => variant._id.toString() === _id
+  );
+  if (!variantToDelete) throw new Error("Biến thể không tồn tại");
+
+  const newTotalQuantity = product.quantity - variantToDelete.quantity;
+  const response = await Product.findByIdAndUpdate(
+    pid,
+    {
+      $pull: { varriants: { _id } },
+      $set: { quantity: newTotalQuantity },
     },
     { new: true }
   );
@@ -360,4 +416,6 @@ module.exports = {
   getDetaiProduct,
   deleteRating,
   addVarriant,
+  deleVarriant,
+  updateVarriant,
 };

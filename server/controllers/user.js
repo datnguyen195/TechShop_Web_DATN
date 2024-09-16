@@ -77,31 +77,36 @@ const login = asyncHandler(async (req, res) => {
     });
   // plain object
   const response = await User.findOne({ email });
-  if (response && (await response.isCorrectPassword(password))) {
-    // Tách password và role ra khỏi response
-    const { password, role, refreshToken, ...userData } = response.toObject();
-    // Tạo access token
-    const accessToken = generateAccessToken(response._id, role);
-    // Tạo refresh token
-    const newRefreshToken = generateRefreshToken(response._id);
-    // // Lưu refresh token vào database
-    await User.findByIdAndUpdate(
-      response._id,
-      { refreshToken: newRefreshToken },
-      { new: true }
-    );
-    // // Lưu refresh token vào cookie
-    res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-    return res.status(200).json({
-      success: true,
-      accessToken,
-      userData,
-    });
+
+  if (response.isBlocked) {
+    if (response && (await response.isCorrectPassword(password))) {
+      // Tách password và role ra khỏi response
+      const { password, role, refreshToken, ...userData } = response.toObject();
+      // Tạo access token
+      const accessToken = generateAccessToken(response._id, role);
+      // Tạo refresh token
+      const newRefreshToken = generateRefreshToken(response._id);
+      // // Lưu refresh token vào database
+      await User.findByIdAndUpdate(
+        response._id,
+        { refreshToken: newRefreshToken },
+        { new: true }
+      );
+      // // Lưu refresh token vào cookie
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+      return res.status(200).json({
+        success: true,
+        accessToken,
+        userData,
+      });
+    } else {
+      throw new Error("Thông tin không hợp lệ!");
+    }
   } else {
-    throw new Error("Thông tin không hợp lệ!");
+    throw new Error("Tài khoản bị khoá!");
   }
 });
 
@@ -356,16 +361,17 @@ const updateCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const {
     pid,
+    pvid,
     quantity = 1,
     color,
     price,
     thumb,
     title,
   } = req.body.params ?? req.body;
-  if (!pid || !color) throw new Error("Missing inputs");
+  if (!pvid || !color) throw new Error("Missing inputs");
   const user = await User.findById(_id).select("cart");
   const alreadyProduct = user?.cart?.find(
-    (el) => el.product === pid && el.color === color
+    (el) => el.productVid === pvid && el.color === color
   );
   if (alreadyProduct && alreadyProduct.color === color) {
     const response = await User.updateOne(
@@ -373,6 +379,7 @@ const updateCart = asyncHandler(async (req, res) => {
       {
         $set: {
           "cart.$.product": pid,
+          "cart.$.productVid": pvid,
           "cart.$.quantity": quantity,
           "cart.$.price": price,
           "cart.$.thumb": thumb,
@@ -389,7 +396,17 @@ const updateCart = asyncHandler(async (req, res) => {
     const response = await User.findByIdAndUpdate(
       _id,
       {
-        $push: { cart: { product: pid, quantity, color, price, thumb, title } },
+        $push: {
+          cart: {
+            product: pid,
+            productVid: pvid,
+            quantity,
+            color,
+            price,
+            thumb,
+            title,
+          },
+        },
       },
       { new: true }
     );
@@ -405,7 +422,7 @@ const deleteCart = asyncHandler(async (req, res) => {
   const { pid, color } = req.params;
   const user = await User.findById(_id).select("cart");
   const alreadyProduct = user?.cart?.find(
-    (el) => el.product === pid && el.color === color
+    (el) => el.productVid === pid && el.color === color
   );
   if (alreadyProduct) {
     return res.status(200).json({
@@ -415,7 +432,7 @@ const deleteCart = asyncHandler(async (req, res) => {
   }
   const response = await User.findByIdAndUpdate(
     _id,
-    { $pull: { cart: { product: pid } } },
+    { $pull: { cart: { productVid: pid } } },
     { new: true }
   );
   return res.status(200).json({

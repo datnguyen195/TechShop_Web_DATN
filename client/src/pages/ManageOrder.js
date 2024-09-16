@@ -26,8 +26,9 @@ const ManageOrder = () => {
     watch,
     setValue,
   } = useForm({});
-  const q = watch("q");
   const status = watch("status");
+  const orderStatus = watch("orderStatus");
+  console.log("orderStatus", orderStatus);
   const fetchOrder = async (params) => {
     const response = await apiGetOrder({
       ...params,
@@ -38,7 +39,7 @@ const ManageOrder = () => {
       setCounts(response.counts);
     }
   };
-
+  console.log("response", orders);
   const render = () => {
     setUpdate(!update);
   };
@@ -49,10 +50,19 @@ const ManageOrder = () => {
     fetchOrder(queries);
     console.log(queries);
   }, [queryDebounce]);
-  console.log(orders);
+
   useEffect(() => {
-    fetchOrder();
-  }, []);
+    const queries = Object.fromEntries([...params]);
+    if (orderStatus) queries.status = orderStatus;
+    fetchOrder(queries);
+    console.log(queries);
+  }, [orderStatus]);
+
+  useEffect(() => {
+    const searchParams = Object.fromEntries([...params]);
+    fetchOrder(searchParams);
+  }, [params]);
+
   return (
     <div className="w-full flex-col gap-4 relative">
       {edit && (
@@ -60,33 +70,49 @@ const ManageOrder = () => {
           <DetaiOder edit={edit} render={render} setEdit={setEdit} />
         </div>
       )}
+
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
         <span>Quản lý đơn hàng</span>
       </h1>
-      <div className="w-full py-4 px-4">
-        <form className="w-[45%]">
-          <InputFrom
-            id="q"
-            register={register}
-            errors={errors}
-            fullwidth
-            placeholder="Tìm kiếm sản phẩm"
-          />
-          {/* <SusSelect
-            options={statusOrder}
-            value={status}
-            onChange={(val) => setValue("status", val)}
-          /> */}
-          {/* <SusSelect
-            options={statusOrder}
-            value={status}
-            onChange={(val) => setValue("status", val)}
-          /> */}
-        </form>
+      <div className="w-full py-4 px-4 ">
+        <div className="w-[100%] flex items-center space-x-4">
+          <form className="w-[45%]">
+            <InputFrom
+              id="q"
+              register={register}
+              errors={errors}
+              fullwidth
+              placeholder="Tìm kiếm sản phẩm"
+            />
+          </form>
+          <div className="mt-4 flex items-center space-x-4">
+            <label htmlFor="orderStatus" className="block text-gray-700">
+              Trạng Thái Đơn
+            </label>
+            <select
+              id="orderStatus"
+              {...register("orderStatus")} // Use register if using React Hook Form
+              className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+            >
+              <option value="">Tất cả</option>
+              <option value="0">Chờ Xác Nhận</option>
+              <option value="1">Thành Công</option>
+              <option value="2">Huỷ</option>
+            </select>
+            {errors.orderStatus && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.orderStatus.message}
+              </p>
+            )}
+          </div>
+        </div>
+
         <table className="table-auto mb-6 text-left w-full ">
           <thead className="font-bold bg-gray-500 text-[13px] text-white">
             <tr>
               <th className="text-center py-2">STT</th>
+              <th className="text-center py-2">Mã đơn</th>
+              <th className="text-center py-2">Khách hàng</th>
               <th className="py-2">Đơn hàng</th>
               <th className="text-center py-2">Tiền</th>
               <th className="text-center py-2">Trạng thái</th>
@@ -100,6 +126,8 @@ const ManageOrder = () => {
               return (
                 <tr className="border-b " key={el._id}>
                   <td className="text-center py-2">{idx + 1}</td>
+                  <td className="text-center py-2">{el.code}</td>
+                  <td className="text-center py-2">{el.orderByName}</td>
                   <td className="text-center py-2">
                     <span className="flex flex-col items-start">
                       {el.products?.map((item) => (

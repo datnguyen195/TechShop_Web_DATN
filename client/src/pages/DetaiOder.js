@@ -11,13 +11,18 @@ const DetaiOder = ({ edit, render, setEdit }) => {
     setEdit(null);
   };
 
+  console.log("edit", edit);
   const fetchUpdateOder = async () => {
     const response = await apiBuyOrder(edit._id);
     setDetai(response);
+    window.location.reload();
+    console.log(response);
   };
-  const fetchDeteOder = async () => {
-    const response = await apiDeteOrder(edit._id);
-    setDetai(response);
+  const fetchDeteOder = async (data) => {
+    // const data = { status: 2 };
+    const response = await apiDeteOrder(data, edit._id);
+    window.location.reload();
+    console.log(response);
   };
 
   return (
@@ -42,21 +47,34 @@ const DetaiOder = ({ edit, render, setEdit }) => {
         </div>
       </div>
       <div className="px-10">
+        <span className=" text-base">Người đặt: </span>
+        <span className=" text-base">{edit.address[0]?.name}</span>
+      </div>
+      <div className="px-10">
+        <span className=" text-base">Số điện Thoại: </span>
+        <span className=" text-base">{edit.address[0]?.phone} </span>
+      </div>
+
+      <div className="px-10">
+        <span className=" text-base">Địa Chỉ: </span>
+        <span className=" text-base">
+          {edit.address[0]?.ward +
+            ", " +
+            edit.address[0]?.street +
+            ", " +
+            edit.address[0]?.district +
+            ", " +
+            edit.address[0]?.city}
+        </span>
+      </div>
+      <div className="px-10">
         <div className="flex flex-row mt-4 justify-between">
           <div>
-            <span className=" text-base">Ngày đặt đơn: </span>
+            <span className=" text-base">Thời gian đặt đơn: </span>
             <span className=" text-base">
-              {moment(edit.createdAt).format("DD / MM / YYYY")}
+              {moment(edit.createdAt).format("hh:mm - DD / MM / YYYY")}
             </span>
           </div>
-
-          <div>
-            <span className=" text-base">Người đặt: </span>
-            <span className=" text-base">{}</span>
-          </div>
-        </div>
-        <div className="flex flex-row mt-4 justify-between">
-          <div></div>
           <div>
             <span className="text-base">Trạng thái đơn: </span>
             <span className="text-base">
@@ -77,8 +95,42 @@ const DetaiOder = ({ edit, render, setEdit }) => {
         <div className="flex flex-row mt-4 justify-between">
           <div></div>
           <div className="flex flex-row gap-4 ">
-            <Button name="Xác nhận đơn" onClick={{ fetchUpdateOder }} />
-            <Button name="Huỷ đơn" onClick={{ fetchDeteOder }} />
+            {edit.status != 1 ? (
+              <button
+                className=" text-green-500 bg-green-200 border p-[10px]  rounded-2xl"
+                onClick={fetchUpdateOder}
+              >
+                Xác nhận đơn
+              </button>
+            ) : (
+              <button className=" text-gray-900 bg-gray-200 border p-[10px]  rounded-2xl">
+                Xác nhận đơn
+              </button>
+            )}
+            {edit.status != 2 ? (
+              <button
+                className="text-red-600  bg-red-200 border p-[10px]  rounded-2xl"
+                onClick={() => fetchDeteOder({ status: 0 })}
+              >
+                Huỷ đơn
+              </button>
+            ) : (
+              <button className=" text-gray-900 bg-gray-200 border p-[10px]  rounded-2xl">
+                Huỷ đơn
+              </button>
+            )}
+            {edit.status == 2 ? (
+              <button
+                className="text-red-600  bg-red-200 border p-[10px]  rounded-2xl"
+                onClick={() => fetchDeteOder({ status: 3 })}
+              >
+                Đã giao
+              </button>
+            ) : (
+              <button className=" text-gray-900 bg-gray-200 border p-[10px]  rounded-2xl">
+                Đã giao
+              </button>
+            )}
           </div>
         </div>
       </div>

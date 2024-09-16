@@ -31,18 +31,20 @@ export const apiGetOrder = (params) =>
   axios({
     url: "/order/admin",
     method: "get",
+    params,
   });
 
 export const apiBuyOrder = (oid) =>
   axios({
-    url: "/buystatus/" + oid,
+    url: "/order/buystatus/" + oid,
     method: "put",
   });
 
-export const apiDeteOrder = (oid) =>
+export const apiDeteOrder = (data, oid) =>
   axios({
-    url: "/detestatus/" + oid,
+    url: "/order/detestatus/" + oid,
     method: "put",
+    data,
   });
 
 export const apiCreateBrand = (data) =>
@@ -114,10 +116,28 @@ export const apiDeleteRating = (rid, pid) =>
     method: "delete",
     data: { pid },
   });
-
 export const apiAddVarrianst = (data, pid) =>
   axios({
     url: "/product/varriants/" + pid,
     method: "put",
     data,
+  });
+export const apiUpdateVarrianst = (data, pid) =>
+  axios({
+    url: "/product/updateVar/" + pid,
+    method: "put",
+    data,
+  });
+export const apiDeleteVarrianst = (_id, pid) =>
+  axios({
+    url: "/product/deleteVar/" + pid,
+    method: "put",
+    data: { _id },
+  });
+
+export const apiDashboard = (params) =>
+  axios({
+    url: "/order/dashboard", // Keep the base endpoint
+    method: "get",
+    params: params, // Add the query parameters here
   });

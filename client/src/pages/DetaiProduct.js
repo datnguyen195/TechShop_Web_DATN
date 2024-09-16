@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { apiGetDetaiProduct } from "../apis";
+import { apiDeleteVarrianst, apiGetDetaiProduct } from "../apis";
 import Slider from "react-slick";
 import DOMPurify from "dompurify";
 import clsx from "clsx";
-
+import icons from "../ultils/icons";
 import {
   formatMoney,
   formatPrice,
   renderStarFromNumber,
 } from "../ultils/helper";
+import { Varriants } from "../components"; // Import the Varriants component
 
 const settings = {
   dots: false,
@@ -22,11 +23,35 @@ const settings = {
 const DetaiProduct = () => {
   const { pid } = useParams();
   const [varriant, setVarriant] = useState(null);
+  const [editVar, setEditVar] = useState(null);
   const [detai, setDetai] = useState(null);
+  const { MdEditSquare, MdClose } = icons;
 
   const fetchProduct = async () => {
     const response = await apiGetDetaiProduct(pid);
     setDetai(response);
+  };
+
+  const handleEdit = async (_id) => {
+    const response = await apiDeleteVarrianst(_id, pid);
+    if (response) {
+      setDetai(response.response);
+    }
+  };
+
+  const handleDelete = async (_id) => {
+    const response = await apiDeleteVarrianst(_id, pid);
+    if (response) {
+      setDetai(response.response);
+    }
+  };
+
+  const handleAddVariant = async () => {
+    // const response = await apiAddVariant(pid, newVariant);
+    // if (response) {
+    //   setDetai(response.response); // Update product details after adding the variant
+    //   setShowAddVariantModal(true); // Show the variant modal
+    // }
   };
 
   useEffect(() => {
@@ -34,96 +59,123 @@ const DetaiProduct = () => {
   }, [pid]);
 
   return (
-    <div className="w-[90%]">
-      <div className="w-[95%] m-auto mt-4 flex ">
-        <div className="flex flex-col gap-4 w-3/5">
+    <div className="container mx-auto mt-8 relative">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Product Images and Slider */}
+        <div className="flex flex-col gap-4 lg:w-1/3">
           <img
             src={detai?.thumb}
             alt="product"
-            className="h-[458px] w-[458px] border object-cover"
+            className="w-full h-[400px] object-cover border rounded-md shadow-md"
           />
-          <div className="w-[470px]">
-            <Slider {...settings}>
-              {detai?.images?.map((el, index) => (
-                <div key={index}>
-                  <img
-                    src={el}
-                    alt={`product-${index}`}
-                    className="h-[100px] w-[90px] border object-cover p-1"
-                  />
-                </div>
-              ))}
-            </Slider>
-          </div>
+          <Slider {...settings}>
+            {detai?.images?.map((el, index) => (
+              <div key={index}>
+                <img
+                  src={el}
+                  alt={`product-${index}`}
+                  className="w-full h-[100px] object-cover border rounded-md"
+                />
+              </div>
+            ))}
+          </Slider>
         </div>
-        <div className="border p-4 border-red-300 w-3/5">
-          <h2 className="text-[30px] font-semibold">{varriant?.title}</h2>
-          <div className="flex items-center justify-between">
-            <h2 className="text-[20px] text-red-600 font-semibold">
+
+        {/* Product Details */}
+        <div className="border p-6 lg:w-2/3 rounded-md shadow-md bg-white">
+          <h2 className="text-3xl font-semibold mb-4">{detai?.title}</h2>
+
+          {/* Price and Quantity */}
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl text-red-600 font-semibold">
               {`${formatMoney(formatPrice(detai?.price))} VND`}
             </h2>
-            <span className="text-sm">{`kho: ${detai?.quantity}`}</span>
+            <span className="text-sm text-gray-700">{`Số lượng: ${detai?.quantity}`}</span>
           </div>
 
-          <div className="flex items-center mt-4 gap-2">
+          {/* Ratings and Sold */}
+          <div className="flex items-center mb-4 gap-2">
             {renderStarFromNumber(detai?.totalRatings)?.map((el) => (
               <span key={el}>{el}</span>
             ))}
             <span className="text-sm text-red-500">{`(Đã bán: ${detai?.sold})`}</span>
           </div>
 
-          <ul className="list-square text-smtext-gray-500 ">
-            <div
-              className="text-sm"
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(detai?.description),
-              }}
-            ></div>
-          </ul>
-          <div className="my-4 flex gap-4">
-            <span>Color:</span>
-            <div className="flex flex-wrap gap-4 items-center w-full">
-              <div
-                onClick={() => setVarriant(null)}
-                className={clsx(
-                  "flex items-center gap-2 p-2 border cursor-pointer",
-                  !varriant && "border-red-500"
-                )}
-              >
-                <img
-                  src={detai?.thumb}
-                  alt="thumb"
-                  className="w-8 h-8 rounded-md object-cover"
-                />
-                <span className="flex flex-col">
-                  <span>{detai?.color}</span>
-                  <span>{detai?.price}</span>
-                </span>
-              </div>
+          {/* Product Description */}
+          <div
+            className="text-sm text-gray-600 mb-6"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(detai?.description),
+            }}
+          ></div>
+
+          {/* Variants Section */}
+          <div className="mb-6">
+            <span className="font-semibold">Biến thể:</span>
+            <div className="flex flex-wrap gap-4 mt-2">
               {detai?.varriants?.map((el) => (
                 <div
-                  onClick={() => setVarriant(el.sku)}
+                  key={el.sku}
                   className={clsx(
-                    "flex items-center gap-2 p-2 border cursor-pointer",
-                    varriant === el.sku && "border-red-500"
+                    "flex items-center gap-4 p-4 border rounded-md shadow-sm transition-transform hover:scale-105 cursor-pointer",
+                    varriant === el.sku ? "border-red-500" : "border-gray-300"
                   )}
+                  onClick={() => setVarriant(el.sku)}
                 >
                   <img
                     src={el.thumb}
-                    alt="thumb"
-                    className="w-8 h-8 rounded-md object-cover"
+                    alt={el.color}
+                    className="w-20 h-20 rounded-md object-cover"
                   />
-                  <span className="flex flex-col">
-                    <span>{el.color}</span>
-                    <span>{el.price}</span>
-                  </span>
+                  <div className="flex-grow">
+                    <p className="font-medium text-gray-800">{el.color}</p>
+                    <p className="text-sm text-gray-600">{`${formatMoney(
+                      el.price
+                    )} VND`}</p>
+                  </div>
+
+                  {/* Edit and Delete Buttons */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(el._id);
+                      }}
+                      className="bg-blue-500 p-2 rounded-md text-white"
+                    >
+                      <MdEditSquare />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(el._id);
+                      }}
+                      className="bg-red-500 p-2 rounded-md text-white"
+                    >
+                      <MdClose />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Add Variant Button */}
+          <button
+            onClick={() => setEditVar(detai)}
+            className="bg-green-500 text-white px-6 py-2 rounded-md"
+          >
+            Thêm Biến Thể
+          </button>
         </div>
       </div>
-      <div className="h-[100px] w-full"></div>
+
+      {/* Add Variant Modal */}
+      {editVar && (
+        <div className="absolute inset-0 min-h-screen bg-gray-100 z-50 ">
+          <Varriants varriant={editVar} setVarriant={setEditVar} />
+        </div>
+      )}
     </div>
   );
 };

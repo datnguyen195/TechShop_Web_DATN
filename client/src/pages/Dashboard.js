@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   LineElement,
@@ -9,6 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { apiDashboard } from "../apis";
 
 ChartJS.register(
   LineElement,
@@ -20,48 +21,85 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const data = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-      {
-        label: "Sales",
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: "rgba(75,192,192,0.4)",
-        borderColor: "rgba(75,192,192,1)",
-        borderCapStyle: "round",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: "rgba(75,192,192,1)",
-        pointBackgroundColor: "#fff",
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: "rgba(75,192,192,1)",
-        pointHoverBorderColor: "rgba(220,220,220,1)",
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: [65, 59, 80, 81, 56, 55, 40],
-      },
-    ],
-  };
+  const [month, setMonth] = useState();
+  const [selectedYear, setSelectedYear] = useState(2024);
+  const [dataDashboard, setDataDashboard] = useState({
+    labels: [],
+    datasets: [],
+  });
+
+  const years = [2024, 2025, 2026];
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   const options = {
     scales: {
-      yAxes: [
-        {
-          ticks: {
-            beginAtZero: true,
-          },
+      y1: {
+        type: "linear",
+        position: "left",
+        ticks: {
+          beginAtZero: true,
         },
-      ],
+        max: 100,
+      },
+      y2: {
+        type: "linear",
+        position: "right",
+        ticks: {
+          beginAtZero: true,
+        },
+      },
     },
   };
 
+  const fetchDashboard = async () => {
+    const params = { year: selectedYear, month: month };
+    try {
+      const response = await apiDashboard(params);
+      if (response) {
+        setDataDashboard(response);
+        console.log("response", response);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboard();
+  }, [selectedYear, month]);
+
   return (
     <div className="px-[59px] mt-12 relative">
-      <Line data={data} options={options} />
+      {/* Chọn năm */}
+      <div className="flex justify-between w-[410px] mb-4">
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(Number(e.target.value))}
+        >
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {"Năm " + year}
+            </option>
+          ))}
+        </select>
+        <select
+          value={month}
+          onChange={(e) => setMonth(Number(e.target.value))}
+        >
+          {months.map((month) => (
+            <option key={month} value={month}>
+              {"Thàng  " + month}
+            </option>
+          ))}
+        </select>
+        {/* <button className="flex justify-between items-center bg-slate-500 text-white text-sm p-1.5 rounded-md shadow-md hover:bg-slate-600 transition duration-300">
+          Sản phẩm bán chạy
+        </button> */}
+      </div>
+
+      {/* Chọn tháng */}
+
+      <Line data={dataDashboard} options={options} />
     </div>
   );
 };

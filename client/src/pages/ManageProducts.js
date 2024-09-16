@@ -94,8 +94,8 @@ const ManageProducts = () => {
   useEffect(() => {
     const searchParams = Object.fromEntries([...params]);
     fetchProducts(searchParams);
+    console.log("searchParams", searchParams);
   }, [params, update]);
-  console.log("tu", setEdit);
 
   return (
     <div className="w-full flex-col gap-4 relative">
@@ -115,7 +115,7 @@ const ManageProducts = () => {
       )}
 
       <h1 className="h-[75px] flex justify-between items-center text-3xl font-bold px-4 border-b">
-        <span>Manage Products</span>
+        <span>Quản lý sản phẩm</span>
       </h1>
       <div className="w-full py-4 px-4">
         <form className="w-[45%]" onSu={handleSubmit(handleSearch)}>
@@ -138,7 +138,7 @@ const ManageProducts = () => {
               <th className="text-center py-2">Giá</th>
               <th className="text-center py-2">Số lượng</th>
               <th className="text-center py-2">Đã bán</th>
-              <th className="text-center py-2">Màu</th>
+              <th className="text-center py-2">Biến thể</th>
               <th className="text-center py-2">Đánh giá</th>
               <th className="text-center py-2">Ngày tạo</th>
               <th className="text-center py-2">Sửa </th>
@@ -161,7 +161,7 @@ const ManageProducts = () => {
                 <td className="text-center py-2">{el.price}</td>
                 <td className="text-center py-2">{el.quantity}</td>
                 <td className="text-center py-2">{el.sold}</td>
-                <td className="text-center py-2">{el.color}</td>
+                <td className="text-center py-2">{el.varriants.length}</td>
                 <td className="text-center py-2">{el.ratings.length}</td>
 
                 <td className="text-center py-2">

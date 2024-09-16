@@ -34,6 +34,8 @@ router.put(
   ]),
   ctrls.addVarriant
 );
+router.put("/deleteVar/:pid", [verifyAccessToken, isAdmin], ctrls.deleVarriant);
+router.put("/updateVar/:pid", verifyAccessToken, isAdmin, ctrls.updateVarriant);
 router.put(
   "/:pid",
   verifyAccessToken,
@@ -46,6 +48,7 @@ router.put(
 );
 
 router.delete("/:pid", [verifyAccessToken, isAdmin], ctrls.deleteProduct);
+
 router.get("/:pid", ctrls.getProduct);
 
 module.exports = router;

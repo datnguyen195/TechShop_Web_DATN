@@ -20,7 +20,6 @@ var productSchema = new mongoose.Schema(
     },
     brand: {
       type: String,
-      required: true,
     },
     thumb: {
       type: String,
@@ -72,6 +71,8 @@ var productSchema = new mongoose.Schema(
         color: String,
         price: Number,
         thumb: String,
+        quantity: Number,
+        sold: Number,
         images: Array,
         title: String,
       },
