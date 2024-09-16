@@ -169,7 +169,7 @@ const logout = asyncHandler(async (req, res) => {
 // Change password
 
 const forgotPassword = asyncHandler(async (req, res) => {
-  const { email } = req.query;
+  const { email } = req.body.params ?? req.query;
   if (!email) throw new Error("Thiếu email");
   const user = await User.findOne({ email });
   if (!user) throw new Error("ko tồn tại user");
@@ -190,7 +190,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   });
 });
 const resetPassword = asyncHandler(async (req, res) => {
-  const { password, token } = req.body;
+  const { password, token } = req.body.params ?? req.body;
   if (!password || !token) throw new Error("Thiếu dữ liệu");
   const passwordResetToken = crypto
     .createHash("sha256")
@@ -211,6 +211,29 @@ const resetPassword = asyncHandler(async (req, res) => {
     mes: user ? "Updated password" : "Đã xảy ra lỗi",
   });
 });
+
+const validateResetToken = asyncHandler(async (req, res) => {
+  const { token } = req.body.params ?? req.body;
+  if (!token) throw new Error("Thiếu token");
+
+  const passwordResetToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    passwordResetToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!user) throw new Error("Token không hợp lệ hoặc đã hết hạn");
+
+  return res.status(200).json({
+    success: true,
+    mes: "Token hợp lệ, tiếp tục đổi mật khẩu",
+  });
+});
+
 const getUsers = asyncHandler(async (req, res) => {
   const queries = { ...req.query };
   const excludeFields = ["limit", "sort", "page", "fields"];
@@ -435,9 +458,11 @@ const deleteCart = asyncHandler(async (req, res) => {
     { $pull: { cart: { productVid: pid } } },
     { new: true }
   );
+
   return res.status(200).json({
     success: response ? true : false,
     mes: response ? "cập nhật giỏ hàng" : "Đã xảy ra lỗi",
+    cart: response.cart,
   });
 });
 
@@ -494,6 +519,8 @@ module.exports = {
   updateUser,
   updateUserByAdmin,
   updateAddress,
+  putAddress,
+  deleteAddress,
   updateCart,
   uploadImagesAvatar,
   changePassUser,
@@ -501,4 +528,5 @@ module.exports = {
   updateOneUser,
   putAddress,
   deleteAddress,
+  validateResetToken,
 };

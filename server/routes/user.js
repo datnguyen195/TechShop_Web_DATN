@@ -18,6 +18,7 @@ router.post("/refreshtoken", ctrls.refreshAccessToken);
 router.get("/logout", ctrls.logout);
 router.get("/forgotpassword", ctrls.forgotPassword);
 router.put("/resetpassword", ctrls.resetPassword);
+router.post("/verifyresetpass", ctrls.validateResetToken);
 router.get("/", [verifyAccessToken, isAdmin], ctrls.getUsers);
 router.delete("/:uid", [verifyAccessToken, isAdmin], ctrls.deleteUser);
 // router.put("/current", [verifyAccessToken], ctrls.updateUser);
