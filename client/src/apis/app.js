@@ -141,3 +141,26 @@ export const apiDashboard = (params) =>
     method: "get",
     params: params, // Add the query parameters here
   });
+
+export const apiDashboardTop = () =>
+  axios({
+    url: "/product/dashboardtop10",
+    method: "get",
+  });
+
+export const apiGetNotification = () =>
+  axios({
+    url: "/notification/",
+    method: "get",
+  });
+export const apiAddNotification = (data) =>
+  axios({
+    url: "/notification/send-notification",
+    method: "post",
+    data,
+  });
+export const apiDeleteNotification = (nid) =>
+  axios({
+    url: "/notification/remove-notification/" + nid,
+    method: "delete",
+  });

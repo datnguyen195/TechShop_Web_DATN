@@ -408,6 +408,21 @@ const deleVarriant = asyncHandler(async (req, res) => {
   });
 });
 
+const getDashboard = asyncHandler(async (req, res) => {
+  try {
+    // Fetch top 10 products sorted by 'sold' in descending order
+    const response = await Product.find().sort({ sold: -1 }).limit(10);
+
+    return res.status(200).json({
+      status: response ? true : false,
+      response: response ? response : "Ko thể thêm biến thể",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 module.exports = {
   createProduct,
   getProduct,
@@ -423,4 +438,5 @@ module.exports = {
   addVarriant,
   deleVarriant,
   updateVarriant,
+  getDashboard,
 };

@@ -17,6 +17,7 @@ import CreateBrand from "./pages/CreateBrand";
 import ManageBrand from "./pages/ManageBrand";
 import ManageRatings from "./pages/ManageRatings";
 import DetaiProduct from "./pages/DetaiProduct";
+import Notification from "./pages/Notification";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path={path.MANAGE_BRAND} element={<ManageBrand />} />
           <Route path={path.MANAGE_RATINGS} element={<ManageRatings />} />
           <Route path={path.DETAI_PRODUCT} element={<DetaiProduct />} />
+          <Route path={path.NOTIFICATION} element={<Notification />} />
         </Route>
         {/* <Route path={path.ADMIN} element={<AdminHome />}></Route> */}
       </Routes>

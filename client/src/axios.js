@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "https://techshop-web-datn.onrender.com/api",
+  baseURL: "http://localhost:5000/api",
+  // baseURL: "https://techshop-web-datn.onrender.com/api",
 });
 // Thêm một bộ đón chặn request
 instance.interceptors.request.use(

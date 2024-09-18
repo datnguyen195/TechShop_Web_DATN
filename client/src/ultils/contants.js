@@ -108,6 +108,13 @@ export const adminSidebar = [
   {
     id: 8,
     type: "SINGLE",
+    text: "Thông báo",
+    path: `/${path.NOTIFICATION}`,
+    icon: <MdComment />,
+  },
+  {
+    id: 9,
+    type: "SINGLE",
     text: "Tài khoản",
     path: `/${path.PRO_FILE}`,
     icon: <MdPerson />,

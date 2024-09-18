@@ -48,7 +48,7 @@ router.put(
 );
 
 router.delete("/:pid", [verifyAccessToken, isAdmin], ctrls.deleteProduct);
-
+router.get("/dashboardtop10", ctrls.getDashboard);
 router.get("/:pid", ctrls.getProduct);
 
 module.exports = router;

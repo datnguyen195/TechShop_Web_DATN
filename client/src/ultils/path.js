@@ -13,5 +13,6 @@ const path = {
   MANAGE_BRAND: "managebrand:",
   MANAGE_RATINGS: "manageratings",
   DETAI_PRODUCT: "detai/:pid",
+  NOTIFICATION: "notification",
 };
 export default path;

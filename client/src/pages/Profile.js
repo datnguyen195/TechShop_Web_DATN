@@ -20,6 +20,9 @@ const Profile = () => {
 
   const handleUpdateInfor = async (data) => {
     const formData = new FormData();
+    console.log("formData", formData);
+    console.log("avatar", data.avatar);
+
     if (data.avatar.length > 0) formData.append("avatar", data.avatar[0]);
     delete data.avatar;
     console.log(data);
@@ -37,7 +40,7 @@ const Profile = () => {
     } else
       Swal.fire({
         icon: "error",
-        title: "Xử lý thành công.",
+        title: "Đã xảy ra lỗi.",
         showConfirmButton: false,
         timer: 1000,
       });
