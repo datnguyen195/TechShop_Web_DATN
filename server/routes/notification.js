@@ -5,6 +5,13 @@ const Notification = require("../models/notification");
 
 router.post("/send-notification", async (req, res) => {
   const { title, message, imageUrl } = req.body;
+
+  if (!req.body) {
+    return res
+      .status(400)
+      .json({ success: false, message: "No data provided" });
+  }
+
   const notification = { title, message, imageUrl };
 
   try {
@@ -31,13 +38,11 @@ router.get("/notifications", async (req, res) => {
     const notifications = await Notification.find().sort({ createdAt: -1 });
     res.status(200).json({ success: true, notifications });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error retrieving notifications",
-        error,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error retrieving notifications",
+      error,
+    });
   }
 });
 
