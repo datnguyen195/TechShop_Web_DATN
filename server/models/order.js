@@ -29,6 +29,10 @@ var OrderSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "Coupon",
     },
+    statusRating: {
+      type: Boolean,
+      default: false,
+    },
     orderBy: {
       type: mongoose.Types.ObjectId,
       ref: "User",

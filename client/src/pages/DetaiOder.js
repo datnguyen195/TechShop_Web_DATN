@@ -11,7 +11,6 @@ const DetaiOder = ({ edit, render, setEdit }) => {
     setEdit(null);
   };
 
-  console.log("edit", edit);
   const fetchUpdateOder = async () => {
     const response = await apiBuyOrder(edit._id);
     setDetai(response);
@@ -120,14 +119,14 @@ const DetaiOder = ({ edit, render, setEdit }) => {
               </button>
             )}
             {edit.status == 2 ? (
+              <button className=" text-gray-900 bg-gray-200 border p-[10px]  rounded-2xl">
+                Đã giao
+              </button>
+            ) : (
               <button
                 className="text-red-600  bg-red-200 border p-[10px]  rounded-2xl"
                 onClick={() => fetchDeteOder({ status: 3 })}
               >
-                Đã giao
-              </button>
-            ) : (
-              <button className=" text-gray-900 bg-gray-200 border p-[10px]  rounded-2xl">
                 Đã giao
               </button>
             )}

@@ -153,8 +153,8 @@ const CreateProducts = () => {
             }}
             placeholder="Tên sản phẩm mới"
           />
-          <div className="w-full flex gap-[50px] my-8">
-            <div className="flex-auto">
+          <div className="w-full flex justify-center gap-[30px] my-8">
+            <div className="flex-1">
               <InputFrom
                 label="Giá"
                 register={register}
@@ -164,12 +164,12 @@ const CreateProducts = () => {
                 validate={{
                   required: "Cần nhập thông tin",
                 }}
-                style="flex-auto"
+                style="flex-1"
                 placeholder="Giá sản phẩm mới"
                 type="number"
               />
             </div>
-            <div className="flex-auto">
+            <div className="flex-1">
               <InputFrom
                 label="Số lượng"
                 register={register}
@@ -179,32 +179,17 @@ const CreateProducts = () => {
                 validate={{
                   required: "Cần nhập thông tin",
                 }}
-                style="flex-auto"
+                style="flex-1"
                 placeholder="Số lượng sản phẩm mới"
                 type="number"
               />
             </div>
-            <div className="flex-auto">
-              <InputFrom
-                label="Biến thể"
-                register={register}
-                errors={errors}
-                id={"color"}
-                fullwidth
-                validate={{
-                  required: "Cần nhập thông tin",
-                }}
-                placeholder="Biến thể sản phẩm mới"
-              />
-            </div>
-          </div>
-          <div className="w-full flex gap-4 mt-5 mb-5">
-            <div className="flex-auto">
+            <div className="flex-1">
               <Select
                 label="Loại"
                 register={register}
                 fullwidth
-                style={"p-2 border  border-gray-950 "}
+                style={"p-2 border border-gray-950"}
                 errors={errors}
                 id={"category"}
                 validate={{

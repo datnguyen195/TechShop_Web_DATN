@@ -26,6 +26,7 @@ const DetaiProduct = () => {
   const [editVar, setEditVar] = useState(null);
   const [detai, setDetai] = useState(null);
   const { MdEditSquare, MdClose } = icons;
+  console.log("varriant", varriant);
 
   const fetchProduct = async () => {
     const response = await apiGetDetaiProduct(pid);
@@ -60,37 +61,58 @@ const DetaiProduct = () => {
 
   return (
     <div className="container mx-auto mt-8 relative">
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-8 p-5">
         {/* Product Images and Slider */}
         <div className="flex flex-col gap-4 lg:w-1/3">
           <img
-            src={detai?.thumb}
+            src={varriant ? varriant.thumb : detai?.thumb}
             alt="product"
-            className="w-full h-[400px] object-cover border rounded-md shadow-md"
+            className="w-full h-[400px] object-cover border rounded-md shadow-md p-3"
           />
-          <Slider {...settings}>
-            {detai?.images?.map((el, index) => (
-              <div key={index}>
-                <img
-                  src={el}
-                  alt={`product-${index}`}
-                  className="w-full h-[100px] object-cover border rounded-md"
-                />
-              </div>
-            ))}
-          </Slider>
+
+          {varriant ? (
+            <Slider {...settings}>
+              {varriant?.images?.map((el, index) => (
+                <div key={index} className="p-3">
+                  <img
+                    src={el}
+                    alt={`product-${index}`}
+                    className="w-full h-[100px] object-cover border rounded-md m-4 p-2"
+                  />
+                </div>
+              ))}
+            </Slider>
+          ) : (
+            <Slider {...settings}>
+              {detai?.images?.map((el, index) => (
+                <div key={index} className="p-3">
+                  <img
+                    src={el}
+                    alt={`product-${index}`}
+                    className="w-full h-[100px] object-cover border rounded-md m-4 p-2"
+                  />
+                </div>
+              ))}
+            </Slider>
+          )}
         </div>
 
         {/* Product Details */}
         <div className="border p-6 lg:w-2/3 rounded-md shadow-md bg-white">
-          <h2 className="text-3xl font-semibold mb-4">{detai?.title}</h2>
+          <h2 className="text-3xl font-semibold mb-4">
+            {varriant ? varriant.title : detai?.title}
+          </h2>
 
           {/* Price and Quantity */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl text-red-600 font-semibold">
-              {`${formatMoney(formatPrice(detai?.price))} VND`}
+              {`${formatMoney(
+                formatPrice(varriant ? varriant.price : detai?.price)
+              )} VND`}
             </h2>
-            <span className="text-sm text-gray-700">{`Số lượng: ${detai?.quantity}`}</span>
+            <span className="text-sm text-gray-700">{`Số lượng: ${
+              varriant ? varriant.quantity : detai?.quantity
+            }`}</span>
           </div>
 
           {/* Ratings and Sold */}
@@ -118,14 +140,14 @@ const DetaiProduct = () => {
                   key={el.sku}
                   className={clsx(
                     "flex items-center gap-4 p-4 border rounded-md shadow-sm transition-transform hover:scale-105 cursor-pointer",
-                    varriant === el.sku ? "border-red-500" : "border-gray-300"
+                    varriant == el ? "border-red-500" : "border-gray-300"
                   )}
-                  onClick={() => setVarriant(el.sku)}
+                  onClick={() => setVarriant(el)}
                 >
                   <img
                     src={el.thumb}
                     alt={el.color}
-                    className="w-20 h-20 rounded-md object-cover"
+                    className="w-20 h-22 rounded-md object-cover p-0.5"
                   />
                   <div className="flex-grow">
                     <p className="font-medium text-gray-800">{el.color}</p>

@@ -11,6 +11,11 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import {
+  formatMoney,
+  formatPrice,
+  renderStarFromNumber,
+} from "../ultils/helper";
 import Swal from "sweetalert2";
 import { useForm, SubmitHandler } from "react-hook-form";
 import UpdateProducts from "./UpdateProducts";
@@ -158,7 +163,9 @@ const ManageProducts = () => {
                 </td>
                 <td className="text-center py-2">{el.title}</td>
                 <td className="text-center py-2">{el.category}</td>
-                <td className="text-center py-2">{el.price}</td>
+                <td className="text-center py-2">{`${formatMoney(
+                  formatPrice(el.price)
+                )} VND`}</td>
                 <td className="text-center py-2">{el.quantity}</td>
                 <td className="text-center py-2">{el.sold}</td>
                 <td className="text-center py-2">{el.varriants.length}</td>
@@ -191,13 +198,13 @@ const ManageProducts = () => {
                     }}
                   />
 
-                  <MdDashboardCustomize
+                  {/* <MdDashboardCustomize
                     size={24}
                     color="red"
                     onClick={() => {
                       setVarriant(el);
                     }}
-                  />
+                  /> */}
                 </td>
               </tr>
             ))}

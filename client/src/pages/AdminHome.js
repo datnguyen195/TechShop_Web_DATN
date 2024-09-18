@@ -10,7 +10,7 @@ const AdminHome = () => {
   const { isLoggedIn, current } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (!isLoggedIn && !current.role == 0) {
+    if (!isLoggedIn) {
       navigate(`/${path.LOGIN}`);
     }
   }, []);

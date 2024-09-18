@@ -1,5 +1,6 @@
 const { response } = require("express");
 const Product = require("../models/product");
+const Order = require("../models/order");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const makeSku = require("uniqid");
@@ -176,13 +177,18 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 const ratings = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { star, comment, pid, avatar, name } = req.body.params ?? req.body;
-  if (!star || !pid) throw new Error("Thiếu trường");
+  const { star, comment, pid, avatar, name, idOrder } =
+    req.body.params ?? req.body;
+  if (!star || !pid || !idOrder || !comment) throw new Error("Thiếu trường");
   const ratingProduct = await Product.findById(pid);
   const alreadyRating = ratingProduct?.ratings?.find(
     (el) => el.postedBy.toString() === _id
   );
-
+  const updatedOrder = await Order.findByIdAndUpdate(
+    idOrder,
+    { statusRating: true },
+    { new: true }
+  );
   if (alreadyRating) {
     // Update star & comment
     await Product.updateOne(

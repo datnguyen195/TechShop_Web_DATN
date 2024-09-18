@@ -81,19 +81,21 @@ const Profile = () => {
               required: "Need fill this field",
             }}
           />
-          <InputFrom
-            label="Số điện thoai"
-            register={register}
-            errors={errors}
-            id="mobile"
-            validate={{
-              required: "Need fill this field",
-              pattern: {
-                value: /^[62|0]+\d{9}/gi,
-                message: "Số điện thoại không hợp lệ.",
-              },
-            }}
-          />
+          <div className="mt-4 mb-4">
+            <InputFrom
+              label="Số điện thoai"
+              register={register}
+              errors={errors}
+              id="mobile"
+              validate={{
+                required: "Need fill this field",
+                pattern: {
+                  value: /^[62|0]+\d{9}/gi,
+                  message: "Số điện thoại không hợp lệ.",
+                },
+              }}
+            />
+          </div>
           <InputFrom
             label="Email"
             register={register}
