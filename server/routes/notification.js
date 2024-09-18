@@ -32,7 +32,7 @@ router.post("/send-notification", async (req, res) => {
   }
 });
 
-router.get("/notifications", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     // Lấy danh sách thông báo từ cơ sở dữ liệu, sắp xếp theo thời gian tạo mới nhất
     const notifications = await Notification.find().sort({ createdAt: -1 });
