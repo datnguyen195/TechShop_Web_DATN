@@ -148,10 +148,11 @@ export const apiDashboardTop = () =>
     method: "get",
   });
 
-export const apiGetNotification = () =>
+export const apiGetNotification = (params) =>
   axios({
-    url: "/notification/",
+    url: "/notification/admin",
     method: "get",
+    params,
   });
 export const apiAddNotification = (data) =>
   axios({

@@ -7,22 +7,27 @@ import {
 } from "../apis"; // Assuming apiDeleteNotification is available
 import Swal from "sweetalert2";
 import moment from "moment";
+import Pagination from "../components/Pagination";
+import { useSearchParams } from "react-router-dom";
 
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [counts, setCounts] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [selectedNotification, setSelectedNotification] = useState(null); // For viewing details
   const { register, handleSubmit, reset } = useForm();
+  const [params] = useSearchParams();
 
   // Function to toggle modal visibility
   const toggleModal = () => setIsModalOpen((prev) => !prev);
 
-  const fetchNotifi = async () => {
+  const fetchNotifi = async (params) => {
     try {
-      const response = await apiGetNotification();
+      const response = await apiGetNotification({ ...params, limit: 10 });
       if (response.success) {
         setNotifications(response.notifications);
+        setCounts(response.counts);
       } else {
         console.error("Failed to fetch notifications:", response.message);
       }
@@ -96,7 +101,9 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchNotifi();
-  }, []);
+    const searchParams = Object.fromEntries([...params]);
+    fetchNotifi(searchParams);
+  }, [params]);
 
   return (
     <div className="w-full">
@@ -261,6 +268,9 @@ const Dashboard = () => {
             </div>
           </div>
         )}
+      </div>
+      <div className="w-full flex justify-b">
+        <Pagination totalCount={counts} />
       </div>
     </div>
   );

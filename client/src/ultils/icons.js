@@ -23,6 +23,7 @@ import {
   MdDashboardCustomize,
   MdOutlineCategory,
   MdComment,
+  MdNotificationsActive,
 } from "react-icons/md";
 const icons = {
   IoIosLogOut,
@@ -47,5 +48,6 @@ const icons = {
   MdDashboardCustomize,
   MdOutlineCategory,
   MdComment,
+  MdNotificationsActive,
 };
 export default icons;

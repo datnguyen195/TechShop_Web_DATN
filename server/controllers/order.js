@@ -145,7 +145,7 @@ const deteStatus = asyncHandler(async (req, res) => {
 
 const getUserOrder = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const response = await Order.find({ orderBy: _id });
+  const response = await Order.find({ orderBy: _id }).sort({ createdAt: -1 });
   return res.json({
     success: response ? true : false,
     response: response ? response : "ko co du lieu",
@@ -156,7 +156,7 @@ const getsOrder = asyncHandler(async (req, res) => {
   const queries = { ...req.query };
   const excludeFields = ["limit", "sort", "page", "fields"];
   excludeFields.forEach((el) => delete queries[el]);
-
+  console.log(queries);
   let queryString = JSON.stringify(queries);
   queryString = queryString.replace(
     /\b(gte|gt|lt|lte)\b/g,
@@ -178,6 +178,8 @@ const getsOrder = asyncHandler(async (req, res) => {
   }
 
   queryCommand = Order.find(formatedQueries);
+
+  queryCommand = queryCommand.sort({ createdAt: -1 });
 
   const page = +req.query.page || 1;
   const limit = +req.query.limit || process.env.LIMIT_PRODUCTS;

@@ -10,6 +10,7 @@ const {
   IoIosToday,
   MdOutlineCategory,
   MdComment,
+  MdNotificationsActive,
 } = icons;
 export const adminSidebar = [
   {
@@ -110,7 +111,7 @@ export const adminSidebar = [
     type: "SINGLE",
     text: "Thông báo",
     path: `/${path.NOTIFICATION}`,
-    icon: <MdComment />,
+    icon: <MdNotificationsActive />,
   },
   {
     id: 9,

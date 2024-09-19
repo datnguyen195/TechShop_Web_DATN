@@ -24,7 +24,7 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 const getProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
-  const product = await Product.findById(pid);
+  const product = await Product.findById(pid).sort({ createdAt: -1 });
   return res.status(200).json({
     success: product ? true : false,
     productData: product ? product : "Cannot get product",
@@ -62,6 +62,7 @@ const getProducts = asyncHandler(async (req, res) => {
   if (queries?.category)
     formatedQueries.category = { $regex: queries.category, $options: "i" };
   queryCommand = Product.find(formatedQueries);
+
   //Sorting
   //abc, seg => [abc,efg]=> abc sfg
   if (req.query.sort) {
@@ -117,20 +118,9 @@ const getProductsw = asyncHandler(async (req, res) => {
   if (queries?.category)
     formatedQueries.category = { $regex: queries.category, $options: "i" };
   queryCommand = Product.find(formatedQueries);
-  //Sorting
-  //abc, seg => [abc,efg]=> abc sfg
-  if (req.query.sort) {
-    const sortBy = req.query.sort.split(",").join(" ");
-    queryCommand = queryCommand.sort(sortBy);
-  }
 
-  if (req.query.fields) {
-    const fields = req.query.fields.split(",").join(" ");
-    queryCommand = queryCommand.select(fields);
-  }
+  queryCommand = queryCommand.sort({ createdAt: -1 });
 
-  //Pagination
-  //limit: số object lay ve goi 1 API
   //skip:2
   //1 2 3 ... 10
   const page = +req.query.page || 1;
@@ -298,7 +288,9 @@ const uploadImagesProduct = asyncHandler(async (req, res) => {
 const getRatings = asyncHandler(async (req, res) => {
   try {
     // Fetch all products and select only the ratings field
-    const products = await Product.find({}).select("ratings");
+    const products = await Product.find({})
+      .select("ratings")
+      .sort({ createdAt: -1 });
 
     // Extract ratings from each product
     const allRatings = products.flatMap((product) => product.ratings);

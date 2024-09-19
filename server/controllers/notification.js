@@ -42,6 +42,46 @@ const getNotifi = asyncHandler(async (req, res) => {
   }
 });
 
+const getNotifiweb = asyncHandler(async (req, res) => {
+  const queries = { ...req.query };
+  const excludeFields = ["limit", "sort", "page", "fields"];
+  excludeFields.forEach((el) => delete queries[el]);
+  console.log(queries);
+  let queryString = JSON.stringify(queries);
+  queryString = queryString.replace(
+    /\b(gte|gt|lt|lte)\b/g,
+    (macthedEl) => `$${macthedEl}`
+  );
+  const formatedQueries = JSON.parse(queryString);
+
+  if (req.query.q) {
+    delete formatedQueries.q;
+    formatedQueries["$or"] = [
+      { title: { $regex: req.query.q, $options: "i" } },
+      { message: { $regex: req.query.q, $options: "i" } },
+    ];
+  }
+
+  queryCommand = Notification.find(formatedQueries);
+
+  queryCommand = queryCommand.sort({ createdAt: -1 });
+
+  const page = +req.query.page || 1;
+  const limit = +req.query.limit || process.env.LIMIT_PRODUCTS;
+  const skip = (page - 1) * limit;
+  queryCommand.skip(skip).limit(limit);
+
+  queryCommand.exec(async (err, response) => {
+    if (err) throw new Error(err.message);
+    const counts = await Notification.find(formatedQueries).countDocuments();
+    return res.status(200).json({
+      success: response ? true : false,
+      counts,
+      notifications: response ? response : "Cannot get đơn hàng",
+    });
+  });
+});
+
 const deleteNotifi = asyncHandler(async (req, res) => {
   try {
     const { nid } = req.params;
@@ -72,4 +112,5 @@ module.exports = {
   senNotifi,
   getNotifi,
   deleteNotifi,
+  getNotifiweb,
 };

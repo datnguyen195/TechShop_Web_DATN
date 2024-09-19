@@ -45,7 +45,7 @@ const DetaiUser = ({ show, render, setShow }) => {
                 d="M12 15v-3m0 0a3 3 0 10-6 0v3m6 0h6v3m0 0a3 3 0 01-6 0v-3M12 6a4 4 0 118 0"
               />
             </svg>
-            {isBlock ? "Mở khoá" : "Khóa Ứng Dụng"}
+            {isBlock ? "Khóa Ứng Dụng" : "Mở khoá"}
           </button>
           <button
             className="text-red-600 hover:underline cursor-pointer"

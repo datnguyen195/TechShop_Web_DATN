@@ -147,7 +147,7 @@ const DetaiProduct = () => {
                   <img
                     src={el.thumb}
                     alt={el.color}
-                    className="w-20 h-22 rounded-md object-cover p-0.5"
+                    className="w-18 h-20 rounded-md object-cover p-0.5"
                   />
                   <div className="flex-grow">
                     <p className="font-medium text-gray-800">{el.color}</p>

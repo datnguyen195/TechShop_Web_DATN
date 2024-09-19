@@ -10,6 +10,7 @@ router.post(
   ctrls.senNotifi
 );
 router.get("/", verifyAccessToken, ctrls.getNotifi);
+router.get("/admin", verifyAccessToken, ctrls.getNotifiweb);
 router.delete(
   "/remove-notification/:nid",
   verifyAccessToken,
