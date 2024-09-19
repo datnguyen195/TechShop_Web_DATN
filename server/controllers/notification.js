@@ -68,8 +68,26 @@ const deleteNotifi = asyncHandler(async (req, res) => {
   }
 });
 
+const getNotificationById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) throw new Error("thieu truong");
+
+  const notification = await Notification.findById(id);
+
+  // If notification is not found, throw an error
+  if (!notification) {
+    res.status(404);
+    throw new Error("Không tìm thấy thông báo");
+  }
+
+  // Send the found notification as the response
+  res.status(200).json(notification);
+});
+
 module.exports = {
   senNotifi,
   getNotifi,
   deleteNotifi,
+  getNotificationById,
 };
