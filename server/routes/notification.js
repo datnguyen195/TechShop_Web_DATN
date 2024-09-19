@@ -18,4 +18,6 @@ router.delete(
   ctrls.deleteNotifi
 );
 
+router.get("/:id", verifyAccessToken, ctrls.getNotificationById);
+
 module.exports = router;
